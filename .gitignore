@@ -1,5 +1,10 @@
 node_modules/
 .env
+.env.*
+!.env.example
+ai_studio_config.json
+*.pem
+*.key
 *.log
 .commons-data/
 client/shared/join-current.json

@@ -1,4 +1,4 @@
-// Hand-written fallback sketches, used whenever no OPENAI_API_KEY is set or a
+// Hand-written fallback sketches, used whenever no model key is configured or a
 // generation call fails. They exist so the whole pipeline -- station knobs,
 // relay, display, audio-reactivity -- is provably real and demoable before a
 // single API key is configured, and so a live demo never goes fully dark if a

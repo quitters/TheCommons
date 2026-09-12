@@ -8,6 +8,7 @@ Use the existing build. Prioritize the real room, an agent demonstration, and re
 - Open `/station/` on two real phones using the laptop's LAN IP and the same Wi-Fi. Each phone receives a separate identity automatically. Verify each can visibly change its assigned control. `127.0.0.1` on a phone points to the phone, not the laptop.
 - If venue Wi-Fi isolates devices, use an available trusted hotspot. Test this before recording; local browser tabs alone do not prove the venue connection.
 - Use `/admin/` on the laptop and sign in privately. Keep `.env` and passwords out of the recording.
+- Use **Hide overlays · F** on the display for an unobstructed artwork shot. Press **F**, **Escape**, or tap the canvas to restore the QR and sound controls. Hiding controls does not stop the artwork or microphone.
 - Keep the shared display on `127.0.0.1` for its microphone permission. Enable its microphone and play a little music; demonstrate a native sketch because the inherited p5 library does not consume audio yet. If sound is unreliable, choose Just watch and demonstrate the core shared controls.
 
 ## Complete interaction (10 minutes)

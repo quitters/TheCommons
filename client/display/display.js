@@ -17,6 +17,30 @@ const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 const p5Mount = document.getElementById('p5Mount');
 const statusEl = document.getElementById('status');
+const overlays = document.getElementById('displayOverlays');
+const hideOverlays = document.getElementById('hideOverlays');
+
+function setOverlaysHidden(hidden) {
+  // Hide the parent so QR refreshes and microphone updates cannot reveal a child.
+  // Each child's existing hidden/open state is preserved for when controls return.
+  overlays.hidden = hidden;
+  if (hidden) document.body.focus({ preventScroll: true });
+  else hideOverlays.focus({ preventScroll: true });
+}
+hideOverlays.addEventListener('click', () => setOverlaysHidden(true));
+addEventListener('keydown', (event) => {
+  if (event.repeat || event.ctrlKey || event.metaKey || event.altKey
+    || event.target.isContentEditable || event.target.closest('input, textarea, select')) return;
+  if (event.key.toLowerCase() === 'f') {
+    event.preventDefault();
+    setOverlaysHidden(!overlays.hidden);
+  } else if (event.key === 'Escape' && overlays.hidden) {
+    setOverlaysHidden(false);
+  }
+});
+addEventListener('click', (event) => {
+  if (overlays.hidden && (event.target === canvas || p5Mount.contains(event.target))) setOverlaysHidden(false);
+}, true);
 
 function resizeCanvas() { canvas.width = innerWidth; canvas.height = innerHeight; }
 addEventListener('resize', resizeCanvas);

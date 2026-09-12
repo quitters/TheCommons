@@ -13,13 +13,14 @@ Adapted from the [Agents, Everywhere starter kit](https://github.com/CopilotKit/
 - The general *idea* of "a single prompt generates a knob-controllable creative-coding sketch" — inspired by that same sibling project's own prompt-to-template feature, but reimplemented from scratch for this project's own contract (native Canvas2D, not p5) and never sharing code with it.
 
 **What we built during the hackathon**
-- The WebSocket relay and its soft per-variable ownership model (`server/relay.js`)
+- The WebSocket relay and automatically balanced individual/shared variable assignments (`server/relay.js`)
 - The Facilitator agent — the perceive/decide/act loop that autonomously evolves the piece from room telemetry (`server/facilitator.js`)
 - Prompt-to-native-sketch generation and its system prompt, with automatic fallback across the full built-in pool on any failure (`server/generate.js`)
 - The p5.js adapter that lets the inherited template library run inside this project's shared multi-station system at all — those templates were never wired to a shared relay/display before (`client/display/display.js`)
 - Live microphone audio analysis and the audio-reactivity contract (`client/display/display.js`)
 - Participant stations with automatic individual/shared control assignments, numeric sliders and categorical choices (`client/station`), plus a separate authenticated creator desk with remix/create modes, saved jobs, and undo (`client/admin`)
 - The smoke test suite (`server/smoke-test.js`)
+- Saved visual presets, an audience-only tunnel gateway, and locally generated scan-to-join QR codes
 
 ## Title and description
 
@@ -51,7 +52,7 @@ The demonstrated model integration is Google Gemini 3.1 Pro for native Canvas2D 
 ## Public repository
 
 - [x] A new participant can run the quickstart from a clean clone (`npm install && cp .env.example .env && npm start` — verified working with zero configuration)
-- [x] The README lists the optional Gemini/OpenAI configuration and the admin password; no model key is required for the fallback demo
+- [x] The README explains optional Gemini/OpenAI configuration and setting a private admin password; no model key is required for the fallback demo
 - [x] `npm run verify` passes (`server/smoke-test.js` — boots the real server on a test port, forces the no-key fallback path, checks the template library, the fallback pool, and the live `/api/telemetry`/`/api/generate` endpoints; run and confirmed passing 2026-09-12)
 - [x] `.env` is gitignored; no tokens or account secrets are committed
 - [x] Sample/fallback content is clearly labeled as such (the built-in sketch pool, the `fallback: true` flag in generation responses)
@@ -65,7 +66,7 @@ The demonstrated model integration is Google Gemini 3.1 Pro for native Canvas2D 
 - [ ] State which sponsor technologies made the interaction possible
 - [ ] Keep the video within the event's limit and check audio
 
-<!-- TODO (team): record after the above is confirmed working end-to-end on the actual demo hardware/network, not just localhost. -->
+<!-- TODO (team): record after the above is confirmed working end-to-end on the actual demo hardware/network, not just local browser tabs. -->
 
 ## Social post and final submission
 

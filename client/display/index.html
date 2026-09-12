@@ -11,9 +11,10 @@
 <link rel="stylesheet" href="./display.css">
 <link rel="stylesheet" href="../shared/join-qr.css">
 </head>
-<body>
+<body tabindex="-1">
 <canvas id="c"></canvas>
 <div id="p5Mount" hidden></div>
+<div id="displayOverlays">
 <header class="display-header">
   <div class="display-brand">The <span>Commons</span></div>
   <div id="status" role="status"></div>
@@ -30,7 +31,11 @@
   <div class="audio-actions"><button id="enableAudio" class="primary-button">Enable microphone</button><button id="skipAudio" class="quiet-button">Just watch</button></div>
   <p id="audioStatus" role="status"></p>
 </section>
-<button id="showAudio" class="audio-chip" hidden>Sound off · enable</button>
+<div class="display-tools">
+  <button id="showAudio" class="audio-chip" hidden>Sound off · enable</button>
+  <button id="hideOverlays" class="audio-chip" aria-keyshortcuts="F" title="Show again with F, Escape, or a tap on the canvas">Hide overlays · F</button>
+</div>
+</div>
 <!-- p5 is only for inherited library content. Fresh generations use Canvas2D. -->
 <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
 <script type="module" src="./display.js"></script>

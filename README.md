@@ -15,19 +15,32 @@ Visual identity — palette, type, layout logic — was designed once in [pitch.
 
 ## Quickstart
 
+Requires Node.js 20.6 or newer and npm. For a fresh clone:
+
 ```bash
+git clone https://github.com/quitters/TheCommons.git
+cd TheCommons
 npm install
 cp .env.example .env
+npm run verify
 npm start
 ```
+
+In Windows PowerShell, use `Copy-Item .env.example .env` instead of `cp`. Copy the example only on first setup; preserve an existing `.env`. The example uses port **4173**; if you change `PORT`, use that port in every local URL (the event laptop uses 4188).
 
 Then open:
 - **`http://127.0.0.1:4173/display/`** — put this on the shared screen/projector. Choose **Enable microphone** for optional audio reactivity, or **Just watch** to dismiss the card. Sound can be enabled later from the corner button.
 - **`http://127.0.0.1:4173/station/?table=1`** — one tab per table. Open it again with `?table=2`, `?table=3`, etc. to simulate multiple tables on one machine for testing. Phones on the same network should use this machine's LAN IP instead of `127.0.0.1`.
 
+Participants can simply open `/station/`: table labels are optional, and each participant receives an identity automatically. Use `127.0.0.1` for local browser tabs; see [AGENTS.md](AGENTS.md) for the IPv4 connection gotcha.
+
+On the display, **Hide overlays · F** removes the logo, status, invitation QR, and sound controls for a clean canvas. Press **F** again, press **Escape**, or click/tap the artwork to restore them. The animation and microphone keep running, and existing panel states are preserved.
+
 Without a model key, the server runs entirely on the built-in pool — two hand-written sketches (`server/builtin-sketches.js`) plus the inherited library (`templates/`, loaded by `server/templates.js`; 31 files preserved, one unsupported renderer excluded). No OpenAI key is required. Set `GENERATION_PROVIDER=fallback` to guarantee no model calls even with keys configured.
 
-The **creator/admin** remixes at **`http://127.0.0.1:4173/admin/`**, after signing in with `ADMIN_PASSWORD` from `.env`. A blank password disables access. Participant stations cannot generate or read generation jobs, including through direct API calls. Each participant receives controls automatically. When people outnumber variables, controls are shared in balanced groups with four-second turns. Reloading a station preserves its identity; a disconnected participant keeps their allocation for 30 seconds. A remix rebuilds everyone's controls from the new variables, including changed names, types, ranges, choices, and defaults.
+## Creator desk and shared controls
+
+The **creator/admin** remixes at **`http://127.0.0.1:4173/admin/`**, after signing in with `ADMIN_PASSWORD` from `.env`. Set your own password locally; a blank password disables access. Participant stations cannot generate or read generation jobs, including through direct API calls. Each participant receives controls automatically. When people outnumber variables, controls are shared in balanced groups with four-second turns. Reloading a station preserves its identity; a disconnected participant keeps their allocation for 30 seconds. A remix rebuilds everyone's controls from the new variables, including changed names, types, ranges, choices, and defaults.
 
 Choose **Remix this piece** to send the current code, variable definitions, and settings with a change request, or **Create a new piece** to generate from a fresh prompt alone. Remix snapshots its source when the job starts, retains compatible control values, and rejects a request based on an outdated piece. Inherited p5 sources are references for a new native Canvas2D result; their files and runtime contract remain untouched. **Undo last change** restores the preceding sketch and its saved settings without another model call, including after a server restart. Undo is unavailable during generation. API clients default to `mode: "create"`; the async endpoint also accepts `mode: "remix"` and `baseSketchId`.
 
@@ -35,13 +48,39 @@ For the final rehearsal, use [docs/DEMO_RUNBOOK.md](docs/DEMO_RUNBOOK.md).
 
 The optional **Choose a preset** panel lists previous successful generations, named saved looks, two native built-ins, and the supported inherited library. **Save current look** stores the current piece and settings for an event set. Loading a preset makes no model call, updates all participants, and supports undo. The unsupported SVG template remains excluded. Presets and generated pieces stay in the ignored local data directory, not in `templates/`.
 
-For a temporary audience link, `npm run preview:public` starts a separate gateway at `127.0.0.1:4189` (override `PUBLIC_PREVIEW_PORT`). Point a separately approved tunnel at this gateway, **not at the main app port**. It exposes only station/display/shared assets and WebSockets; admin and generation routes are blocked. Keep the creator desk on the main local address. A temporary tunnel requires the laptop and both processes to remain running; it is not a permanent deployment.
+## Invite an audience
+
+For a temporary audience link, `npm run preview:public` starts a separate gateway at `127.0.0.1:4189` (override `PUBLIC_PREVIEW_PORT`). It reads the app's `PORT` from `.env`. Point a separately approved tunnel at this gateway, **not at the main app port**. It exposes only station/display/shared assets and WebSockets; admin and generation routes are blocked. Keep the creator desk on the main local address. Keep the laptop awake and all three processes running: app, gateway, and tunnel. A temporary tunnel is not a permanent deployment.
+
+After starting an approved Cloudflare Quick Tunnel, generate a scan-to-join code for its current station URL:
+
+```bash
+cloudflared tunnel --url http://127.0.0.1:4189
+# In another terminal, substitute the address printed by cloudflared:
+npm run qr -- https://YOUR-CURRENT-TUNNEL.trycloudflare.com/station/
+```
+
+The QR appears on the shared display and under **Invite participants** in the creator desk. Open `/shared/join.html` for a large presentation view, or download `/shared/join-qr.png` for printing. Encoding and verification run locally, without an external QR service. Regenerate whenever the tunnel URL changes; open pages update within ten seconds. Generated QR assets and the event URL are ignored by Git.
+
+Test a real phone on mobile data before presenting. Restarting the tunnel changes its address; restarting the app requires connected stations to reload. See [docs/DEMO_RUNBOOK.md](docs/DEMO_RUNBOOK.md) for rehearsal and [docs/OPERATIONS.md](docs/OPERATIONS.md) for access boundaries and private data.
+
+## Gemini and saved generation jobs
 
 For live Gemini generation, set `GENERATION_PROVIDER=gemini` and either `GEMINI_API_KEY` or `GEMINI_CONFIG_PATH` to an existing server-local JSON file containing `api_key`. The default model is `gemini-3.1-pro-preview`; the key stays on the server. OpenAI remains available with `GENERATION_PROVIDER=openai` and `OPENAI_API_KEY`. Set `FACILITATOR_ENABLED=false` for manual remixes only; enabling it permits autonomous model calls.
 
 The creator desk starts a saved background job and polls it. Gemini gets a ten-minute deadline (`GEMINI_TIMEOUT_MS`), independent of browser requests. Reloads and lost responses reuse the same job ID without another model call. Prompts and finished sketches are saved under ignored `.commons-data/generations/` (override with `GENERATION_DATA_DIR`); completed applied sketches return after a server restart. A server restart interrupts an unfinished model request, but preserves its prompt and marks it for an explicit retry. A model timeout uses the fallback pool and retains the idea; partial provider output cannot be resumed. Nothing automatically retries a paid request.
 
 Run `npm run verify` (or `npm test`) to check this yourself — it boots the real server on a separate test port with the key forced empty, then exercises the template library, the fallback pool, and the live `/api/telemetry` and `/api/generate` endpoints (`server/smoke-test.js`).
+
+| Command | Purpose |
+|---|---|
+| `npm start` | Run the app using local `.env` settings. |
+| `npm run dev` | Restart automatically when server files change; use outside the live demo. |
+| `npm run verify` | Run isolated server/API checks with paid generation disabled. |
+| `npm run preview:public` | Start the audience-only gateway; does not itself open a public tunnel. |
+| `npm run qr -- <station-url>` | Generate and independently decode-check the local invitation QR. |
+
+The lockfile pins the tested dependency set. `qs` is overridden to 6.16.0 to address the query-parser advisories reported against Express 4's dependency range; review this override when updating Express. Use `npm ci` for a reproducible install and `npm audit` to check current dependency advisories.
 
 ## How a sketch works
 
@@ -70,13 +109,13 @@ Either way, `getVar`/`p.getSynthVar` reads the current knob value for a variable
 - Physical MIDI controller support (Web MIDI API) as an alternative to touch knobs at a table. Touch knobs are the practical default for a hackathon demo — they work on any device with zero hardware sourcing — but the relay/station split is designed so a MIDI-reading station is a drop-in addition, not a redesign.
 - A visible on-screen nudge from the facilitator to a specific quiet table (currently it only ever triggers a full-room regeneration, not a per-table hint).
 - Audio-reactivity for the inherited p5 template library — today only natively-generated sketches consume `audio.*`; wiring a few of the strongest inherited templates (e.g. `flow-field`, `strange-attractors`) to react to `p.getSynthVar('_audio_bass')`-style live values would extend the music-sync story across the whole default library, not just fresh generations.
-- **A Jackbox-style join flow**: the shared display shows a short room code; a `/join` page lets someone type it in on their phone rather than navigating to a `?table=N` URL by hand. Better suited to a dim bar than a QR code, which needs a clean line of sight from across a room. Also the honest structural fix if this ever runs more than one room per server — right now a station only makes sense against the one relay it's pointed at.
+- **Multiple rooms and short join codes**: QR joining works today for the single shared room. A future `/join` page could accept a short room code and route participants to separate canvases; the server currently hosts one room.
 
 ## What's inherited vs. built
 
 Per the hackathon's own eligibility rules ("existing templates... may be used as building blocks," but "the project's core functionality must be built during the event"):
 
 - **Inherited, unmodified, clearly attributed:** the 31 files in [`templates/`](templates/) — real p5.js generative-art templates copied verbatim from `synthograsizer-suite`'s own template library (several of which credit their own further upstream sources in each file's own `tags` field). This is default *content*, not the mechanism. The schema those files follow, and the actual prompt that generated them, are documented (trimmed to only the parts relevant here) in [`docs/TEMPLATE_SCHEMA.md`](docs/TEMPLATE_SCHEMA.md) and [`docs/inherited-p5-generation-prompt.md`](docs/inherited-p5-generation-prompt.md) — neither is wired into this project's own generation path (see "How a sketch works" above), they're there so the inherited content's origin is fully traceable, not just the content itself.
-- **Built from scratch during the event:** everything that makes this a shared, agentic, music-synced installation rather than a single-user art tool — the WebSocket relay and its soft-ownership design, the facilitator's perceive/decide/act loop, the prompt-to-native-code generation path and its system prompt, the live audio analysis, the station UI, and the p5-adapter that lets the inherited templates run inside this project's own knob/relay system at all (they were never wired to a shared multi-station display before).
+- **Built from scratch during the event:** everything that makes this a shared, agentic, music-synced installation rather than a single-user art tool — the WebSocket relay and its individual/shared assignments, the facilitator's perceive/decide/act loop, the prompt-to-native-code generation path and its system prompt, the live audio analysis, the station UI, and the p5-adapter that lets the inherited templates run inside this project's own knob/relay system at all (they were never wired to a shared multi-station display before).
 
 This project does not call into, vendor, or fork any *code* from `synthograsizer-suite` or `SignalChain` (sibling projects on the same machine) — only the explicitly-permitted template *content* above, copied once, unmodified, and disclosed here rather than blended in quietly.

@@ -10,8 +10,8 @@ import { fileURLToPath } from 'node:url';
 // is called out plainly in README.md. Everything that RUNS these templates
 // (the relay, the facilitator, the p5 adapter below, the station UI) is new.
 //
-// Two templates are present in templates/ but excluded from the auto-picked
-// pool: they use a non-default p5 renderer mode (SVG) this project's display
+// One template is present in templates/ but excluded from the auto-picked
+// pool: it uses a non-default p5 renderer mode (SVG) this project's display
 // runtime doesn't yet special-case -- see README's "documented next step".
 const EXCLUDED = new Set(['svg-flow-particles']);
 
