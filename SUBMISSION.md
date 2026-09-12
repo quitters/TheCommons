@@ -18,22 +18,22 @@ Adapted from the [Agents, Everywhere starter kit](https://github.com/CopilotKit/
 - Prompt-to-native-sketch generation and its system prompt, with automatic fallback across the full built-in pool on any failure (`server/generate.js`)
 - The p5.js adapter that lets the inherited template library run inside this project's shared multi-station system at all — those templates were never wired to a shared relay/display before (`client/display/display.js`)
 - Live microphone audio analysis and the audio-reactivity contract (`client/display/display.js`)
-- The table station UI — on-screen knobs generated generically from whatever sketch is live, plus the full-remix prompt box (`client/station`)
+- Participant stations with automatic individual/shared control assignments, numeric sliders and categorical choices (`client/station`), plus a separate authenticated creator desk with remix/create modes, saved jobs, and undo (`client/admin`)
 - The smoke test suite (`server/smoke-test.js`)
 
 ## Title and description
 
 **What you built**
-<!-- TODO (team): one or two sentences on the complete interaction the demo shows. -->
+The Commons turns a shared screen into generative art that everyone in a room can steer. Each participant receives visual controls; a creator can evolve the current piece or generate a new one, while a facilitator watches room activity and can refresh the canvas when engagement quiets.
 
 **Who it is for**
-<!-- TODO (team): name a person in a concrete situation -- e.g. "a bar/venue that wants a shared visual piece the whole room shapes together, not a screen nobody's watching." -->
+Venues, parties, and events that want the audience to shape a shared visual piece together using the phones they already have.
 
 **Why the context matters**
 The agent (the Facilitator) only has anything to perceive or decide because more than one person's hands are in the piece at once, in a physical room, with real telemetry about who's engaged and who's gone quiet. Remove the room and there's nothing left for it to watch.
 
 **Sponsor technologies used**
-<!-- TODO (team): name the ones actually used and what they visibly contributed. As of this pass: OpenAI (prompt-to-sketch generation, optional -- the app runs fully without a key). Confirm before submitting which others, if any, ended up wired in. -->
+The demonstrated model integration is Google Gemini 3.1 Pro for native Canvas2D code generation and context-aware remixing. OpenAI is an optional supported provider, not required or used in the current demo. Confirm the Ottawa event's sponsor-credit requirements in the participant portal; do not imply that an unused provider powered the demonstration.
 
 ## Evidence for the judging criteria
 
@@ -51,7 +51,7 @@ The agent (the Facilitator) only has anything to perceive or decide because more
 ## Public repository
 
 - [x] A new participant can run the quickstart from a clean clone (`npm install && cp .env.example .env && npm start` — verified working with zero configuration)
-- [x] The README lists the credentials and separate processes required (just `OPENAI_API_KEY`, optional)
+- [x] The README lists the optional Gemini/OpenAI configuration and the admin password; no model key is required for the fallback demo
 - [x] `npm run verify` passes (`server/smoke-test.js` — boots the real server on a test port, forces the no-key fallback path, checks the template library, the fallback pool, and the live `/api/telemetry`/`/api/generate` endpoints; run and confirmed passing 2026-09-12)
 - [x] `.env` is gitignored; no tokens or account secrets are committed
 - [x] Sample/fallback content is clearly labeled as such (the built-in sketch pool, the `fallback: true` flag in generation responses)
