@@ -4,16 +4,24 @@ import { randomUUID } from 'node:crypto';
 
 // A browser request only starts a job. Work continues independently, and the
 // prompt + completed result survive reloads. Never write into templates/.
-export function createGenerationJobs({ directory, generate, publish, getSketch }) {
+export function createGenerationJobs({ directory, generate, publish, getSketch, getValues = () => ({}) }) {
   fs.mkdirSync(directory, { recursive: true });
   const jobs = new Map();
   let active = null;
+  const statePath = path.join(directory, 'room-state.json');
+  let roomState = null;
+  try { roomState = JSON.parse(fs.readFileSync(statePath, 'utf8')); } catch {}
+  function saveRoom(next) {
+    fs.writeFileSync(`${statePath}.tmp`, JSON.stringify(next, null, 2));
+    fs.renameSync(`${statePath}.tmp`, statePath);
+    roomState = next;
+  }
   function save(job) {
     const filename = path.join(directory, `${job.id}.json`);
     fs.writeFileSync(`${filename}.tmp`, JSON.stringify(job, null, 2));
     fs.renameSync(`${filename}.tmp`, filename);
   }
-  for (const filename of fs.readdirSync(directory).filter((file) => file.endsWith('.json'))) {
+  for (const filename of fs.readdirSync(directory).filter((file) => file.endsWith('.json') && file !== 'room-state.json')) {
     try {
       const job = JSON.parse(fs.readFileSync(path.join(directory, filename), 'utf8'));
       if (!/^[a-f0-9-]{36}$/.test(job.id) || typeof job.prompt !== 'string') continue;
@@ -30,15 +38,27 @@ export function createGenerationJobs({ directory, generate, publish, getSketch }
   return {
     get: (id) => snapshot(jobs.get(id)),
     active: () => snapshot(active?.job),
+    canUndo: () => Boolean(roomState?.undo) && !active,
+    latestValues: () => snapshot(roomState?.values) || {},
+    undo() {
+      if (active) throw new Error('Wait for the current generation to finish before undoing.');
+      if (!roomState?.undo) throw new Error('There is no previous piece to restore.');
+      const previous = roomState.undo;
+      saveRoom({ ...previous, undo: null });
+      publish(previous.sketch, previous.values);
+      return previous.sketch;
+    },
     latestSketch() {
+      if (roomState?.sketch) return snapshot(roomState.sketch);
       return [...jobs.values()].filter((job) => job.applied && job.sketch)
         .sort((a, b) => b.finishedAt - a.finishedAt)[0]?.sketch ?? null;
     },
-    start(prompt, { apply = true, id = randomUUID() } = {}) {
+    start(prompt, { apply = true, id = randomUUID(), mode = 'create', baseSketchId } = {}) {
+      if (!['create', 'remix'].includes(mode)) throw new Error('Unknown generation mode');
       if (!/^[a-f0-9-]{36}$/.test(id)) throw new Error('invalid remix request ID');
       const existing = jobs.get(id);
       if (existing) {
-        if (existing.prompt !== prompt) throw new Error('request ID belongs to another prompt');
+        if (existing.prompt !== prompt || (existing.mode || 'create') !== mode) throw new Error('request ID belongs to another prompt or mode');
         return { job: snapshot(existing), completion: active?.job.id === id ? active.completion : Promise.resolve(existing.sketch ?? null) };
       }
       if (active) {
@@ -46,21 +66,31 @@ export function createGenerationJobs({ directory, generate, publish, getSketch }
         error.jobId = active.job.id;
         throw error;
       }
-      const job = { id, prompt, status: 'generating', createdAt: Date.now() };
       const before = getSketch();
+      if (mode === 'remix' && (!before || (baseSketchId && baseSketchId !== before.id))) {
+        const error = new Error('The piece changed. Review the current canvas before remixing.');
+        error.status = 409;
+        throw error;
+      }
+      const previous = { sketch: snapshot(before), values: getValues() };
+      const job = { id, prompt, mode, ...(mode === 'remix' ? { source: previous } : {}), status: 'generating', createdAt: Date.now() };
       save(job); // do not start a potentially paid call if the prompt cannot be saved
       jobs.set(job.id, job);
       const entry = { job, completion: null };
       active = entry;
       entry.completion = Promise.resolve().then(async () => {
         try {
-          const sketch = await generate(prompt);
+          const sketch = await generate(prompt, { mode, ...(mode === 'remix' ? { source: snapshot(previous) } : {}) });
           job.sketch = sketch;
           job.status = sketch.fallback ? 'fallback' : 'completed';
           job.finishedAt = Date.now();
           job.applied = apply && getSketch() === before;
           save(job); // save the finished piece before broadcasting it
-          if (job.applied) publish(sketch);
+          if (job.applied) {
+            const values = mode === 'remix' && !sketch.fallback ? previous.values : {};
+            saveRoom({ sketch, values, undo: previous.sketch ? previous : null });
+            publish(sketch, values);
+          }
           return sketch;
         } catch {
           job.status = 'failed';

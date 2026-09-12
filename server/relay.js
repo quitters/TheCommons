@@ -61,11 +61,16 @@ export function createRelay(httpServer, { disconnectGraceMs = 30_000 } = {}) {
     }
     for (const [name, hold] of holds) if (!assigned.get(name)?.has(hold.person)) holds.delete(name);
   }
-  function setSketch(sketch) {
+  function setSketch(sketch, initialValues = {}) {
     currentSketch = sketch;
     values.clear();
     holds.clear();
-    for (const v of sketch.variables || []) values.set(v.name, defaultValue(v));
+    for (const v of sketch.variables || []) {
+      const candidate = initialValues[v.name];
+      const accepted = v.type === 'number' ? numericValue(v, candidate)
+        : v.values?.some((choice) => choice.text === candidate) ? candidate : null;
+      values.set(v.name, accepted ?? defaultValue(v));
+    }
     distribute();
     broadcast({ type: 'sketch', sketch, values: Object.fromEntries(values), owners: ownership() });
   }
@@ -135,7 +140,7 @@ export function createRelay(httpServer, { disconnectGraceMs = 30_000 } = {}) {
   });
   httpServer.on('close', () => { for (const person of participants.values()) clearTimeout(person.timer); });
   return {
-    setSketch, getSketch: () => currentSketch,
+    setSketch, getSketch: () => currentSketch, getValues: () => Object.fromEntries(values),
     getTelemetry() {
       const now = Date.now();
       return { activeTables: [...telemetry.tableSeen].filter(([, at]) => now - at < 30_000).map(([table]) => table),

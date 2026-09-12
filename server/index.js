@@ -27,10 +27,18 @@ const server = http.createServer(app);
 const relay = createRelay(server);
 const jobs = createGenerationJobs({
   directory: process.env.GENERATION_DATA_DIR || path.join(__dirname, '../.commons-data/generations'),
-  generate: generateSketch, publish: relay.setSketch, getSketch: relay.getSketch,
+  generate: generateSketch, publish: relay.setSketch, getSketch: relay.getSketch, getValues: relay.getValues,
 });
 const bootSketch = jobs.latestSketch() || pickFallback();
-relay.setSketch(bootSketch);
+relay.setSketch(bootSketch, jobs.latestValues());
+
+app.get('/api/admin/canvas', admin.require, (_req, res) => res.json({
+  name: relay.getSketch()?.name, sketchId: relay.getSketch()?.id, canUndo: jobs.canUndo(),
+}));
+app.post('/api/admin/undo', admin.require, (_req, res) => {
+  try { res.json({ name: jobs.undo().name }); }
+  catch (error) { res.status(409).json({ error: error.message }); }
+});
 
 function readPrompt(req, res) {
   const prompt = typeof req.body?.prompt === 'string' ? req.body.prompt.trim() : '';
@@ -40,21 +48,25 @@ function readPrompt(req, res) {
   }
   return prompt;
 }
-function startJob(prompt, res, id) {
+function startJob(prompt, res, id, mode = 'create', baseSketchId) {
+  if (!['create', 'remix'].includes(mode)) {
+    res.status(400).json({ error: 'mode must be create or remix' });
+    return null;
+  }
   if (id !== undefined && (typeof id !== 'string' || !/^[a-f0-9-]{36}$/.test(id))) {
     res.status(400).json({ error: 'invalid remix request ID' });
     return null;
   }
-  try { return jobs.start(prompt, { id }); }
+  try { return jobs.start(prompt, { id, mode, baseSketchId }); }
   catch (error) {
-    res.status(error.jobId ? 409 : 503).json({ error: error.jobId ? error.message : 'Could not save the remix request.', jobId: error.jobId });
+    res.status(error.status || (error.jobId ? 409 : 503)).json({ error: error.status || error.jobId ? error.message : 'Could not save the remix request.', jobId: error.jobId });
     return null;
   }
 }
 app.post('/api/generations', admin.require, (req, res) => {
   const prompt = readPrompt(req, res);
   if (!prompt) return;
-  const started = startJob(prompt, res, req.body.requestId);
+  const started = startJob(prompt, res, req.body.requestId, req.body.mode, req.body.baseSketchId);
   if (started) res.status(202).json(started.job);
 });
 app.get('/api/generations/active', admin.require, (_req, res) => res.json(jobs.active()));

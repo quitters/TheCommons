@@ -2,12 +2,36 @@ let authenticated = false;
 let remixing = false;
 const promptSend = document.getElementById('promptSend');
 const promptStatus = document.getElementById('promptStatus');
-function updateConnection() { promptSend.disabled = !authenticated || remixing; }
+const undoPiece = document.getElementById('undoPiece');
+const modeOptions = document.getElementById('modeOptions');
+let canvas = null;
+const mode = () => document.querySelector('input[name="mode"]:checked').value;
+function updateConnection() {
+  promptSend.disabled = !authenticated || remixing || (mode() === 'remix' && !canvas?.sketchId);
+  modeOptions.disabled = remixing;
+  undoPiece.disabled = !authenticated || remixing || !canvas?.canUndo;
+  promptSend.textContent = remixing ? 'Composing…' : mode() === 'remix' ? 'Remix this piece ↗' : 'Create a new piece ↗';
+}
+async function refreshCanvas() {
+  if (!authenticated) return;
+  try {
+    const response = await fetch('/api/admin/canvas');
+    if (!response.ok) return;
+    canvas = await response.json();
+    document.getElementById('currentPiece').textContent = `On the wall: ${canvas.name}`;
+    updateConnection();
+  } catch {}
+}
+modeOptions.addEventListener('change', () => {
+  remember('commons-admin-mode', mode());
+  updateConnection();
+});
 function setAuthenticated(value) {
   authenticated = value;
   document.getElementById('loginForm').hidden = value;
   document.getElementById('creatorTools').hidden = !value;
   updateConnection();
+  if (value) refreshCanvas();
 }
 const draftKey = 'commons-admin-draft';
 const jobKey = 'commons-admin-remix';
@@ -17,6 +41,8 @@ function remember(key, value) {
 }
 function recalled(key) { try { return localStorage.getItem(key); } catch { return null; } }
 promptInput.value = recalled(draftKey) || '';
+const savedMode = recalled('commons-admin-mode');
+if (savedMode === 'create') document.querySelector('input[value="create"]').checked = true;
 promptInput.addEventListener('input', () => remember(draftKey, promptInput.value));
 const pause = () => new Promise((resolve) => setTimeout(resolve, 2000));
 function requestId() {
@@ -47,7 +73,7 @@ async function followRemix(request) {
           ? await fetch(`/api/generations/${request.id}`, { signal: AbortSignal.timeout(10_000) })
           : await fetch('/api/generations', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: request.prompt, requestId: request.id }),
+            body: JSON.stringify({ prompt: request.prompt, requestId: request.id, mode: request.mode || 'create', baseSketchId: request.baseSketchId }),
             signal: AbortSignal.timeout(10_000),
           });
         job = await response.json();
@@ -63,7 +89,7 @@ async function followRemix(request) {
       }
       if (!response.ok) {
         promptStatus.textContent = response.status === 409
-          ? 'A remix is already in progress. Your idea is saved — try again when it finishes.'
+          ? (job.error || 'A remix is already in progress. Your idea is saved — try again when it finishes.')
           : 'Couldn’t reconnect to this remix. Your idea is saved — try again.';
         promptStatus.dataset.error = 'true';
         remember(jobKey, null);
@@ -92,6 +118,7 @@ async function followRemix(request) {
     remixing = false;
     promptSend.textContent = 'Remix for the room ↗';
     updateConnection();
+    await refreshCanvas();
   }
 }
 
@@ -100,7 +127,17 @@ document.getElementById('promptForm').addEventListener('submit', (event) => {
   const prompt = promptInput.value.trim();
   if (!prompt || remixing || !authenticated) return;
   remember(draftKey, promptInput.value);
-  followRemix({ id: requestId(), prompt });
+  followRemix({ id: requestId(), prompt, mode: mode(), baseSketchId: canvas?.sketchId });
+});
+undoPiece.addEventListener('click', async () => {
+  undoPiece.disabled = true;
+  try {
+    const response = await fetch('/api/admin/undo', { method: 'POST' });
+    const result = await response.json();
+    promptStatus.textContent = response.ok ? `Restored ${result.name}, including its previous settings.` : result.error;
+    promptStatus.dataset.error = String(!response.ok);
+  } catch { promptStatus.textContent = 'Couldn’t restore the previous piece. Try again.'; }
+  await refreshCanvas();
 });
 function resumeRemix() {
   try {

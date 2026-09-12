@@ -116,11 +116,12 @@ async function waitForServer(timeoutMs = 8000) {
 try {
   await waitForServer();
   await checkAsync('participant requests cannot remix or access jobs; admin signs in securely', async () => {
-    for (const route of ['/api/generate', '/api/generations']) {
+    for (const route of ['/api/generate', '/api/generations', '/api/admin/undo']) {
       const response = await fetch(`http://127.0.0.1:${PORT}${route}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: 'blocked' }) });
       assert.equal(response.status, 401);
     }
     assert.equal((await fetch(`http://127.0.0.1:${PORT}/api/generations/active`)).status, 401);
+    assert.equal((await fetch(`http://127.0.0.1:${PORT}/api/admin/canvas`)).status, 401);
     const incorrect = await fetch(`http://127.0.0.1:${PORT}/api/admin/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: 'wrong' }) });
     assert.equal(incorrect.status, 401);
     const login = await fetch(`http://127.0.0.1:${PORT}/api/admin/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: 'test-admin-password' }) });
@@ -193,6 +194,27 @@ try {
     assert.equal(retried.status, 'fallback');
     assert.equal(retried.id, requestId);
     assert.ok(retried.sketch.code || retried.sketch.p5Code);
+  });
+  await checkAsync('admin modes capture the source, reject stale remixes, and undo without generation', async () => {
+    const endpoint = `http://127.0.0.1:${PORT}`;
+    const before = await (await apiFetch(`${endpoint}/api/admin/canvas`)).json();
+    const post = (route, body) => apiFetch(`${endpoint}${route}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    assert.equal((await post('/api/generations', { prompt: 'test', mode: 'invalid' })).status, 400);
+    assert.equal((await post('/api/generations', { prompt: 'test', mode: 'remix', baseSketchId: 'outdated' })).status, 409);
+    const response = await post('/api/generations', { prompt: 'soften this piece', mode: 'remix', baseSketchId: before.sketchId });
+    assert.equal(response.status, 202);
+    const job = await response.json();
+    assert.equal(job.source.sketch.id, before.sketchId);
+    for (let i = 0; i < 30; i++) {
+      const status = await (await apiFetch(`${endpoint}/api/generations/${job.id}`)).json();
+      if (status.status !== 'generating') break;
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    assert.equal((await post('/api/admin/undo', {})).status, 200);
+    const restored = await (await apiFetch(`${endpoint}/api/admin/canvas`)).json();
+    assert.equal(restored.sketchId, before.sketchId);
+    assert.equal(restored.canUndo, false);
+    assert.equal((await post('/api/admin/undo', {})).status, 409);
   });
 } finally {
   const stopped = once(server, 'exit');

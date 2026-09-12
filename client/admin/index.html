@@ -17,6 +17,15 @@
   #adminPassword { width: 100%; min-height: 46px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--ground); color: var(--ink); margin-bottom: 14px; font: inherit; }
   .admin-actions { margin-top: 24px; display: flex; gap: 20px; align-items: center; }
   .admin-actions a { color: var(--cyan); }
+  .mode-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border: 0; padding: 0; margin: 20px 0; }
+  .mode-options legend { color: var(--ink-dim); font-size: 13px; margin-bottom: 10px; }
+  #promptBox .mode-options label { margin: 0; padding: 14px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+  .mode-options label:has(input:checked) { border-color: var(--cyan); background: var(--cyan-dim); }
+  .mode-options input { accent-color: var(--cyan); }
+  .mode-options strong { font-size: 14px; }
+  .mode-options small { display: block; color: var(--ink-dim); line-height: 1.5; margin-top: 8px; }
+  #undoPiece { margin-top: 18px; }
+  @media(max-width:420px) { .mode-options { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body><div class="station-shell">
@@ -31,14 +40,21 @@
     </form>
     <section id="creatorTools" hidden>
       <div id="promptBox">
-        <div class="section-heading"><span class="section-number">01</span><div><p class="eyebrow">For everyone on the wall</p><h2>Remix the room</h2></div></div>
+        <div class="section-heading"><span class="section-number">01</span><div><p class="eyebrow">For everyone on the wall</p><h2>Shape what comes next</h2></div></div>
+        <p id="currentPiece" class="section-help" role="status">Reading the current canvas…</p>
         <p class="section-help">The current canvas keeps playing while the next piece is composed. Your prompt and finished sketch are saved, even if you reload.</p>
         <form id="promptForm">
+          <fieldset class="mode-options" id="modeOptions">
+            <legend>Choose a starting point</legend>
+            <label><input type="radio" name="mode" value="remix" checked> <strong>Remix this piece</strong><small>Build on the current code and settings. Tell us what to change.</small></label>
+            <label><input type="radio" name="mode" value="create"> <strong>Create a new piece</strong><small>Start from a fresh idea, without the current sketch.</small></label>
+          </fieldset>
           <label class="eyebrow" for="promptInput">What do you imagine?</label>
           <textarea id="promptInput" rows="4" required maxlength="2000" placeholder="an ocean of ribbons, with a palette choice and sliders for speed and density"></textarea>
-          <button id="promptSend" class="primary-button" type="submit">Remix for the room ↗</button>
+          <button id="promptSend" class="primary-button" type="submit">Remix this piece ↗</button>
           <p id="promptStatus" class="form-status" role="status"></p>
         </form>
+        <button id="undoPiece" class="primary-button" type="button" disabled>Undo last change</button>
       </div>
       <div class="admin-actions"><button id="logout" type="button" class="primary-button">Sign out</button><a href="/station/">Open a station</a></div>
     </section>

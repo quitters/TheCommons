@@ -83,12 +83,15 @@ export async function checkRelay(baseUrl, headers = {}) {
     assert.equal(response.status, 200);
     const next = await response.json();
     const defaults = Object.fromEntries(next.variables.map((v) => [v.name, defaultValue(v)]));
+    let nextOwners;
     for (const client of clients) {
       const update = await client.next('sketch');
+      nextOwners = update.owners;
       assert.deepEqual(update.sketch, next, 'all open clients must receive a remix');
       assert.deepEqual(update.values, defaults, 'a remix resets stale values');
     }
-    const nextVariable = next.variables[0];
+    const nextVariable = next.variables.find((v) => nextOwners[v.name]?.some((person) => person.id === welcome.participantId));
+    assert.ok(nextVariable, 'the first participant retains an assigned control after remix');
     a.send(nextVariable.name, defaultValue(nextVariable));
     for (const client of clients) assert.equal((await client.next('var')).table, 'smoke-a');
   } finally {

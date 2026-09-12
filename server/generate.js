@@ -56,13 +56,21 @@ RULES:
 
 ${SKETCH_JSON_SHAPE}`;
 
-export async function generateSketch(prompt, { fetchImpl = fetch, timeoutMs, env = process.env } = {}) {
+export function generationPrompt(prompt, { mode = 'create', source } = {}) {
+  if (mode !== 'remix') return prompt;
+  if (!source?.sketch) throw new Error('Remix requires a source sketch');
+  const sketch = source.sketch;
+  return `Remix the existing piece below according to the user's instructions. Preserve its visual identity, code structure, controls, and current settings unless the requested changes require replacing them. Keep compatible variable names. Use current settings as numeric defaults and first choices where possible. Return a COMPLETE replacement native Canvas2D sketch, never a patch.\n${sketch.p5Code ? 'The source is an inherited p5 sketch, provided only as a visual/algorithm reference. Reimplement the requested result in the native Canvas2D contract; never return p5Code or combine runtimes.' : 'The source uses the same native Canvas2D contract as your output.'}\n\nSOURCE DATA:\n${JSON.stringify({ name: sketch.name, promptTemplate: sketch.promptTemplate, variables: sketch.variables, code: sketch.code, p5Code: sketch.p5Code, currentValues: source.values })}\n\nUSER CHANGE REQUEST:\n${prompt}`;
+}
+
+export async function generateSketch(prompt, { fetchImpl = fetch, timeoutMs, env = process.env, mode = 'create', source } = {}) {
   let config;
   try {
     config = generationConfig(env);
     const { provider, key, model } = config;
     if (!key) return { ...pickFallback(), fallback: true, reason: provider === 'fallback'
       ? 'fallback mode selected' : provider === 'gemini' ? 'no Gemini key configured' : 'no OPENAI_API_KEY set' };
+    prompt = generationPrompt(prompt, { mode, source });
     let text;
     if (provider === 'gemini') {
       const res = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
