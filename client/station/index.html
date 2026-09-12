@@ -4,31 +4,61 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>The Commons — Table Station</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/theme.css">
 <style>
-  body { font-family: system-ui, sans-serif; background: #111; color: #eee; margin: 0; padding: 20px; }
-  h1 { font-size: 16px; opacity: 0.7; margin: 0 0 4px; }
-  #tableName { opacity: 0.5; font-size: 12px; margin-bottom: 18px; }
-  .knob { margin: 18px 0; }
-  .knob label { display: block; margin-bottom: 8px; font-size: 15px; }
+  body { margin: 0; padding: 24px; }
+  h1 {
+    font-family: var(--font-display); font-weight: 700; font-size: 22px;
+    margin: 0 0 6px; line-height: 1.05;
+  }
+  h1 span { color: var(--coral); }
+  #tableName {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-dim); margin-bottom: 26px;
+  }
+
+  .knob { margin: 20px 0; }
+  .knob label {
+    display: block; margin-bottom: 8px; font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-dim);
+  }
   .values { display: flex; gap: 8px; flex-wrap: wrap; }
   .values button {
-    padding: 12px 16px; border-radius: 10px; border: 1px solid #444; background: #222;
-    color: #eee; font-size: 14px; -webkit-tap-highlight-color: transparent;
+    padding: 12px 16px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--surface-2); color: var(--ink); font-family: var(--font-body);
+    font-size: 14px; -webkit-tap-highlight-color: transparent; transition: background 0.15s, border-color 0.15s;
   }
-  .values button.active { background: #4c6ef5; border-color: #4c6ef5; }
-  #promptBox { margin-top: 28px; padding-top: 18px; border-top: 1px solid #333; }
-  #promptBox textarea { width: 100%; box-sizing: border-box; background: #1a1a1a; color: #eee;
-    border: 1px solid #444; border-radius: 8px; padding: 10px; font-size: 14px; }
-  #promptBox button { margin-top: 8px; padding: 10px 16px; border-radius: 8px; border: none;
-    background: #4c6ef5; color: #fff; font-size: 14px; }
+  .values button:hover { border-color: var(--ink-dim); }
+  .values button.active { background: var(--coral); border-color: var(--coral); color: #1a0a08; font-weight: 600; }
+
+  #promptBox { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line); }
+  #promptBox .hint {
+    display: block; margin-bottom: 8px; font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.04em; color: var(--ink-dim);
+  }
+  #promptBox textarea {
+    width: 100%; box-sizing: border-box; background: var(--surface); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-family: var(--font-body);
+    font-size: 14px; resize: vertical;
+  }
+  #promptBox textarea:focus { outline: none; border-color: var(--cyan-dim); }
+  #promptBox button {
+    margin-top: 10px; padding: 10px 16px; border-radius: 8px; border: none;
+    background: var(--coral); color: #1a0a08; font-family: var(--font-body);
+    font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  #promptBox button:disabled { opacity: 0.6; cursor: default; }
 </style>
 </head>
 <body>
-<h1>The Commons</h1>
+<h1>The <span>Commons</span></h1>
 <div id="tableName"></div>
 <div id="knobs"></div>
 <div id="promptBox">
-  <label style="display:block;margin-bottom:6px;font-size:13px;opacity:0.7;">Or describe a whole new piece for everyone:</label>
+  <span class="hint">Or describe a whole new piece for everyone:</span>
   <textarea id="promptInput" rows="2" placeholder="a slow bioluminescent ocean that pulses on the bass"></textarea>
   <button id="promptSend">Remix for the room</button>
 </div>

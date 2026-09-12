@@ -12,6 +12,7 @@ const app = express();
 app.use(express.json());
 app.use('/display', express.static(path.join(__dirname, '../client/display')));
 app.use('/station', express.static(path.join(__dirname, '../client/station')));
+app.use('/shared', express.static(path.join(__dirname, '../client/shared')));
 app.get('/', (_req, res) => res.redirect('/display/'));
 
 const server = http.createServer(app);

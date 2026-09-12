@@ -1,0 +1,35 @@
+/* The Commons -- shared visual identity.
+ *
+ * Extracted from pitch.html so the actual product and the pitch deck read as
+ * one thing, not two unrelated projects. A single deliberate dark visual
+ * world -- a dim room lit by a shared screen -- not a light/dark toggle;
+ * both pages here commit to the same choice pitch.html already made.
+ *
+ * Anyone extending this UI (including a fresh model picking up this repo)
+ * should reach for these tokens rather than inventing new colors/fonts.
+ */
+
+:root {
+  --ground: #0a0b0f;
+  --surface: #14161d;
+  --surface-2: #1c1f29;
+  --line: #262a36;
+  --ink: #eef0f4;
+  --ink-dim: #8b90a0;
+  --coral: #ff6b6b;
+  --coral-dim: #ff6b6b66;
+  --cyan: #22b8cf;
+  --cyan-dim: #22b8cf66;
+
+  --font-display: 'Unbounded', system-ui, sans-serif;
+  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
