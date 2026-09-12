@@ -19,6 +19,10 @@ Use the existing build. Prioritize the real room, an agent demonstration, and re
 5. Choose Create a new piece and give a different visual idea. Check the result, then undo if the previous piece is stronger for the presentation.
 6. Keep a completed, good-looking piece ready before the live presentation. A generation timeout retains the idea and uses fallback content; undo can return to the preceding piece.
 
+Prepare the event set from **Choose a preset**: successful generations appear automatically, and **Save current look** stores a named copy with the current control settings. Load visuals instantly during the demo; no model call or generation wait is required. The preset picker includes the supported inherited library and native built-ins.
+
+For guests outside the laptop's Wi-Fi, use the optional participant-only gateway (`npm run preview:public`, port 4189) with an approved temporary tunnel. Share its `/station/` URL. Keep `/admin/` local on port 4188. Never tunnel the main server while using a temporary demo password.
+
 ## Make the agent visible (10 minutes)
 
 The local preview currently has `FACILITATOR_ENABLED=false`. For the agent rehearsal, set it to `true` in the local `.env`, restart the server, and reload connected pages. This permits autonomous Gemini calls. Let participants make a few changes, then leave controls untouched for at least 90 seconds plus generation time. The facilitator checks every 10 seconds and should initiate its own new piece without an admin prompt. Record that transition and its room-activity explanation from the server log, keeping credentials out of view. Restore the toggle to `false` afterward if you want the presentation to remain on a chosen piece.

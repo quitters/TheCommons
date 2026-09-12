@@ -38,6 +38,26 @@ export function createGenerationJobs({ directory, generate, publish, getSketch, 
   return {
     get: (id) => snapshot(jobs.get(id)),
     active: () => snapshot(active?.job),
+    savedPieces: () => [...jobs.values()].filter((job) => job.sketch && !job.sketch.fallback && ['completed', 'preset'].includes(job.status))
+      .sort((a, b) => b.finishedAt - a.finishedAt).map((job) => ({ id: job.id, name: job.presetName || job.sketch.name, savedAt: job.finishedAt,
+        kind: job.status === 'preset' ? 'Saved looks' : 'Generated pieces', sketch: snapshot(job.sketch), values: snapshot(job.values) || {} })),
+    savePreset(name) {
+      const sketch = snapshot(getSketch());
+      if (!sketch) throw new Error('There is no piece to save.');
+      const job = { id: randomUUID(), prompt: '', status: 'preset', presetName: name || sketch.name,
+        sketch: { ...sketch, fallback: false }, values: getValues(), finishedAt: Date.now() };
+      save(job);
+      jobs.set(job.id, job);
+      return job.id;
+    },
+    loadPreset(sketch, values = {}) {
+      if (active) throw new Error('Wait for the current generation to finish before loading a preset.');
+      const next = { ...snapshot(sketch), id: randomUUID() };
+      const previous = { sketch: snapshot(getSketch()), values: getValues() };
+      saveRoom({ sketch: next, values, undo: previous.sketch ? previous : null });
+      publish(next, values);
+      return next;
+    },
     canUndo: () => Boolean(roomState?.undo) && !active,
     latestValues: () => snapshot(roomState?.values) || {},
     undo() {
@@ -88,6 +108,8 @@ export function createGenerationJobs({ directory, generate, publish, getSketch, 
           save(job); // save the finished piece before broadcasting it
           if (job.applied) {
             const values = mode === 'remix' && !sketch.fallback ? previous.values : {};
+            job.values = values;
+            save(job);
             saveRoom({ sketch, values, undo: previous.sketch ? previous : null });
             publish(sketch, values);
           }

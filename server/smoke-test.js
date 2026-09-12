@@ -23,6 +23,8 @@ import { checkGemini } from './gemini-smoke-test.js';
 import { checkFacilitator } from './facilitator-smoke-test.js';
 import { checkGenerationJobs } from './generation-jobs-smoke-test.js';
 import { checkOwnership } from './ownership-smoke-test.js';
+import { createPublicPreview } from './public-preview.js';
+import { relayClients } from './relay-smoke-test.js';
 
 let adminCookie = '';
 const apiFetch = (url, options = {}) => fetch(url, { ...options, headers: { ...options.headers, ...(adminCookie ? { Cookie: adminCookie } : {}) } });
@@ -116,12 +118,13 @@ async function waitForServer(timeoutMs = 8000) {
 try {
   await waitForServer();
   await checkAsync('participant requests cannot remix or access jobs; admin signs in securely', async () => {
-    for (const route of ['/api/generate', '/api/generations', '/api/admin/undo']) {
+    for (const route of ['/api/generate', '/api/generations', '/api/admin/undo', '/api/admin/presets', '/api/admin/presets/load']) {
       const response = await fetch(`http://127.0.0.1:${PORT}${route}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: 'blocked' }) });
       assert.equal(response.status, 401);
     }
     assert.equal((await fetch(`http://127.0.0.1:${PORT}/api/generations/active`)).status, 401);
     assert.equal((await fetch(`http://127.0.0.1:${PORT}/api/admin/canvas`)).status, 401);
+    assert.equal((await fetch(`http://127.0.0.1:${PORT}/api/admin/presets`)).status, 401);
     const incorrect = await fetch(`http://127.0.0.1:${PORT}/api/admin/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: 'wrong' }) });
     assert.equal(incorrect.status, 401);
     const login = await fetch(`http://127.0.0.1:${PORT}/api/admin/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: 'test-admin-password' }) });
@@ -215,6 +218,45 @@ try {
     assert.equal(restored.sketchId, before.sketchId);
     assert.equal(restored.canUndo, false);
     assert.equal((await post('/api/admin/undo', {})).status, 409);
+  });
+  await checkAsync('presets save settings, load without model calls, and support undo', async () => {
+    const endpoint = `http://127.0.0.1:${PORT}`;
+    const post = (route, body) => apiFetch(`${endpoint}${route}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const before = await (await apiFetch(`${endpoint}/api/admin/canvas`)).json();
+    const saved = await post('/api/admin/presets', { name: 'Opening set' });
+    assert.equal(saved.status, 201);
+    const { id } = await saved.json();
+    const library = await (await apiFetch(`${endpoint}/api/admin/presets`)).json();
+    assert.ok(library.some((p) => p.id === id && p.name === 'Opening set'));
+    assert.ok(library.some((p) => p.id === 'builtin-0'));
+    assert.ok(!library.some((p) => p.id === 'inherited-svg-flow-particles'));
+    assert.equal((await post('/api/admin/presets/load', { presetId: '__unknown' })).status, 404);
+    assert.equal((await post('/api/admin/presets/load', { presetId: 'builtin-0' })).status, 200);
+    assert.equal((await (await apiFetch(`${endpoint}/api/admin/canvas`)).json()).name, 'Pulse Field');
+    assert.equal((await post('/api/admin/undo', {})).status, 200);
+    assert.equal((await (await apiFetch(`${endpoint}/api/admin/canvas`)).json()).sketchId, before.sketchId);
+    assert.equal((await post('/api/admin/presets/load', { presetId: id })).status, 200);
+    assert.equal((await (await apiFetch(`${endpoint}/api/admin/canvas`)).json()).name, before.name);
+  });
+  await checkAsync('audience gateway passes pages and WebSockets but blocks all admin and generation routes', async () => {
+    const gateway = createPublicPreview({ appPort: PORT });
+    await new Promise((resolve) => gateway.listen(0, '127.0.0.1', resolve));
+    const endpoint = `http://127.0.0.1:${gateway.address().port}`;
+    const audience = relayClients(endpoint);
+    try {
+      for (const route of ['/station/', '/display/', '/shared/theme.css']) assert.equal((await fetch(`${endpoint}${route}`)).status, 200);
+      for (const route of ['/admin/', '/api/admin/presets', '/api/admin/login', '/api/generate', '/api/generations']) {
+        assert.equal((await fetch(`${endpoint}${route}`)).status, 404);
+        assert.equal((await fetch(`${endpoint}${route}`, { method: 'POST' })).status, 404);
+      }
+      const station = audience.connect('role=station&table=public-test');
+      assert.ok((await station.next('welcome')).participantId);
+      assert.ok((await audience.connect('role=display').next('sketch')).sketch);
+    } finally {
+      audience.close();
+      gateway.closeAllConnections();
+      await new Promise((resolve) => gateway.close(resolve));
+    }
   });
 } finally {
   const stopped = once(server, 'exit');

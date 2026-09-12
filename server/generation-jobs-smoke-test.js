@@ -79,6 +79,16 @@ export async function checkGenerationJobs() {
     assert.equal(generationPrompt('new idea', generationOptions), 'new idea');
     finish(result); await fresh.completion;
     assert.deepEqual(currentValues, {});
+    currentValues = { speed: 0, palette: 'coral' };
+    const presetId = recovered.savePreset('Doors open');
+    const presetManager = createGenerationJobs(options);
+    const preset = presetManager.savedPieces().find((piece) => piece.id === presetId);
+    assert.equal(preset.name, 'Doors open');
+    assert.deepEqual(preset.values, currentValues);
+    const beforeLoadCalls = calls;
+    presetManager.loadPreset(preset.sketch, preset.values);
+    assert.deepEqual(currentValues, { speed: 0, palette: 'coral' });
+    assert.equal(calls, beforeLoadCalls, 'loading a preset never invokes a model');
     const inherited = generationPrompt('soften it', { mode: 'remix', source: { sketch: { p5Code: 'p.draw = function(){};', variables: [] }, values: {} } });
     assert.match(inherited, /never return p5Code or combine runtimes/);
   } finally {

@@ -25,6 +25,11 @@
   .mode-options strong { font-size: 14px; }
   .mode-options small { display: block; color: var(--ink-dim); line-height: 1.5; margin-top: 8px; }
   #undoPiece { margin-top: 18px; }
+  .preset-library { margin-bottom: 24px; border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: var(--surface); }
+  .preset-library summary { cursor: pointer; color: var(--cyan); font-weight: 600; }
+  .preset-library label { display: block; margin: 18px 0 8px; color: var(--ink-dim); font-size: 13px; }
+  .preset-library select, .preset-library input { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); background: var(--ground); font: inherit; }
+  .preset-library button { margin-top: 12px; }
   @media(max-width:420px) { .mode-options { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -39,6 +44,17 @@
       <p id="loginStatus" class="form-status" role="status"></p>
     </form>
     <section id="creatorTools" hidden>
+      <details class="preset-library">
+        <summary>Choose a preset</summary>
+        <p class="section-help">Load a prepared visual instantly, without generating. You can undo a load.</p>
+        <label for="presetSelect">Your visual library</label>
+        <select id="presetSelect"><option value="">Loading library…</option></select>
+        <button id="loadPreset" class="primary-button" type="button" disabled>Load selected piece</button>
+        <label for="presetName">Save the current piece and settings</label>
+        <input id="presetName" maxlength="100" placeholder="Optional name, e.g. Opening set">
+        <button id="savePreset" class="primary-button" type="button">Save current look</button>
+        <p id="presetStatus" class="form-status" role="status"></p>
+      </details>
       <div id="promptBox">
         <div class="section-heading"><span class="section-number">01</span><div><p class="eyebrow">For everyone on the wall</p><h2>Shape what comes next</h2></div></div>
         <p id="currentPiece" class="section-help" role="status">Reading the current canvas…</p>

@@ -8,6 +8,8 @@ import { startFacilitator } from './facilitator.js';
 import { generationConfig } from './generation-config.js';
 import { createGenerationJobs } from './generation-jobs.js';
 import { adminAccess } from './admin.js';
+import { builtinSketches } from './builtin-sketches.js';
+import { loadTemplateLibrary } from './templates.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -31,6 +33,25 @@ const jobs = createGenerationJobs({
 });
 const bootSketch = jobs.latestSketch() || pickFallback();
 relay.setSketch(bootSketch, jobs.latestValues());
+
+function presets() {
+  return [...jobs.savedPieces(),
+    ...builtinSketches.map((sketch, index) => ({ id: `builtin-${index}`, name: sketch.name, kind: 'Built-in pieces', sketch })),
+    ...loadTemplateLibrary().map((sketch) => ({ id: `inherited-${sketch.id}`, name: sketch.name, kind: 'Inherited library', sketch }))];
+}
+app.get('/api/admin/presets', admin.require, (_req, res) => res.json(presets().map(({ id, name, kind, savedAt }) => ({ id, name, kind, savedAt }))));
+app.post('/api/admin/presets', admin.require, (req, res) => {
+  const name = req.body?.name;
+  if (name !== undefined && (typeof name !== 'string' || name.trim().length > 100)) return res.status(400).json({ error: 'Use a preset name of up to 100 characters.' });
+  try { res.status(201).json({ id: jobs.savePreset(name?.trim()) }); }
+  catch { res.status(503).json({ error: 'Could not save this look.' }); }
+});
+app.post('/api/admin/presets/load', admin.require, (req, res) => {
+  const preset = presets().find((entry) => entry.id === req.body?.presetId);
+  if (!preset) return res.status(404).json({ error: 'Preset not found.' });
+  try { res.json({ name: jobs.loadPreset(preset.sketch, preset.values).name }); }
+  catch (error) { res.status(409).json({ error: error.message }); }
+});
 
 app.get('/api/admin/canvas', admin.require, (_req, res) => res.json({
   name: relay.getSketch()?.name, sketchId: relay.getSketch()?.id, canUndo: jobs.canUndo(),

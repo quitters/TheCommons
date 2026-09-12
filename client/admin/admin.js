@@ -4,12 +4,17 @@ const promptSend = document.getElementById('promptSend');
 const promptStatus = document.getElementById('promptStatus');
 const undoPiece = document.getElementById('undoPiece');
 const modeOptions = document.getElementById('modeOptions');
+const presetSelect = document.getElementById('presetSelect');
+const loadPreset = document.getElementById('loadPreset');
+const savePreset = document.getElementById('savePreset');
 let canvas = null;
 const mode = () => document.querySelector('input[name="mode"]:checked').value;
 function updateConnection() {
   promptSend.disabled = !authenticated || remixing || (mode() === 'remix' && !canvas?.sketchId);
   modeOptions.disabled = remixing;
   undoPiece.disabled = !authenticated || remixing || !canvas?.canUndo;
+  loadPreset.disabled = !authenticated || remixing || !presetSelect.value;
+  savePreset.disabled = !authenticated || remixing;
   promptSend.textContent = remixing ? 'Composing…' : mode() === 'remix' ? 'Remix this piece ↗' : 'Create a new piece ↗';
 }
 async function refreshCanvas() {
@@ -31,7 +36,7 @@ function setAuthenticated(value) {
   document.getElementById('loginForm').hidden = value;
   document.getElementById('creatorTools').hidden = !value;
   updateConnection();
-  if (value) refreshCanvas();
+  if (value) { refreshCanvas(); refreshPresets(); }
 }
 const draftKey = 'commons-admin-draft';
 const jobKey = 'commons-admin-remix';
@@ -119,6 +124,7 @@ async function followRemix(request) {
     promptSend.textContent = 'Remix for the room ↗';
     updateConnection();
     await refreshCanvas();
+    await refreshPresets();
   }
 }
 
@@ -128,6 +134,46 @@ document.getElementById('promptForm').addEventListener('submit', (event) => {
   if (!prompt || remixing || !authenticated) return;
   remember(draftKey, promptInput.value);
   followRemix({ id: requestId(), prompt, mode: mode(), baseSketchId: canvas?.sketchId });
+});
+async function refreshPresets() {
+  if (!authenticated) return;
+  try {
+    const response = await fetch('/api/admin/presets');
+    if (!response.ok) return;
+    const presets = await response.json();
+    const selected = presetSelect.value;
+    presetSelect.replaceChildren(new Option('Choose a piece…', ''));
+    const groups = new Map();
+    for (const preset of presets) {
+      if (!groups.has(preset.kind)) {
+        const group = document.createElement('optgroup'); group.label = preset.kind;
+        groups.set(preset.kind, group); presetSelect.append(group);
+      }
+      const stamp = preset.savedAt ? new Date(preset.savedAt).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+      groups.get(preset.kind).append(new Option(stamp ? `${preset.name} · ${stamp}` : preset.name, preset.id));
+    }
+    presetSelect.value = selected;
+    updateConnection();
+  } catch { document.getElementById('presetStatus').textContent = 'Couldn’t load the library. Reload to reconnect.'; }
+}
+presetSelect.addEventListener('change', updateConnection);
+loadPreset.addEventListener('click', async () => {
+  loadPreset.disabled = true;
+  try {
+    const response = await fetch('/api/admin/presets/load', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ presetId: presetSelect.value }) });
+    const result = await response.json();
+    document.getElementById('presetStatus').textContent = response.ok ? `On the wall: ${result.name}.` : result.error;
+  } catch { document.getElementById('presetStatus').textContent = 'Couldn’t load this piece. Try again.'; }
+  await refreshCanvas();
+});
+savePreset.addEventListener('click', async () => {
+  savePreset.disabled = true;
+  try {
+    const response = await fetch('/api/admin/presets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: document.getElementById('presetName').value }) });
+    document.getElementById('presetStatus').textContent = response.ok ? 'Saved to your library, including the current settings.' : 'Couldn’t save this look. Try again.';
+  } catch { document.getElementById('presetStatus').textContent = 'Couldn’t save this look. Try again.'; }
+  await refreshPresets();
+  updateConnection();
 });
 undoPiece.addEventListener('click', async () => {
   undoPiece.disabled = true;
