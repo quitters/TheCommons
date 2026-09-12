@@ -31,7 +31,7 @@ The local preview currently has `FACILITATOR_ENABLED=false`. For the agent rehea
 ## Record and submit (remaining time)
 
 - Rehearse a two-minute explanation: shared surface → two people change it → agent acts → creator remix and undo. Use a pre-recorded autonomous transition if the live idle wait would dominate the allotted presentation.
-- Describe Gemini as generating executable drawing code. Be explicit that the 31 inherited templates are fallback content, separately attributed in README.
+- Describe Gemini as generating executable drawing code. Be explicit that the 28 inherited templates are fallback content, separately attributed in README.
 - Record a short backup video on the actual hardware. Confirm screen visibility and audio before the final take.
 - Run `npm run verify`; confirm the intended commits are on the public repository before sharing that link. Local commits are not automatically pushed.
 - Check the participant portal for the actual video limit, submission deadline, links, and sponsor-tagging instructions. Submit only after checking the repository/video for secrets.

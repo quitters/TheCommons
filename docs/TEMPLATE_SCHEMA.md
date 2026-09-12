@@ -117,5 +117,5 @@ Fresh native output is validated separately by `server/validate-sketch.js`: it r
 | PromptCraft Sequencer Schema (`_promptcraft`, 16-step data) | No sequencer |
 | Batch Export Formats (plain text, numbered list, JSON, AI Studio batch, Story JSON) | No batch export feature |
 | Backend API models for `/api/generate/image`, `/api/generate/video`, image analysis, Smart Transform, narrative generation | This project never calls an image or video generation model — a scope decision documented in the root README, not a gap |
-| Legacy template format + migration guide | None of the 31 templates this project loads use the legacy bare-string format — they were already canonical. The listed legacy files are all non-p5 text-prompt templates (band names, taglines, character concepts) that were never copied into this project in the first place |
+| Legacy template format + migration guide | None of the 28 templates this project loads use the legacy bare-string format — they were already canonical. The listed legacy files are all non-p5 text-prompt templates (band names, taglines, character concepts) that were never copied into this project in the first place |
 | Model reference table (Gemini/Imagen/Veo model IDs) | Live code generation has its own Gemini/OpenAI configuration; inherited model tables do not apply and no image/video model is called |

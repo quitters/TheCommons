@@ -1,6 +1,6 @@
 # The Commons
 
-A shared generative-art canvas on the wall — many hands, one evolving piece, nobody controls it alone. Built for **Agents, Everywhere** (Ottawa, September 2026). The engine — relay, facilitator agent, prompt-to-code generation, station UI, and an optional audio-sync layer — is written entirely from scratch. The default sketch library is honestly inherited: 31 real p5.js templates from `synthograsizer-suite`'s own template set, used verbatim as content, which is explicitly permitted ("existing templates... may be used as building blocks") rather than something this project is quietly passing off as new. See "What's inherited vs. built" below.
+A shared generative-art canvas on the wall — many hands, one evolving piece, nobody controls it alone. Built for **Agents, Everywhere** (Ottawa, September 2026). The engine — relay, facilitator agent, prompt-to-code generation, station UI, and an optional audio-sync layer — is written entirely from scratch. The default sketch library is honestly inherited: 28 real p5.js templates from `synthograsizer-suite`'s own template set, used verbatim as content, which is explicitly permitted ("existing templates... may be used as building blocks") rather than something this project is quietly passing off as new. See "What's inherited vs. built" below.
 
 See [SUBMISSION.md](SUBMISSION.md) for the hackathon eligibility/deliverables checklist, [LICENSE](LICENSE) for terms (MIT, with the inherited template content separately noted), and [AGENTS.md](AGENTS.md) if you're a coding agent picking this up cold — it has the specific, hard-won gotchas that aren't obvious from reading the code once.
 
@@ -36,7 +36,7 @@ Participants can simply open `/station/`: table labels are optional, and each pa
 
 On the display, **Hide overlays · F** removes the logo, status, invitation QR, and sound controls for a clean canvas. Press **F** again, press **Escape**, or click/tap the artwork to restore them. The animation and microphone keep running, and existing panel states are preserved.
 
-Without a model key, the server runs entirely on the built-in pool — two hand-written sketches (`server/builtin-sketches.js`) plus the inherited library (`templates/`, loaded by `server/templates.js`; 31 files preserved, one unsupported renderer excluded). No OpenAI key is required. Set `GENERATION_PROVIDER=fallback` to guarantee no model calls even with keys configured.
+Without a model key, the server runs entirely on the built-in pool — two hand-written sketches (`server/builtin-sketches.js`) plus the inherited library (`templates/`, loaded by `server/templates.js`; 28 files preserved, one unsupported renderer excluded). No OpenAI key is required. Set `GENERATION_PROVIDER=fallback` to guarantee no model calls even with keys configured.
 
 ## Creator desk and shared controls
 
@@ -97,7 +97,7 @@ Either way, `getVar`/`p.getSynthVar` reads the current knob value for a variable
 - Server: Express + a WebSocket relay (`server/relay.js`) with automatically balanced individual assignments and shared groups when people outnumber controls. Opaque per-tab session tokens preserve assignments on reload; table labels do not grant ownership. Shared changes hold for four seconds so a turn is visibly legible, without averaging inputs.
 - Generation (`server/generate.js`): prompt → Gemini or OpenAI → validated native JSON, with automatic fallback on missing keys, invalid output, or network errors. Admin-only background jobs preserve prompts/results across browser reloads and prevent duplicate generation requests.
 - Fresh-generation checks (`server/validate-sketch.js`): native-only output, 2–6 named controls, matching prompt placeholders, and compilable JavaScript before broadcast. Categorical controls have 3–6 distinct weighted choices; explicitly numeric controls have finite min/max/step/default values. Gemini defaults to a ten-minute deadline; OpenAI to 45 seconds. Syntax validation does not execute model code on the server or guarantee visual quality; the display still handles per-frame runtime errors.
-- Default template library (`server/templates.js`): loads and normalizes 31 real p5.js templates at boot, excluding one (`svg-flow-particles`) that uses a renderer mode this project doesn't special-case yet.
+- Default template library (`server/templates.js`): loads and normalizes 28 real p5.js templates at boot, excluding one (`svg-flow-particles`) that uses a renderer mode this project doesn't special-case yet.
 - Facilitator agent (`server/facilitator.js`): when enabled, polls every 10s and after 90s of room-wide silence regenerates from engagement history. One call at a time, with a fresh 90-second cooldown after completion; a stale result cannot replace a newer admin remix.
 - Display (`client/display`): runs either sketch contract, live mic analysis, graceful per-frame error handling on the native path (one bad frame from a malformed sketch never kills the animation loop).
 - Station (`client/station`): renders assigned controls generically. Quantities explicitly declared as numbers get sliders with min/max/step labels and a live readout; categories retain selectable buttons. Numeric-looking text is never silently converted. Inherited template content remains unchanged.
@@ -115,7 +115,39 @@ Either way, `getVar`/`p.getSynthVar` reads the current knob value for a variable
 
 Per the hackathon's own eligibility rules ("existing templates... may be used as building blocks," but "the project's core functionality must be built during the event"):
 
-- **Inherited, unmodified, clearly attributed:** the 31 files in [`templates/`](templates/) — real p5.js generative-art templates copied verbatim from `synthograsizer-suite`'s own template library (several of which credit their own further upstream sources in each file's own `tags` field). This is default *content*, not the mechanism. The schema those files follow, and the actual prompt that generated them, are documented (trimmed to only the parts relevant here) in [`docs/TEMPLATE_SCHEMA.md`](docs/TEMPLATE_SCHEMA.md) and [`docs/inherited-p5-generation-prompt.md`](docs/inherited-p5-generation-prompt.md) — neither is wired into this project's own generation path (see "How a sketch works" above), they're there so the inherited content's origin is fully traceable, not just the content itself.
+- **Inherited, unmodified, clearly attributed:** the 28 files in [`templates/`](templates/) — real p5.js generative-art templates copied verbatim from `synthograsizer-suite`'s own template library (several of which credit their own further upstream sources in each file's own `tags` field). This is default *content*, not the mechanism. The schema those files follow, and the actual prompt that generated them, are documented (trimmed to only the parts relevant here) in [`docs/TEMPLATE_SCHEMA.md`](docs/TEMPLATE_SCHEMA.md) and [`docs/inherited-p5-generation-prompt.md`](docs/inherited-p5-generation-prompt.md) — neither is wired into this project's own generation path (see "How a sketch works" above), they're there so the inherited content's origin is fully traceable, not just the content itself. Three templates from the original set (`glorpy_heads`, `smiley-mound`, `salvagepunk-salon`) were dropped rather than adapted: most of their declared knobs were leftover text-to-image prompt fragments from the sibling project's original two-stage pipeline (p5 wireframe → img2img refinement) that this project's p5 code never reads, so they'd have handed participants controls that visibly did nothing.
 - **Built from scratch during the event:** everything that makes this a shared, agentic, music-synced installation rather than a single-user art tool — the WebSocket relay and its individual/shared assignments, the facilitator's perceive/decide/act loop, the prompt-to-native-code generation path and its system prompt, the live audio analysis, the station UI, and the p5-adapter that lets the inherited templates run inside this project's own knob/relay system at all (they were never wired to a shared multi-station display before).
 
 This project does not call into, vendor, or fork any *code* from `synthograsizer-suite` or `SignalChain` (sibling projects on the same machine) — only the explicitly-permitted template *content* above, copied once, unmodified, and disclosed here rather than blended in quietly.
+
+## FAQ
+
+**Is the generated code p5.js?** No. Anything freshly generated is plain Canvas2D JavaScript — a function body taking `(ctx, frame, getVar, audio)`, no libraries, no imports. p5.js is loaded only to run the 28 inherited templates, through an entirely separate path (see "How a sketch works" above); the two contracts never mix, by design.
+
+**Why Canvas2D instead of having the model write p5 too?** A smaller, more reliable target for a model to get right on the first try, live, with a room waiting — no setup/draw lifecycle or library quirks to get wrong, just one function that draws a frame from scratch every time.
+
+**Is it safe to run AI-written code on a public display?** Two real layers, with an honest limit. Before broadcast, the server checks structure — valid control types, numeric ranges, unique names — and compiles the code (never executes it server-side) to catch syntax errors. On the display, a runtime error in one frame is caught and swallowed so one bad frame never kills the animation loop. What this does *not* do is sandbox the code against a deliberately malicious script (no worker/iframe isolation) — an acceptable boundary here because only the signed-in admin can trigger generation at all; participants never submit code or prompts.
+
+**What happens if generation fails or times out?** It falls back automatically to the built-in pool — two native sketches plus the 28 inherited templates — so the display never goes blank or shows an error.
+
+**Can a remix build on the current piece, or does it always start over?** Both, as separate admin actions: "Remix this piece" sends the current code, variables, and settings as context; "Create a new piece" sends only the new prompt. "Undo last change" reverts without another model call.
+
+**How does the app decide who controls what?** Automatically, on join. With at least as many controls as people, everyone gets their own; with more people than controls, a control is shared by a small group and each person's turn holds for four seconds before it can be taken, so a turn is visibly legible rather than a race.
+
+**What happens if two people reach for the same shared control at once?** Whoever's turn it currently is keeps it until the hold expires; the other person's station reports that it's held and by whom. Nothing is silently dropped or averaged.
+
+**What if someone joins or leaves mid-piece?** Controls rebalance automatically — leaving frees a slice for someone else, joining takes a fair share from whoever currently has more than one. A 30-second disconnect grace period means a dropped connection doesn't immediately reassign someone's controls.
+
+**Where's the actual agent?** The facilitator (`server/facilitator.js`): it watches real aggregate engagement — which tables are active, which have gone quiet, how long since the piece last meaningfully changed — and after 90 seconds of room-wide silence, autonomously calls the same generation path a person's own prompt would use. It's off by default in this repo's `.env` (`FACILITATOR_ENABLED=false`); enabling it is a config flag, not a missing feature.
+
+**What's the stack?** Node.js, Express, and the `ws` WebSocket library — no frontend framework, no build step. State lives in server memory; there's no database, because nothing here needs to outlive one running session.
+
+**Does this scale to a real venue?** The shared-control mechanic exists exactly for this: it assumes more people than knobs from the start rather than one phone per control. The practical ceiling is the WebSocket server's own connection limit, comfortably in the hundreds on a single machine.
+
+**Are the built-in visuals themselves AI-generated?** No — the 28 default templates are hand-written p5.js sketches from a sibling project, used verbatim and disclosed above. Only what an admin's own prompt produces is model-written, and only ever as drawing code, never an image or video.
+
+**Why no image or video generation, given tools like that exist?** That's this project's actual premise: AI-generated video delivered for a client event got rejected for feeling cold and impersonal in a room meant to be about people connecting with each other. So this only ever generates code that draws, steered by the room itself — never a finished clip handed to people to just watch.
+
+**Can a participant type something inappropriate into a prompt?** No — only the signed-in admin can submit a generation prompt at all. Participants adjust existing knobs; they never send text that reaches a model.
+
+**Is any personal data collected?** No accounts and no names — a random per-tab session token, held only in the participant's own browser for the length of the event, is the only identifier.

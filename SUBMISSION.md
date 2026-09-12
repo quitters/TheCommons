@@ -9,7 +9,7 @@ Adapted from the [Agents, Everywhere starter kit](https://github.com/CopilotKit/
 - [x] Inherited templates, libraries, prompts, components, and starter code are identified separately from event work
 
 **What we inherited**
-- 31 real p5.js generative-art template files, copied verbatim from a sibling project (`synthograsizer-suite`)'s own template library — see [README.md#whats-inherited-vs-built](README.md#whats-inherited-vs-built) for the full list and reasoning. Several of the templates themselves credit further upstream open generative-art sources in their own `tags` field.
+- 28 real p5.js generative-art template files, copied verbatim from a sibling project (`synthograsizer-suite`)'s own template library — see [README.md#whats-inherited-vs-built](README.md#whats-inherited-vs-built) for the full list and reasoning. Several of the templates themselves credit further upstream open generative-art sources in their own `tags` field. (Three files from the original set were dropped rather than adapted — see README for why.)
 - The general *idea* of "a single prompt generates a knob-controllable creative-coding sketch" — inspired by that same sibling project's own prompt-to-template feature, but reimplemented from scratch for this project's own contract (native Canvas2D, not p5) and never sharing code with it.
 
 **What we built during the hackathon**
