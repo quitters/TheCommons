@@ -95,4 +95,4 @@ This project has no image-upload path anywhere in its UI, so this addendum is do
 
 ## What was deliberately left out of this copy
 
-The source function (`generate_p5_template`) also contains: the Python branching logic that picks between text-only and multimodal calls, MIME-type sniffing for uploaded images (PNG/JPEG/GIF/BMP magic-byte checks), and error handling tied to `SafetyBlockedError` and the source project's own Google GenAI client. None of that is prompt content — it's plumbing specific to how `synthograsizer-suite`'s backend is wired to Google's API, which has no equivalent in this project (this project calls OpenAI's Responses API instead, from `server/generate.js`, with its own error handling already in place).
+The source function (`generate_p5_template`) also contains the Python branching logic for multimodal calls, MIME-type sniffing, and error handling tied to its own Google GenAI client. None of that plumbing is inherited here. This project's `server/generate.js` independently calls Gemini or OpenAI for text-only native Canvas2D code, with its own validation and fallback handling.

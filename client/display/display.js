@@ -11,6 +11,8 @@
 //                        already written against. p5.js is loaded (index.html)
 //                        only to run these -- generation never produces p5 code.
 
+import { defaultValue } from '../shared/parameters.js';
+
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 const p5Mount = document.getElementById('p5Mount');
@@ -42,7 +44,7 @@ function loadSketch(next, values = {}) {
   sketch = next;
   for (const name of Object.keys(vars)) delete vars[name];
   for (const v of sketch.variables || []) {
-    vars[v.name] = values[v.name] ?? v.values?.[0]?.text ?? null;
+    vars[v.name] = values[v.name] ?? defaultValue(v);
   }
 
   if (sketch.p5Code) {

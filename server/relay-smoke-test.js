@@ -1,8 +1,9 @@
 // Exercises real WebSocket clients against the server booted by smoke-test.js.
 import assert from 'node:assert/strict';
 import WebSocket from 'ws';
+import { defaultValue } from '../client/shared/parameters.js';
 
-export async function checkRelay(baseUrl) {
+export function relayClients(baseUrl) {
   const clients = [];
   function connect(query) {
     const ws = new WebSocket(`${baseUrl.replace('http', 'ws')}/ws?${query}`);
@@ -33,6 +34,11 @@ export async function checkRelay(baseUrl) {
     clients.push(client);
     return client;
   }
+  return { clients, connect, close: () => { for (const { ws } of clients) ws.terminate(); } };
+}
+
+export async function checkRelay(baseUrl, headers = {}) {
+  const { clients, connect, close } = relayClients(baseUrl);
   try {
     const a = connect('role=station&table=smoke-a');
     const b = connect('role=station&table=smoke-b');
@@ -40,7 +46,7 @@ export async function checkRelay(baseUrl) {
     const [welcome, other, initial] = await Promise.all([a.next('welcome'), b.next('welcome'), display.next('sketch')]);
     assert.deepEqual(welcome.values, other.values);
     assert.deepEqual(welcome.values, initial.values);
-    const variable = welcome.sketch.variables.find((v) => new Set(v.values.map((x) => x.text)).size > 1);
+    const variable = welcome.sketch.variables.find((v) => other.owners[v.name]?.some((person) => person.id === welcome.participantId) && new Set(v.values?.map((x) => x.text)).size > 1);
     assert.ok(variable, 'boot sketch needs a control with two choices');
     const first = variable.values[0].text;
     const second = variable.values.find((v) => v.text !== first).text;
@@ -51,10 +57,10 @@ export async function checkRelay(baseUrl) {
       assert.equal(update.table, 'smoke-a');
     }
     b.send(variable.name, first);
-    const held = await b.next('held');
+    const held = await b.next('not_owner');
     assert.equal(held.value, second, 'rejected turn must restore the accepted value');
-    assert.equal(held.table, 'smoke-a');
-    assert.ok(held.until > Date.now(), 'ownership must still be active');
+    assert.equal(held.owners[variable.name][0].id, welcome.participantId);
+
 
     const lateStation = connect('role=station&table=smoke-late');
     const lateDisplay = connect('role=display');
@@ -70,29 +76,22 @@ export async function checkRelay(baseUrl) {
     assert.equal(telemetry.changesByTable['smoke-a'], 2);
     assert.equal(telemetry.changesByTable['smoke-b'], undefined);
 
-    // Keep the intentional four-second hold; prove another table can take over.
-    b.send(variable.name, second);
-    const renewedHold = await b.next('held');
-    await new Promise((resolve) => setTimeout(resolve, Math.max(0, renewedHold.until - Date.now()) + 30));
-    b.send(variable.name, second);
-    for (const client of clients) assert.equal((await client.next('var')).table, 'smoke-b');
-
     const response = await fetch(`${baseUrl}/api/generate`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ prompt: 'a fresh shared canvas' }),
     });
     assert.equal(response.status, 200);
     const next = await response.json();
-    const defaults = Object.fromEntries(next.variables.map((v) => [v.name, v.values[0].text]));
+    const defaults = Object.fromEntries(next.variables.map((v) => [v.name, defaultValue(v)]));
     for (const client of clients) {
       const update = await client.next('sketch');
       assert.deepEqual(update.sketch, next, 'all open clients must receive a remix');
       assert.deepEqual(update.values, defaults, 'a remix resets stale values');
     }
     const nextVariable = next.variables[0];
-    a.send(nextVariable.name, nextVariable.values[0].text);
+    a.send(nextVariable.name, defaultValue(nextVariable));
     for (const client of clients) assert.equal((await client.next('var')).table, 'smoke-a');
   } finally {
-    for (const { ws } of clients) ws.terminate();
+    close();
   }
 }

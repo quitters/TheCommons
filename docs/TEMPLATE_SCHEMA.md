@@ -107,7 +107,7 @@ Trimmed from the original's base-template validation rules (its story-block vali
 | Value format | every value is `{"text": string, "weight": 1\|2\|3}` — never a bare string |
 | `feature_name` format | Title Case |
 
-Fresh native output is validated separately by `server/validate-sketch.js`: it requires `code`, rejects `p5Code`, checks 2–6 distinct named controls with 3–6 distinct weighted choices each, matches prompt placeholders, and compiles the JavaScript without executing it. A missing label defaults to the variable name with spaces; a missing weight defaults to 1. These native-generation checks never rewrite or validate the inherited files against a new contract.
+Fresh native output is validated separately by `server/validate-sketch.js`: it requires `code`, rejects `p5Code`, checks 2–6 distinct named controls, matches prompt placeholders, and compiles JavaScript without executing it. Categorical controls have 3–6 distinct weighted choices. A numeric control instead declares `{"name":"speed","label":"Speed","type":"number","min":0,"max":2,"step":0.1,"default":0.3}`, without a `values` array. Its finite bounds must have min < max, positive step, and max/default aligned to the step grid. `getVar` returns numbers for these explicit numeric controls, including zero; all choices still return text. A missing label defaults to the variable name with spaces; a missing weight defaults to 1. These native-generation checks never rewrite or validate inherited files against a new contract.
 
 ## What was deliberately left out, and why
 
@@ -118,4 +118,4 @@ Fresh native output is validated separately by `server/validate-sketch.js`: it r
 | Batch Export Formats (plain text, numbered list, JSON, AI Studio batch, Story JSON) | No batch export feature |
 | Backend API models for `/api/generate/image`, `/api/generate/video`, image analysis, Smart Transform, narrative generation | This project never calls an image or video generation model — a scope decision documented in the root README, not a gap |
 | Legacy template format + migration guide | None of the 31 templates this project loads use the legacy bare-string format — they were already canonical. The listed legacy files are all non-p5 text-prompt templates (band names, taglines, character concepts) that were never copied into this project in the first place |
-| Model reference table (Gemini/Imagen/Veo model IDs) | This project uses OpenAI for generation, not Gemini, and calls no image/video model at all |
+| Model reference table (Gemini/Imagen/Veo model IDs) | Live code generation has its own Gemini/OpenAI configuration; inherited model tables do not apply and no image/video model is called |

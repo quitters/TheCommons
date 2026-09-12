@@ -9,7 +9,9 @@
  *     name: string,                 // short display name
  *     promptTemplate: string,       // e.g. "a {{mood}} field of {{shape}}s, {{palette}}"
  *     variables: [
- *       { name: string, label: string, values: [{ text: string, weight: number }] }
+ *       { name: string, label: string, values: [{ text: string, weight: number }] },
+ *       { name: string, label: string, type: 'number', min: number, max: number,
+ *         step: number, default: number }
  *     ],
  *     code: string                  // JS statements -- NOT a full function --
  *                                    // run every frame as the body of
@@ -19,7 +21,8 @@
  * `code` runs once per animation frame with:
  *   ctx      -- CanvasRenderingContext2D, already sized to the display canvas
  *   frame    -- { t: seconds since sketch start, width, height, dt: seconds since last frame }
- *   getVar   -- (variableName) => the currently selected value's `text`, or null
+ *   getVar   -- (variableName) => selected text for a choice, a number for an
+ *                explicit numeric control, or null. Never infer type from text.
  *   audio    -- { level, bass, mid, treble } each 0..1, plus `beat` (boolean,
  *                a simple bass-onset heuristic -- see client/display/display.js)
  *
@@ -31,7 +34,9 @@ export const SKETCH_JSON_SHAPE = `{
   "promptTemplate": "<one sentence with {{var}} placeholders>",
   "variables": [
     { "name": "<snake_case>", "label": "<Human Label>",
-      "values": [ { "text": "<value>", "weight": 1 } ] }
+      "values": [ { "text": "<value>", "weight": 1 } ] },
+    { "name": "speed", "label": "Speed", "type": "number",
+      "min": 0, "max": 2, "step": 0.1, "default": 0.5 }
   ],
   "code": "<JS statements using ctx, frame, getVar, audio -- no function wrapper>"
 }`;

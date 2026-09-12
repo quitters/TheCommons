@@ -26,22 +26,14 @@
     <div class="station-layout">
       <section class="controls" aria-labelledby="sketchName">
         <div class="section-heading"><span class="section-number">01</span><div><p class="eyebrow">On the wall</p><h2 id="sketchName">Finding the canvas…</h2></div></div>
+        <p class="section-help" id="allocationStatus" role="status">Finding your controls…</p>
         <p class="section-help" id="controlHint" role="status">Your choices below steer the shared piece.</p>
         <div id="knobs" aria-describedby="controlHint"></div>
       </section>
-      <aside id="promptBox" aria-labelledby="remixTitle">
-        <div class="section-heading"><span class="section-number">02</span><div><p class="eyebrow">A new direction</p><h2 id="remixTitle">Remix the room</h2></div></div>
-        <p class="section-help">Give the whole canvas a fresh start. Every table joins the next piece.</p>
-        <form id="promptForm">
-          <label for="promptInput" class="eyebrow">What do you imagine?</label>
-          <textarea id="promptInput" rows="4" required maxlength="2000" placeholder="a slow bioluminescent ocean that pulses on the bass"></textarea>
-          <button id="promptSend" class="primary-button" type="submit" disabled>Remix for the room <span aria-hidden="true">↗</span></button>
-          <p id="promptStatus" class="form-status" role="status"></p>
-        </form>
-      </aside>
+
     </div>
   </main>
-  <footer><span class="eyebrow">The Commons / Table station</span><span>Nobody controls it alone.</span></footer>
+  <footer><span class="eyebrow">The Commons / Table station</span><span>Nobody controls it alone. <a href="/admin/">Creator desk</a></span></footer>
 </div>
 <script type="module" src="./station.js"></script>
 </body>

@@ -5,11 +5,19 @@ import { fileURLToPath } from 'node:url';
 import { generateSketch, pickFallback } from './generate.js';
 import { createRelay } from './relay.js';
 import { startFacilitator } from './facilitator.js';
+import { generationConfig } from './generation-config.js';
+import { createGenerationJobs } from './generation-jobs.js';
+import { adminAccess } from './admin.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(express.json());
+const admin = adminAccess(process.env.ADMIN_PASSWORD);
+app.post('/api/admin/login', admin.login);
+app.post('/api/admin/logout', admin.logout);
+app.get('/api/admin/session', admin.status);
+app.use('/admin', express.static(path.join(__dirname, '../client/admin')));
 app.use('/display', express.static(path.join(__dirname, '../client/display')));
 app.use('/station', express.static(path.join(__dirname, '../client/station')));
 app.use('/shared', express.static(path.join(__dirname, '../client/shared')));
@@ -17,21 +25,66 @@ app.get('/', (_req, res) => res.redirect('/display/'));
 
 const server = http.createServer(app);
 const relay = createRelay(server);
-const bootSketch = pickFallback(); // a random pick across both the native and inherited p5 libraries
+const jobs = createGenerationJobs({
+  directory: process.env.GENERATION_DATA_DIR || path.join(__dirname, '../.commons-data/generations'),
+  generate: generateSketch, publish: relay.setSketch, getSketch: relay.getSketch,
+});
+const bootSketch = jobs.latestSketch() || pickFallback();
 relay.setSketch(bootSketch);
 
-app.post('/api/generate', async (req, res) => {
+function readPrompt(req, res) {
   const prompt = typeof req.body?.prompt === 'string' ? req.body.prompt.trim() : '';
-  if (!prompt) return res.status(400).json({ error: "need 'prompt'" });
-  if (prompt.length > 2000) return res.status(400).json({ error: 'prompt must be 2000 characters or fewer' });
-  const sketch = await generateSketch(prompt);
-  relay.setSketch(sketch);
+  if (!prompt || prompt.length > 2000) {
+    res.status(400).json({ error: 'prompt must be text between 1 and 2000 characters' });
+    return null;
+  }
+  return prompt;
+}
+function startJob(prompt, res, id) {
+  if (id !== undefined && (typeof id !== 'string' || !/^[a-f0-9-]{36}$/.test(id))) {
+    res.status(400).json({ error: 'invalid remix request ID' });
+    return null;
+  }
+  try { return jobs.start(prompt, { id }); }
+  catch (error) {
+    res.status(error.jobId ? 409 : 503).json({ error: error.jobId ? error.message : 'Could not save the remix request.', jobId: error.jobId });
+    return null;
+  }
+}
+app.post('/api/generations', admin.require, (req, res) => {
+  const prompt = readPrompt(req, res);
+  if (!prompt) return;
+  const started = startJob(prompt, res, req.body.requestId);
+  if (started) res.status(202).json(started.job);
+});
+app.get('/api/generations/active', admin.require, (_req, res) => res.json(jobs.active()));
+app.get('/api/generations/:id', admin.require, (req, res) => {
+  const job = jobs.get(req.params.id);
+  if (!job) return res.status(404).json({ error: 'remix not found' });
+  res.json(job);
+});
+// Retain the original endpoint for integrations. The creator desk uses the async
+// job API, so browser/proxy HTTP timeouts cannot discard a long model call.
+app.post('/api/generate', admin.require, async (req, res) => {
+  const prompt = readPrompt(req, res);
+  if (!prompt) return;
+  const started = startJob(prompt, res);
+  if (!started) return;
+  const sketch = await started.completion;
+  if (!sketch) return res.status(503).json({ error: 'remix failed', jobId: started.job.id });
   res.json(sketch);
 });
 
 app.get('/api/telemetry', (_req, res) => res.json(relay.getTelemetry()));
 
-startFacilitator(relay);
+if (process.env.FACILITATOR_ENABLED !== 'false') startFacilitator(relay, {
+  generate: async (prompt) => {
+    const started = jobs.start(prompt, { apply: false });
+    const sketch = await started.completion;
+    if (!sketch) throw new Error('facilitator remix failed');
+    return sketch;
+  },
+});
 
 const PORT = process.env.PORT || 4173;
 // Explicit 0.0.0.0, not the platform default: this needs to be reachable from
@@ -43,6 +96,10 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log(`The Commons running:`);
   console.log(`  Display (put this on the shared screen/projector): http://127.0.0.1:${PORT}/display/`);
   console.log(`  Station (one per table, from any device on this network): http://<this-machine's-LAN-IP>:${PORT}/station/?table=1`);
-  console.log(`  Generation: ${process.env.OPENAI_API_KEY ? 'live (OpenAI configured)' : 'built-in + inherited template library only (no OPENAI_API_KEY)'}`);
+  try {
+    const config = generationConfig();
+    console.log(`  Generation: ${config.key ? `live (${config.provider}, ${config.model})` : 'built-in + inherited template library only'}`);
+  } catch { console.log('  Generation: fallback (check generation configuration)'); }
+  console.log(`  Facilitator: ${process.env.FACILITATOR_ENABLED === 'false' ? 'off' : 'on'}`);
   console.log(`  Booted on: ${bootSketch.name}${bootSketch.p5Code ? ' (inherited p5 template)' : ' (native)'}`);
 });

@@ -7,7 +7,7 @@
 export const builtinSketches = [
   {
     name: 'Pulse Field',
-    promptTemplate: 'a {{palette}} field of pulsing circles reacting to the music',
+    promptTemplate: 'a {{palette}} field of {{density}} circles orbiting at {{speed}} and reacting to the music',
     variables: [
       {
         name: 'palette', label: 'Palette',
@@ -18,11 +18,12 @@ export const builtinSketches = [
         ],
       },
       {
-        name: 'density', label: 'Density',
-        values: [
-          { text: 'sparse', weight: 1 },
-          { text: 'dense', weight: 1 },
-        ],
+        name: 'density', label: 'Particle count', type: 'number',
+        min: 12, max: 96, step: 4, default: 24,
+      },
+      {
+        name: 'speed', label: 'Orbit speed', type: 'number',
+        min: 0, max: 2, step: 0.1, default: 0.3,
       },
     ],
     code: `
@@ -32,13 +33,13 @@ const PALETTES = {
   neon:   ['#f06595', '#845ef7', '#22b8cf'],
 };
 const pal = PALETTES[getVar('palette')] || PALETTES.sunset;
-const dense = getVar('density') === 'dense';
-const n = dense ? 60 : 24;
+const n = getVar('density') ?? 24;
+const speed = getVar('speed') ?? 0.3;
 ctx.fillStyle = 'rgba(10,10,15,0.15)';
 ctx.fillRect(0, 0, frame.width, frame.height);
 for (let i = 0; i < n; i++) {
-  const a = (i / n) * Math.PI * 2 + frame.t * 0.3;
-  const r = Math.min(frame.width, frame.height) * (0.15 + 0.25 * Math.sin(frame.t * 0.5 + i));
+  const a = (i / n) * Math.PI * 2 + frame.t * speed;
+  const r = Math.min(frame.width, frame.height) * (0.15 + 0.25 * Math.sin(frame.t * speed * 5 / 3 + i));
   const x = frame.width / 2 + Math.cos(a) * r;
   const y = frame.height / 2 + Math.sin(a) * r;
   const boost = 1 + audio.bass * 2 + (audio.beat ? 0.8 : 0);

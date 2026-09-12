@@ -1,6 +1,8 @@
 // Only freshly generated Canvas2D sketches pass through this gate. The
 // inherited p5 library keeps its own contract and its verbatim source files.
 // This checks structure and syntax, not runtime safety or artistic quality.
+import { onStep } from '../client/shared/parameters.js';
+
 export function validateNativeSketch(sketch) {
   const nonempty = (value) => typeof value === 'string' && value.trim().length > 0;
   function require(condition, message) {
@@ -20,6 +22,16 @@ export function validateNativeSketch(sketch) {
       && !['constructor', 'prototype'].includes(v.name), 'invalid variable name');
     require(!names.has(v.name), `duplicate variable ${v.name}`);
     names.add(v.name);
+    const label = nonempty(v.label) ? v.label : v.name.replaceAll('_', ' ');
+    require(v.type === undefined || v.type === 'select' || v.type === 'number', 'unknown control type');
+    if (v.type === 'number') {
+      require(!Object.hasOwn(v, 'values'), `${v.name} cannot mix a numeric range and choices`);
+      require([v.min, v.max, v.step, v.default].every(Number.isFinite), `${v.name} needs finite min/max/step/default`);
+      require(v.min < v.max && v.step > 0 && v.step <= v.max - v.min, `${v.name} has an invalid range`);
+      require(v.default >= v.min && v.default <= v.max, `${v.name} default is outside its range`);
+      require(onStep(v, v.max) && onStep(v, v.default), `${v.name} max and default must align with step from min`);
+      return { name: v.name, label, type: 'number', min: v.min, max: v.max, step: v.step, default: v.default };
+    }
     require(Array.isArray(v.values) && v.values.length >= 3 && v.values.length <= 6,
       `${v.name} needs 3–6 choices`);
     const texts = new Set();
@@ -31,7 +43,7 @@ export function validateNativeSketch(sketch) {
       require([1, 2, 3].includes(weight), `${v.name} has an invalid weight`);
       return { text: value.text, weight };
     });
-    return { name: v.name, label: nonempty(v.label) ? v.label : v.name.replaceAll('_', ' '), values };
+    return { name: v.name, label, values };
   });
   const placeholders = new Set([...sketch.promptTemplate.matchAll(/\{\{\s*([a-z][a-z0-9_]*)\s*\}\}/g)].map((match) => match[1]));
   require(placeholders.size === names.size && [...names].every((name) => placeholders.has(name)),

@@ -2,6 +2,7 @@ import { SKETCH_JSON_SHAPE } from '../shared/contract.js';
 import { builtinSketches } from './builtin-sketches.js';
 import { loadTemplateLibrary } from './templates.js';
 import { validateNativeSketch } from './validate-sketch.js';
+import { generationConfig } from './generation-config.js';
 
 // Deliberately narrow: this system prompt only ever asks for Canvas2D drawing
 // CODE, never an image or video generation call. That's a scope decision, not
@@ -20,15 +21,22 @@ RUNTIME CONTRACT -- your "code" field runs every animation frame as the BODY of 
 (ctx, frame, getVar, audio) => { ...your code... }. Do not include the function wrapper itself.
 - ctx: CanvasRenderingContext2D, already sized to frame.width x frame.height.
 - frame: { t (seconds elapsed), width, height, dt (seconds since last frame) }.
-- getVar(name): returns the CURRENT selected value's text for a variable you declared, or null.
+- getVar(name): returns CURRENT selected text for a choice, a number for a numeric control, or null.
 - audio: { level, bass, mid, treble } each 0..1, plus audio.beat (boolean). Use these to make
   the piece visibly react to the music -- e.g. scale, rotate, spawn, or recolor on audio.bass
   or audio.beat, not just on frame.t.
 
 RULES:
 - Pure Canvas2D only. No p5.js, no external libraries, no network calls, no image/video generation.
-- 2-6 variables, each with 3-6 weighted values. Bind them to the most visually expressive
-  parameters (palette, shape family, motion style, density) via getVar.
+- 2-6 variables. Use selectable choices for categorical ideas such as palette, shape family,
+  or motion style. Use numeric sliders only for real quantities such as speed, count, scale,
+  or line width. Choose controls that suit the requested piece; not every variable is numeric.
+- Numeric controls have type:"number", min, max, step, and default (all numbers), and NO
+  values array. Require min < max, step > 0, and max/default on the step grid from min.
+  The default must be inside the range. Pick useful, finite ranges with sensible performance
+  limits for a shared display. Read numbers directly: const speed = getVar('speed') ?? 0.5;
+  use ?? rather than || so zero remains a valid value.
+- Selectable controls have 3-6 weighted values and no numeric range fields.
 - Give each variable a unique snake_case name and a short human label. Values are unique
   {text, weight} objects with weights 1, 2, or 3. Include every variable as a {{name}}
   placeholder in promptTemplate, and never refer to an undeclared placeholder.
@@ -48,41 +56,61 @@ RULES:
 
 ${SKETCH_JSON_SHAPE}`;
 
-const MODEL = process.env.MODEL || 'gpt-5.6-sol';
-
-export async function generateSketch(prompt, { fetchImpl = fetch, timeoutMs = 45_000 } = {}) {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) {
-    return { ...pickFallback(), fallback: true, reason: 'no OPENAI_API_KEY set' };
-  }
+export async function generateSketch(prompt, { fetchImpl = fetch, timeoutMs, env = process.env } = {}) {
+  let config;
   try {
-    const res = await fetchImpl('https://api.openai.com/v1/responses', {
-      method: 'POST',
-      signal: AbortSignal.timeout(timeoutMs),
-      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: MODEL,
-        input: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: prompt },
-        ],
-        max_output_tokens: 2048,
-      }),
-    });
-    if (!res.ok) throw new Error(`OpenAI request failed: HTTP ${res.status}`);
-    const result = await res.json();
-    const text = (result.output ?? [])
-      .flatMap((item) => item.content ?? [])
-      .filter((item) => item.type === 'output_text')
-      .map((item) => item.text)
-      .join('\n')
-      .trim();
+    config = generationConfig(env);
+    const { provider, key, model } = config;
+    if (!key) return { ...pickFallback(), fallback: true, reason: provider === 'fallback'
+      ? 'fallback mode selected' : provider === 'gemini' ? 'no Gemini key configured' : 'no OPENAI_API_KEY set' };
+    let text;
+    if (provider === 'gemini') {
+      const res = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: 'POST', signal: AbortSignal.timeout(timeoutMs ?? config.timeoutMs),
+        headers: { 'x-goog-api-key': key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 8192,
+            ...(model.startsWith('gemini-3') ? { thinkingConfig: { thinkingLevel: 'LOW' } } : {}) },
+        }),
+      });
+      if (!res.ok) throw new Error(`Gemini request failed: HTTP ${res.status}`);
+      const result = await res.json();
+      const candidate = result.candidates?.[0];
+      if (candidate?.finishReason !== 'STOP') throw new Error('Gemini did not return a complete sketch');
+      text = (candidate.content?.parts || []).filter((part) => !part.thought && typeof part.text === 'string')
+        .map((part) => part.text).join('\n').trim();
+    } else {
+      const res = await fetchImpl('https://api.openai.com/v1/responses', {
+        method: 'POST',
+        signal: AbortSignal.timeout(timeoutMs ?? 45_000),
+        headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model,
+          input: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'user', content: prompt },
+          ],
+          max_output_tokens: 2048,
+        }),
+      });
+      if (!res.ok) throw new Error(`OpenAI request failed: HTTP ${res.status}`);
+      const result = await res.json();
+      text = (result.output ?? [])
+        .flatMap((item) => item.content ?? [])
+        .filter((item) => item.type === 'output_text')
+        .map((item) => item.text)
+        .join('\n')
+        .trim();
+    }
     const cleaned = text.replace(/^```(?:json)?\s*|\s*```\s*$/g, '');
     const sketch = validateNativeSketch(JSON.parse(cleaned));
-    return { ...sketch, id: randomId(), fallback: false };
+    return { ...sketch, id: randomId(), fallback: false, generation: { provider, model } };
   } catch (err) {
-    console.warn('[generate] falling back to a built-in sketch:', err.message);
-    return { ...pickFallback(), fallback: true, reason: err.message };
+    const reason = config?.key ? err.message.replaceAll(config.key, '[redacted]') : err.message;
+    console.warn('[generate] falling back to a built-in sketch:', reason);
+    return { ...pickFallback(), fallback: true, reason };
   }
 }
 
