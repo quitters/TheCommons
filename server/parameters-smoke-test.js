@@ -59,4 +59,3 @@ export async function checkParameters() {
     await new Promise((resolve) => server.close(resolve));
   }
 }
-
