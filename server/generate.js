@@ -1,6 +1,7 @@
 import { SKETCH_JSON_SHAPE } from '../shared/contract.js';
 import { builtinSketches } from './builtin-sketches.js';
 import { loadTemplateLibrary } from './templates.js';
+import { validateNativeSketch } from './validate-sketch.js';
 
 // Deliberately narrow: this system prompt only ever asks for Canvas2D drawing
 // CODE, never an image or video generation call. That's a scope decision, not
@@ -8,6 +9,12 @@ import { loadTemplateLibrary } from './templates.js';
 const SYSTEM_PROMPT = `You write short JavaScript Canvas2D drawing code for a live, shared
 generative art piece running at a public event. Multiple people steer it together via knobs
 mapped to your "variables", and it reacts to live music playing in the room.
+
+VISUAL INTENT:
+- Let the requested visual technique determine the drawing: a moire study needs interfering
+  lines, an orbit study needs orbital motion. Do not answer every idea with the same particles.
+- Translate mood into a deliberate composition, palette, and movement. Keep the result legible
+  on a distant wall, with a composed first frame and a visible animation even when audio is zero.
 
 RUNTIME CONTRACT -- your "code" field runs every animation frame as the BODY of a function
 (ctx, frame, getVar, audio) => { ...your code... }. Do not include the function wrapper itself.
@@ -22,23 +29,36 @@ RULES:
 - Pure Canvas2D only. No p5.js, no external libraries, no network calls, no image/video generation.
 - 2-6 variables, each with 3-6 weighted values. Bind them to the most visually expressive
   parameters (palette, shape family, motion style, density) via getVar.
+- Give each variable a unique snake_case name and a short human label. Values are unique
+  {text, weight} objects with weights 1, 2, or 3. Include every variable as a {{name}}
+  placeholder in promptTemplate, and never refer to an undeclared placeholder.
+- For categorical parameters, use lookup maps whose keys exactly match the declared value
+  texts. Read each getVar once per frame and fall back to the first option if it is unknown.
+  Example: const speeds = { calm: 0.2, drifting: 0.6, lively: 1.2 };
+  const speed = speeds[getVar('motion')] ?? speeds.calm;
+- Every knob must visibly affect a distinct part of the piece. Order choices coherently,
+  from quieter to more expressive, and make the first choice an inviting starting point.
 - Code must run correctly on a fresh call every frame -- there is no persistent state between
   calls, so derive everything from frame.t and audio each time (or rely on the canvas's own
   existing pixel content for trail effects, e.g. a low-alpha fillRect before drawing).
+- Keep loops bounded and drawing self-contained. Use ctx.save()/ctx.restore() around
+  transforms, and fill the background unless trails are intentional. No DOM access, timers,
+  event listeners, imports, global state, or unfinished code. Do not emit a p5Code field.
 - Respond with ONLY the JSON object below. No markdown fences, no commentary, no extra keys.
 
 ${SKETCH_JSON_SHAPE}`;
 
 const MODEL = process.env.MODEL || 'gpt-5.6-sol';
 
-export async function generateSketch(prompt) {
+export async function generateSketch(prompt, { fetchImpl = fetch, timeoutMs = 45_000 } = {}) {
   const key = process.env.OPENAI_API_KEY;
   if (!key) {
     return { ...pickFallback(), fallback: true, reason: 'no OPENAI_API_KEY set' };
   }
   try {
-    const res = await fetch('https://api.openai.com/v1/responses', {
+    const res = await fetchImpl('https://api.openai.com/v1/responses', {
       method: 'POST',
+      signal: AbortSignal.timeout(timeoutMs),
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: MODEL,
@@ -58,10 +78,7 @@ export async function generateSketch(prompt) {
       .join('\n')
       .trim();
     const cleaned = text.replace(/^```(?:json)?\s*|\s*```\s*$/g, '');
-    const sketch = JSON.parse(cleaned);
-    if (!sketch.code || !Array.isArray(sketch.variables)) {
-      throw new Error('model response missing code/variables');
-    }
+    const sketch = validateNativeSketch(JSON.parse(cleaned));
     return { ...sketch, id: randomId(), fallback: false };
   } catch (err) {
     console.warn('[generate] falling back to a built-in sketch:', err.message);

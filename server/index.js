@@ -21,8 +21,9 @@ const bootSketch = pickFallback(); // a random pick across both the native and i
 relay.setSketch(bootSketch);
 
 app.post('/api/generate', async (req, res) => {
-  const prompt = (req.body?.prompt || '').trim();
+  const prompt = typeof req.body?.prompt === 'string' ? req.body.prompt.trim() : '';
   if (!prompt) return res.status(400).json({ error: "need 'prompt'" });
+  if (prompt.length > 2000) return res.status(400).json({ error: 'prompt must be 2000 characters or fewer' });
   const sketch = await generateSketch(prompt);
   relay.setSketch(sketch);
   res.json(sketch);

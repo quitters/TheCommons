@@ -107,7 +107,7 @@ Trimmed from the original's base-template validation rules (its story-block vali
 | Value format | every value is `{"text": string, "weight": 1\|2\|3}` — never a bare string |
 | `feature_name` format | Title Case |
 
-`server/generate.js`'s current validation of a freshly-generated (native-contract) sketch is intentionally lighter than this table — it only checks for `code`/`p5Code` and a `variables` array before accepting a model's output, falling back on anything else. Tightening it to the fuller rule set above would be a reasonable next step if generation output quality ever becomes an issue.
+Fresh native output is validated separately by `server/validate-sketch.js`: it requires `code`, rejects `p5Code`, checks 2–6 distinct named controls with 3–6 distinct weighted choices each, matches prompt placeholders, and compiles the JavaScript without executing it. A missing label defaults to the variable name with spaces; a missing weight defaults to 1. These native-generation checks never rewrite or validate the inherited files against a new contract.
 
 ## What was deliberately left out, and why
 

@@ -13,6 +13,7 @@ import assert from 'node:assert/strict';
 import { loadTemplateLibrary } from './templates.js';
 import { pickFallback } from './generate.js';
 import { checkRelay } from './relay-smoke-test.js';
+import { checkGeneration } from './generation-smoke-test.js';
 
 const PORT = 4199; // dedicated test port, distinct from the dev default (4173)
 let failed = false;
@@ -68,6 +69,8 @@ check('pickFallback() returns a valid sketch from the combined native+p5 pool', 
 });
 
 console.log('\nLive server checks (spawns the real server on a test port):');
+
+await checkAsync('native generation validates controls and syntax, with safe no-key/error/timeout fallback', checkGeneration);
 
 const server = spawn(process.execPath, ['server/index.js'], {
   env: { ...process.env, PORT: String(PORT), OPENAI_API_KEY: '' },
@@ -126,6 +129,16 @@ try {
       body: JSON.stringify({}),
     });
     assert.equal(res.status, 400);
+  });
+
+  await checkAsync('POST /api/generate rejects non-text, whitespace, and oversized prompts', async () => {
+    for (const prompt of [123, {}, '   ', 'x'.repeat(2001)]) {
+      const res = await fetch(`http://127.0.0.1:${PORT}/api/generate`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+      assert.equal(res.status, 400);
+    }
   });
 } finally {
   server.kill();
