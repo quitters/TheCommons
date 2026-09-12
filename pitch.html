@@ -1,0 +1,512 @@
+<title>The Commons</title>
+<style>
+  :root {
+    --ground: #0a0b0f;
+    --surface: #14161d;
+    --surface-2: #1c1f29;
+    --line: #262a36;
+    --ink: #eef0f4;
+    --ink-dim: #8b90a0;
+    --coral: #ff6b6b;
+    --coral-dim: #ff6b6b66;
+    --cyan: #22b8cf;
+    --cyan-dim: #22b8cf66;
+    --font-display: 'Unbounded', system-ui, sans-serif;
+    --font-body: 'Hanken Grotesk', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-body);
+    scroll-behavior: smooth;
+  }
+  body {
+    scroll-snap-type: y proximity;
+    overflow-y: auto;
+    height: 100vh;
+  }
+  ::selection { background: var(--coral-dim); }
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+  p { margin: 0; }
+  a { color: var(--coral); }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  section {
+    scroll-snap-align: start;
+    padding: 72px clamp(24px, 6vw, 96px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    border-bottom: 1px solid var(--line);
+  }
+  section:last-child { border-bottom: none; }
+
+  /* ---------- rail nav ---------- */
+  .rail {
+    position: fixed;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 20;
+  }
+  .rail a {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--line);
+    display: block;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .rail a.active { background: var(--coral); transform: scale(1.4); }
+
+  /* ---------- hero ---------- */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(320px, 480px);
+    gap: 56px;
+    align-items: center;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(48px, 7.4vw, 92px);
+    line-height: 0.98;
+    margin: 14px 0 22px;
+  }
+  .hero h1 span { color: var(--coral); }
+  .thesis {
+    font-size: clamp(17px, 1.6vw, 21px);
+    line-height: 1.5;
+    color: var(--ink-dim);
+    max-width: 46ch;
+  }
+  .thesis em { color: var(--ink); font-style: normal; }
+
+  .hero-demo { display: flex; flex-direction: column; gap: 14px; }
+  .canvas-frame {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #000;
+    aspect-ratio: 4 / 3;
+  }
+  .canvas-frame canvas { width: 100%; height: 100%; display: block; }
+  .live-tag {
+    position: absolute; top: 10px; left: 10px;
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+    color: var(--ink); background: rgba(0,0,0,0.55); border: 1px solid var(--coral-dim);
+    padding: 4px 8px; border-radius: 100px; display: flex; align-items: center; gap: 6px;
+  }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--coral); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  .knob-row { display: flex; flex-wrap: wrap; gap: 18px; }
+  .knob-group { display: flex; flex-direction: column; gap: 8px; }
+  .knob-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--ink-dim); text-transform: uppercase; }
+  .knob-group .opts { display: flex; gap: 6px; }
+  .knob-group button, .mic-btn {
+    font-family: var(--font-body); font-size: 13px; color: var(--ink);
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 12px; cursor: pointer; transition: background 0.15s, border-color 0.15s;
+  }
+  .knob-group button:hover, .mic-btn:hover { border-color: var(--ink-dim); }
+  .knob-group button.active { background: var(--coral); border-color: var(--coral); color: #1a0a08; font-weight: 600; }
+  .mic-btn { align-self: flex-start; color: var(--cyan); border-color: var(--cyan-dim); background: transparent; }
+  .mic-btn.on { background: var(--cyan); color: #051215; border-color: var(--cyan); }
+  .hero-caption { font-size: 13px; color: var(--ink-dim); line-height: 1.5; max-width: 52ch; }
+
+  /* ---------- generic section chrome ---------- */
+  .kicker { display: flex; align-items: baseline; gap: 14px; margin-bottom: 30px; }
+  .kicker .num { font-family: var(--font-display); font-size: 15px; color: var(--coral); }
+  .kicker h2 { font-family: var(--font-display); font-size: clamp(26px, 3.2vw, 38px); font-weight: 600; }
+
+  .lede { font-size: clamp(16px, 1.4vw, 19px); color: var(--ink-dim); max-width: 68ch; line-height: 1.6; margin-bottom: 40px; }
+  .lede strong { color: var(--ink); font-weight: 600; }
+
+  code, .mono { font-family: var(--font-mono); }
+  .codebox {
+    font-family: var(--font-mono); font-size: 13px; line-height: 1.7;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px 20px; color: var(--cyan); overflow-x: auto; white-space: pre;
+  }
+  .codebox .fn { color: var(--coral); }
+  .codebox .cm { color: var(--ink-dim); }
+
+  /* ---------- theme (surface table) ---------- */
+  .surfaces { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .surfaces .cell { background: var(--surface); padding: 20px; }
+  .surfaces .cell.picked { background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--coral); }
+  .surfaces .cell h3 { font-size: 14px; margin-bottom: 8px; }
+  .surfaces .cell p { font-size: 13px; color: var(--ink-dim); line-height: 1.5; }
+  .surfaces .cell .tag { font-family: var(--font-mono); font-size: 10px; color: var(--coral); letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 10px; }
+
+  .callout {
+    margin-top: 36px; padding: 20px 24px; border-left: 2px solid var(--coral);
+    background: var(--surface); border-radius: 0 10px 10px 0; font-size: 16px; max-width: 60ch;
+  }
+
+  /* ---------- mechanism diagram ---------- */
+  .diagram { display: flex; align-items: center; gap: 0; flex-wrap: wrap; margin-bottom: 40px; }
+  .node {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 20px; min-width: 150px; text-align: center;
+  }
+  .node .t { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 6px; display: block; }
+  .node .v { font-size: 15px; font-weight: 600; }
+  .node.stations { border-color: var(--coral-dim); }
+  .node.facilitator { border-color: var(--cyan-dim); }
+  .arrow { color: var(--ink-dim); font-size: 20px; padding: 0 14px; }
+  .diagram-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .updown { font-size: 18px; color: var(--cyan); }
+
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .fact { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+  .fact .n { font-family: var(--font-display); font-size: 22px; color: var(--coral); display: block; margin-bottom: 8px; }
+  .fact.cyan .n { color: var(--cyan); }
+  .fact p { font-size: 13.5px; color: var(--ink-dim); line-height: 1.55; }
+
+  /* ---------- differentiators ---------- */
+  .diffs { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; background: var(--line); border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+  .diff { background: var(--surface); padding: 26px 24px; }
+  .diff .num { font-family: var(--font-display); font-size: 26px; color: var(--coral-dim); display: block; margin-bottom: 12px; }
+  .diff h3 { font-size: 17px; margin-bottom: 8px; }
+  .diff p { font-size: 13.5px; color: var(--ink-dim); line-height: 1.55; }
+
+  /* ---------- rubric ---------- */
+  .rubric-list { display: flex; flex-direction: column; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .rubric-row { background: var(--surface); display: grid; grid-template-columns: minmax(200px, 320px) 1fr; gap: 20px; padding: 22px 24px; }
+  .rubric-row .crit { font-size: 14.5px; font-weight: 600; }
+  .rubric-row .crit .n { display: block; font-family: var(--font-mono); font-size: 10px; color: var(--cyan); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  .rubric-row .proof { font-size: 14px; color: var(--ink-dim); line-height: 1.55; }
+  .rubric-row .proof strong { color: var(--ink); }
+
+  /* ---------- status ---------- */
+  .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .status-col h3 { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 16px; }
+  .status-col.built h3 { color: var(--coral); }
+  .status-col.next h3 { color: var(--ink-dim); }
+  .status-col ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .status-col li { font-size: 14.5px; line-height: 1.55; padding-left: 20px; position: relative; color: var(--ink-dim); }
+  .status-col.built li { color: var(--ink); }
+  .status-col li::before { content: '\2014'; position: absolute; left: 0; color: var(--ink-dim); }
+  .status-col.built li::before { content: '\2713'; color: var(--coral); }
+
+  .close { margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; }
+  .close .line { font-family: var(--font-display); font-size: clamp(20px, 2.4vw, 28px); max-width: 30ch; }
+  .close .meta { font-family: var(--font-mono); font-size: 12px; color: var(--ink-dim); text-align: right; line-height: 1.6; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .rubric-row, .status-grid { grid-template-columns: 1fr; }
+    .rail { display: none; }
+    .diagram { flex-direction: column; align-items: stretch; }
+    .diagram .arrow { align-self: center; transform: rotate(90deg); padding: 4px 0; }
+    .diagram .node, .diagram-col { width: 100%; }
+    .diagram .node { max-width: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<nav class="rail" id="rail">
+  <a href="#s1" class="active" data-i="0"></a>
+  <a href="#s2" data-i="1"></a>
+  <a href="#s3" data-i="2"></a>
+  <a href="#s4" data-i="3"></a>
+  <a href="#s5" data-i="4"></a>
+  <a href="#s6" data-i="5"></a>
+</nav>
+
+<section id="s1" class="hero">
+  <div>
+    <p class="eyebrow">Agents, Everywhere &mdash; Ottawa AI Tinkerers &mdash; Sept 12&ndash;13, 2026</p>
+    <h1>The<br><span>Commons</span></h1>
+    <p class="thesis">A shared canvas on the wall. Many hands, one evolving piece &mdash; <em>nobody controls it alone.</em> Optionally alive to whatever's playing in the room.</p>
+  </div>
+  <div class="hero-demo">
+    <div class="canvas-frame">
+      <span class="live-tag"><span class="live-dot"></span>LIVE &mdash; real sketch, real contract</span>
+      <canvas id="heroCanvas"></canvas>
+    </div>
+    <div class="knob-row">
+      <div class="knob-group" data-var="palette">
+        <span class="knob-label">Palette</span>
+        <div class="opts">
+          <button data-value="sunset" class="active">sunset</button>
+          <button data-value="ocean">ocean</button>
+          <button data-value="neon">neon</button>
+        </div>
+      </div>
+      <div class="knob-group" data-var="density">
+        <span class="knob-label">Density</span>
+        <div class="opts">
+          <button data-value="sparse" class="active">sparse</button>
+          <button data-value="dense">dense</button>
+        </div>
+      </div>
+      <button class="mic-btn" id="micToggle">Use my mic instead</button>
+    </div>
+    <p class="hero-caption">This is the actual mechanism, running live in this page &mdash; click a knob. In the shipped app these buttons sit on a phone at another table, and everyone in the room watches the <strong style="color:var(--ink)">same</strong> canvas answer.</p>
+  </div>
+</section>
+
+<section id="s2" class="theme">
+  <div class="kicker"><span class="num">01</span><h2>The room is the point</h2></div>
+  <p class="lede">The brief: build an agent for a place people already work, talk, or live, and make the surrounding context <strong>essential</strong> &mdash; not decorative. Most agent demos still fit entirely inside a browser tab. This one doesn't.</p>
+
+  <div class="surfaces">
+    <div class="cell"><span class="tag">At work</span><h3>Team conversation</h3><p>Threads, docs, tickets &mdash; context an agent reads.</p></div>
+    <div class="cell"><span class="tag">In your pocket</span><h3>Device state</h3><p>Notifications, quick approvals, phone context.</p></div>
+    <div class="cell"><span class="tag">On the web</span><h3>The open page</h3><p>Current record, selected item, app state.</p></div>
+    <div class="cell picked"><span class="tag" style="color:var(--coral)">In the room &larr; this one</span><h3>Voice, vision, physical surroundings</h3><p>Multiple people, one shared object nobody owns alone &mdash; optionally alive to the room's own audio.</p></div>
+  </div>
+
+  <div class="callout">Remove the room &mdash; the tables, the other people's hands, the music actually playing &mdash; and there is nothing left to demo. That's not a limitation. That's the thesis.</div>
+</section>
+
+<section id="s3" class="mechanism">
+  <div class="kicker"><span class="num">02</span><h2>How it actually works</h2></div>
+  <p class="lede">Three real pieces, wired through one WebSocket relay. No image model, no video model, anywhere in the pipeline &mdash; every frame is <strong>drawn</strong>, not synthesized.</p>
+
+  <div class="diagram">
+    <div class="node stations"><span class="t">many tables</span><span class="v">Stations</span></div>
+    <span class="arrow">&rarr;</span>
+    <div class="diagram-col">
+      <div class="node"><span class="t">soft ownership &middot; 4s hold</span><span class="v">Relay</span></div>
+      <span class="updown">&uarr;</span>
+      <div class="node facilitator"><span class="t">checks every 10s</span><span class="v">Facilitator</span></div>
+    </div>
+    <span class="arrow">&rarr;</span>
+    <div class="node"><span class="t">runs the code &middot; reads the mic</span><span class="v">Display</span></div>
+  </div>
+
+  <div class="codebox"><span class="cm">// every sketch, no exceptions</span>
+<span class="fn">(ctx, frame, getVar, audio)</span> => { <span class="cm">/* pure Canvas2D &mdash; nothing else is allowed to draw here */</span> }</div>
+
+  <div class="facts" style="margin-top:32px">
+    <div class="fact"><span class="n">4 sec</span><p>A knob "holds" its variable this long &mdash; long enough for a turn to feel like <em>yours</em>, never a blended average nobody can trace back to a table.</p></div>
+    <div class="fact cyan"><span class="n">90 sec</span><p>Of room-wide silence before the Facilitator writes its own prompt &mdash; from whichever tables were just active &mdash; and regenerates the piece. No operator.</p></div>
+    <div class="fact"><span class="n">60 fps</span><p>Generated code runs at full frame rate in a native Canvas2D loop, with a per-frame try/catch &mdash; one bad sketch can never freeze the shared display.</p></div>
+    <div class="fact cyan"><span class="n">31 templates</span><p>The default library, inherited on purpose &mdash; real p5.js sketches (flow fields, strange attractors, moir&eacute; interference) running knob-controlled from day one, before a single API key exists.</p></div>
+  </div>
+</section>
+
+<section id="s4" class="unique">
+  <div class="kicker"><span class="num">03</span><h2>What's actually new here</h2></div>
+  <p class="lede">Not a wrapper, and not a demo of an existing tool with knobs bolted on.</p>
+
+  <div class="diffs">
+    <div class="diff"><span class="num">01</span><h3>Code, not pixels</h3><p>Every visual is JavaScript drawing to a canvas, generated fresh by a model. No Imagen, no Veo, no diffusion model anywhere in this codebase &mdash; on purpose.</p></div>
+    <div class="diff"><span class="num">02</span><h3>An agent, not a script</h3><p>The Facilitator watches real telemetry &mdash; which tables are active, how long since anything changed &mdash; and <em>decides</em> when to act. Nobody scheduled a cron job.</p></div>
+    <div class="diff"><span class="num">03</span><h3>Engine from scratch, content disclosed</h3><p>The relay, the Facilitator, generation, audio-sync &mdash; all new. The default sketch library borrows 31 real templates from a sibling project, verbatim and credited, because the rules explicitly allow reusing templates as content. Said plainly here, not blended in quietly.</p></div>
+    <div class="diff"><span class="num">04</span><h3>Legible, not statistical</h3><p>Soft per-variable ownership means a change is always traceable to the table that made it &mdash; the piece never dissolves into an average nobody caused.</p></div>
+  </div>
+</section>
+
+<section id="s5" class="rubric">
+  <div class="kicker"><span class="num">04</span><h2>Against the actual rubric</h2></div>
+  <p class="lede">One concrete proof point per official criterion &mdash; not a claim, a thing you can watch happen.</p>
+
+  <div class="rubric-list">
+    <div class="rubric-row">
+      <div class="crit"><span class="n">01</span>Core Requirements &amp; Functionality</div>
+      <div class="proof">The full loop runs today: knob press &rarr; relay &rarr; display &rarr; agent. <strong>Zero configuration required</strong> &mdash; a hand-written fallback sketch library means the app is fully demoable before a single API key exists.</div>
+    </div>
+    <div class="rubric-row">
+      <div class="crit"><span class="n">02</span>Innovation &amp; Theme Alignment</div>
+      <div class="proof">Ask what's lost if the room is removed: <strong>everything</strong>. No single person, alone with a chatbox, can make this &mdash; it only exists because more than one set of hands is in it at once.</div>
+    </div>
+    <div class="rubric-row">
+      <div class="crit"><span class="n">03</span>Technical Execution &amp; Integration</div>
+      <div class="proof">A relevant failure, handled live: a generation call fails or a table drops mid-event, and the shared display <strong>keeps running</strong> on the last known state &mdash; it never freezes because one of many inputs vanished.</div>
+    </div>
+    <div class="rubric-row">
+      <div class="crit"><span class="n">04</span>Usefulness &amp; Agentic Experience</div>
+      <div class="proof">The user is the room itself: a venue full of strangers on their phones. The agent's job is turning shared physical presence back into <strong>shared attention</strong> &mdash; and keeping the piece alive all night without anyone running it.</div>
+    </div>
+  </div>
+</section>
+
+<section id="s6" class="status">
+  <div class="kicker"><span class="num">05</span><h2>What's real right now</h2></div>
+  <p class="lede">Said plainly, because it's more convincing than an inflated claim.</p>
+
+  <div class="status-grid">
+    <div class="status-col built">
+      <h3>Built &amp; working</h3>
+      <ul>
+        <li>WebSocket relay with soft per-variable ownership</li>
+        <li>Prompt &rarr; OpenAI &rarr; validated sketch, with automatic fallback across the full built-in pool on any failure</li>
+        <li>31 real p5.js templates inherited, normalized, and running live through the same relay &mdash; every default is real content, not a placeholder</li>
+        <li>Facilitator loop: telemetry &rarr; autonomous regeneration</li>
+        <li>Live display: runs either sketch contract, reads the room's mic, never freezes on a bad native frame</li>
+        <li>Table station: on-screen knobs generated from whatever sketch is live, plus a full-remix prompt box</li>
+      </ul>
+    </div>
+    <div class="status-col next">
+      <h3>Documented next step</h3>
+      <ul>
+        <li>Physical MIDI controllers as an alternative to on-screen knobs (Web MIDI API &mdash; the relay/station split is already shaped for this)</li>
+        <li>Per-table microphones, scaling a table's pull by how chatty it actually is &mdash; not just its knob presses</li>
+        <li>Audio-reactivity ported into the strongest inherited templates, not just fresh generations</li>
+        <li>A Jackbox-style join code on the display, so a phone types in rather than reads a URL off the wall</li>
+        <li>A visible per-table nudge from the Facilitator, not just a room-wide regeneration</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="close">
+    <p class="line">Many hands. One canvas. Nobody runs it alone.</p>
+    <p class="meta">the-commons<br>github.com/&lt;team&gt;/the-commons<br>built during the event, from scratch</p>
+  </div>
+</section>
+
+<script>
+// ---------- the exact runtime contract, ported verbatim from client/display/display.js ----------
+const canvas = document.getElementById('heroCanvas');
+const ctx = canvas.getContext('2d');
+function resize() {
+  const r = canvas.getBoundingClientRect();
+  canvas.width = r.width * devicePixelRatio;
+  canvas.height = r.height * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+}
+new ResizeObserver(resize).observe(canvas);
+resize();
+
+// Pulse Field, verbatim from server/builtin-sketches.js
+const PULSE_FIELD_CODE = `
+const PALETTES = {
+  sunset: ['#ff6b6b', '#ffa94d', '#ffd43b'],
+  ocean:  ['#1c7ed6', '#22b8cf', '#63e6be'],
+  neon:   ['#f06595', '#845ef7', '#22b8cf'],
+};
+const pal = PALETTES[getVar('palette')] || PALETTES.sunset;
+const dense = getVar('density') === 'dense';
+const n = dense ? 60 : 24;
+ctx.fillStyle = 'rgba(10,10,15,0.15)';
+ctx.fillRect(0, 0, frame.width, frame.height);
+for (let i = 0; i < n; i++) {
+  const a = (i / n) * Math.PI * 2 + frame.t * 0.3;
+  const r = Math.min(frame.width, frame.height) * (0.15 + 0.25 * Math.sin(frame.t * 0.5 + i));
+  const x = frame.width / 2 + Math.cos(a) * r;
+  const y = frame.height / 2 + Math.sin(a) * r;
+  const boost = 1 + audio.bass * 2 + (audio.beat ? 0.8 : 0);
+  const size = (6 + 10 * audio.level) * boost;
+  ctx.fillStyle = pal[i % pal.length];
+  ctx.beginPath();
+  ctx.arc(x, y, size, 0, Math.PI * 2);
+  ctx.fill();
+}
+`;
+const drawFn = new Function('ctx', 'frame', 'getVar', 'audio', PULSE_FIELD_CODE);
+
+const vars = { palette: 'sunset', density: 'sparse' };
+function getVar(name) { return vars[name]; }
+
+document.querySelectorAll('.knob-group').forEach((group) => {
+  const varName = group.dataset.var;
+  group.querySelectorAll('button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      group.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      vars[varName] = btn.dataset.value;
+    });
+  });
+});
+
+// ---------- audio: simulated by default, real mic on request ----------
+let usingMic = false;
+let audioState = { level: 0.3, bass: 0.2, mid: 0.2, treble: 0.2, beat: false };
+let nextBeatAt = 0;
+
+function simulateAudio(t) {
+  const level = 0.28 + 0.12 * Math.sin(t * 1.3);
+  const bass = 0.22 + 0.18 * Math.sin(t * 0.9);
+  const beat = t > nextBeatAt;
+  if (beat) nextBeatAt = t + 0.55 + Math.random() * 0.25;
+  return { level, bass: beat ? Math.min(1, bass + 0.5) : bass, mid: 0.25 + 0.1 * Math.sin(t * 2.1), treble: 0.2 + 0.15 * Math.sin(t * 3.3), beat };
+}
+
+document.getElementById('micToggle').addEventListener('click', async function () {
+  if (usingMic) return;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const actx = new AudioContext();
+    const src = actx.createMediaStreamSource(stream);
+    const analyser = actx.createAnalyser();
+    analyser.fftSize = 1024;
+    src.connect(analyser);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    const bassHistory = [];
+    usingMic = true;
+    this.textContent = '🎤 mic live';
+    this.classList.add('on');
+    setInterval(() => {
+      analyser.getByteFrequencyData(data);
+      const n = data.length;
+      const band = (from, to) => {
+        let sum = 0, count = 0;
+        for (let i = Math.floor(n * from); i < Math.floor(n * to); i++) { sum += data[i]; count++; }
+        return count ? sum / count / 255 : 0;
+      };
+      const bass = band(0, 0.1), mid = band(0.1, 0.4), treble = band(0.4, 1);
+      const level = (bass + mid + treble) / 3;
+      bassHistory.push(bass); if (bassHistory.length > 30) bassHistory.shift();
+      const avgBass = bassHistory.reduce((a, b) => a + b, 0) / bassHistory.length;
+      const beat = bass > avgBass * 1.4 && bass > 0.3;
+      audioState = { level, bass, mid, treble, beat };
+    }, 1000 / 30);
+  } catch (err) {
+    console.warn('mic unavailable, staying on simulated audio:', err.message);
+  }
+});
+
+let startTime = performance.now();
+function frame(now) {
+  const t = (now - startTime) / 1000;
+  if (!usingMic) audioState = simulateAudio(t);
+  const rect = canvas.getBoundingClientRect();
+  try {
+    drawFn(ctx, { t, width: rect.width, height: rect.height, dt: 1 / 60 }, getVar, audioState);
+  } catch (err) { /* a bad frame must never kill the loop */ }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// ---------- rail nav ----------
+const sections = [...document.querySelectorAll('section')];
+const dots = [...document.querySelectorAll('.rail a')];
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const idx = sections.indexOf(entry.target);
+      dots.forEach((d) => d.classList.remove('active'));
+      if (dots[idx]) dots[idx].classList.add('active');
+    }
+  });
+}, { threshold: 0.5 });
+sections.forEach((s) => io.observe(s));
+</script>

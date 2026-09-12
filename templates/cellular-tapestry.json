@@ -1,0 +1,131 @@
+{
+  "promptTemplate": "An evolving cellular automaton tapestry using {{rule_set}} rules at {{grid_resolution}} resolution. Cells are {{cell_shape}} shaped, colored with a {{color_palette}} palette mapped by {{color_mapping}}. Starting from a {{initial_pattern}} initial pattern, evolving at {{evolution_speed}} speed. Dead cells fade in {{fade_mode}} mode. The grid has {{grid_lines}} grid lines with {{boundary}} boundaries and {{mutation_rate}} mutation rate.",
+  "variables": [
+    {
+      "name": "rule_set",
+      "values": [
+        {"text": "game_of_life", "weight": 3},
+        {"text": "brians_brain", "weight": 3},
+        {"text": "cyclic", "weight": 2},
+        {"text": "seeds", "weight": 2},
+        {"text": "day_and_night", "weight": 1},
+        {"text": "highlife", "weight": 1},
+        {"text": "rule_110", "weight": 1},
+        {"text": "diamoeba", "weight": 1}
+      ]
+    },
+    {
+      "name": "grid_resolution",
+      "values": [
+        {"text": "coarse", "weight": 2},
+        {"text": "medium", "weight": 3},
+        {"text": "fine", "weight": 3},
+        {"text": "ultra", "weight": 2},
+        {"text": "pixel", "weight": 1},
+        {"text": "chunky", "weight": 1}
+      ]
+    },
+    {
+      "name": "cell_shape",
+      "values": [
+        {"text": "square", "weight": 3},
+        {"text": "circle", "weight": 3},
+        {"text": "diamond", "weight": 2},
+        {"text": "hexagon", "weight": 2},
+        {"text": "triangle", "weight": 1},
+        {"text": "organic", "weight": 1}
+      ]
+    },
+    {
+      "name": "color_palette",
+      "values": [
+        {"text": "thermal", "weight": 3},
+        {"text": "ocean", "weight": 3},
+        {"text": "forest", "weight": 2},
+        {"text": "neon", "weight": 2},
+        {"text": "pastel", "weight": 2},
+        {"text": "cosmic", "weight": 1},
+        {"text": "autumn", "weight": 1},
+        {"text": "grayscale", "weight": 1}
+      ]
+    },
+    {
+      "name": "color_mapping",
+      "values": [
+        {"text": "state", "weight": 3},
+        {"text": "age", "weight": 3},
+        {"text": "neighbors", "weight": 2},
+        {"text": "gradient", "weight": 2},
+        {"text": "random", "weight": 1},
+        {"text": "pulse", "weight": 1}
+      ]
+    },
+    {
+      "name": "initial_pattern",
+      "values": [
+        {"text": "random", "weight": 3},
+        {"text": "center_seed", "weight": 3},
+        {"text": "diagonal", "weight": 2},
+        {"text": "glider_gun", "weight": 2},
+        {"text": "border", "weight": 1},
+        {"text": "spiral", "weight": 1}
+      ]
+    },
+    {
+      "name": "evolution_speed",
+      "values": [
+        {"text": "frozen", "weight": 1},
+        {"text": "slow", "weight": 3},
+        {"text": "medium", "weight": 3},
+        {"text": "fast", "weight": 2},
+        {"text": "rapid", "weight": 2},
+        {"text": "instant", "weight": 1}
+      ]
+    },
+    {
+      "name": "fade_mode",
+      "values": [
+        {"text": "none", "weight": 3},
+        {"text": "trail", "weight": 3},
+        {"text": "ghost", "weight": 2},
+        {"text": "afterglow", "weight": 2},
+        {"text": "echo", "weight": 1},
+        {"text": "psychedelic", "weight": 1}
+      ]
+    },
+    {
+      "name": "grid_lines",
+      "values": [
+        {"text": "none", "weight": 3},
+        {"text": "subtle", "weight": 3},
+        {"text": "visible", "weight": 2},
+        {"text": "bold", "weight": 2},
+        {"text": "glow", "weight": 1},
+        {"text": "dashed", "weight": 1}
+      ]
+    },
+    {
+      "name": "boundary",
+      "values": [
+        {"text": "wrap", "weight": 3},
+        {"text": "mirror", "weight": 3},
+        {"text": "fixed", "weight": 2},
+        {"text": "infinite", "weight": 2},
+        {"text": "decay", "weight": 1},
+        {"text": "random", "weight": 1}
+      ]
+    },
+    {
+      "name": "mutation_rate",
+      "values": [
+        {"text": "none", "weight": 3},
+        {"text": "rare", "weight": 3},
+        {"text": "occasional", "weight": 2},
+        {"text": "frequent", "weight": 2},
+        {"text": "constant", "weight": 1},
+        {"text": "burst", "weight": 1}
+      ]
+    }
+  ],
+  "p5Code": "// Cellular Tapestry - Evolving Grid Automata\n\nlet grid, nextGrid, ageGrid;\nlet cols, rows, cellSize;\nlet prevParams = '';\nlet genCount = 0;\nlet frameAccum = 0;\nlet rule110Row = 0;\n\nconst PALETTES = {\n  thermal: [[0,0,80],[80,0,120],[200,50,50],[255,160,0],[255,255,100]],\n  ocean: [[0,20,60],[0,60,120],[0,120,180],[60,180,220],[180,230,255]],\n  forest: [[10,30,10],[30,80,20],[60,140,40],[120,180,60],[200,230,120]],\n  neon: [[255,0,100],[0,255,150],[200,0,255],[255,255,0],[0,200,255]],\n  pastel: [[255,180,200],[180,220,255],[200,255,200],[255,240,180],[220,200,255]],\n  cosmic: [[20,0,40],[80,0,120],[0,50,150],[200,0,200],[255,200,255]],\n  autumn: [[100,30,0],[180,80,20],[220,150,30],[180,120,40],[140,60,10]],\n  grayscale: [[30,30,30],[80,80,80],[130,130,130],[190,190,190],[240,240,240]]\n};\n\nfunction getGridSize(v) {\n  const m = {chunky:12, coarse:20, medium:40, fine:60, ultra:80, pixel:120};\n  return m[v] || 40;\n}\n\nfunction getEvolutionFrames(v) {\n  const m = {frozen:999999, slow:15, medium:6, fast:3, rapid:1, instant:0};\n  return m[v] || 6;\n}\n\nfunction getMutationProb(v) {\n  const m = {none:0, rare:0.0005, occasional:0.002, frequent:0.008, constant:0.02, burst:-1};\n  return m[v] || 0;\n}\n\nfunction initGrid(pattern, c, r) {\n  grid = new Uint8Array(c * r);\n  nextGrid = new Uint8Array(c * r);\n  ageGrid = new Float32Array(c * r);\n  genCount = 0;\n  rule110Row = 0;\n\n  if (pattern === 'random') {\n    for (let i = 0; i < c * r; i++) grid[i] = Math.random() > 0.5 ? 1 : 0;\n  } else if (pattern === 'center_seed') {\n    let cx = Math.floor(c/2), cy = Math.floor(r/2);\n    for (let dx = -2; dx <= 2; dx++) {\n      for (let dy = -2; dy <= 2; dy++) {\n        let idx = (cy+dy)*c+(cx+dx);\n        if (idx >= 0 && idx < c*r) grid[idx] = 1;\n      }\n    }\n  } else if (pattern === 'diagonal') {\n    for (let i = 0; i < Math.min(c,r); i++) {\n      grid[i*c+i] = 1;\n      if (i < c-1) grid[i*c+i+1] = 1;\n    }\n  } else if (pattern === 'glider_gun') {\n    // Gosper glider gun (simplified)\n    let gun = [[1,5],[1,6],[2,5],[2,6],[11,5],[11,6],[11,7],[12,4],[12,8],[13,3],[13,9],[14,3],[14,9],[15,6],[16,4],[16,8],[17,5],[17,6],[17,7],[18,6],[21,3],[21,4],[21,5],[22,3],[22,4],[22,5],[23,2],[23,6],[25,1],[25,2],[25,6],[25,7],[35,3],[35,4],[36,3],[36,4]];\n    for (let g of gun) {\n      let idx = (g[0]+2)*c+(g[1]+2);\n      if (idx >= 0 && idx < c*r) grid[idx] = 1;\n    }\n  } else if (pattern === 'border') {\n    for (let x = 0; x < c; x++) { grid[x] = 1; grid[(r-1)*c+x] = 1; }\n    for (let y = 0; y < r; y++) { grid[y*c] = 1; grid[y*c+c-1] = 1; }\n  } else if (pattern === 'spiral') {\n    let cx = c/2, cy = r/2;\n    for (let a = 0; a < Math.PI*8; a += 0.1) {\n      let rad = a * 1.5;\n      let x = Math.floor(cx + Math.cos(a)*rad*0.5);\n      let y = Math.floor(cy + Math.sin(a)*rad*0.5);\n      if (x >= 0 && x < c && y >= 0 && y < r) grid[y*c+x] = 1;\n    }\n  }\n}\n\nfunction getCell(x, y, boundaryV) {\n  if (x >= 0 && x < cols && y >= 0 && y < rows) return grid[y*cols+x];\n  if (boundaryV === 'wrap') return grid[((y%rows+rows)%rows)*cols+((x%cols+cols)%cols)];\n  if (boundaryV === 'mirror') {\n    let mx = x < 0 ? -x : (x >= cols ? 2*cols-x-2 : x);\n    let my = y < 0 ? -y : (y >= rows ? 2*rows-y-2 : y);\n    mx = Math.max(0, Math.min(cols-1, mx));\n    my = Math.max(0, Math.min(rows-1, my));\n    return grid[my*cols+mx];\n  }\n  if (boundaryV === 'random') return Math.random() > 0.5 ? 1 : 0;\n  if (boundaryV === 'decay') return 0;\n  return 0; // fixed, infinite\n}\n\nfunction countNeighbors(x, y, bnd) {\n  let count = 0;\n  for (let dy = -1; dy <= 1; dy++) {\n    for (let dx = -1; dx <= 1; dx++) {\n      if (dx === 0 && dy === 0) continue;\n      count += getCell(x+dx, y+dy, bnd) > 0 ? 1 : 0;\n    }\n  }\n  return count;\n}\n\nfunction evolve(ruleSet, bnd) {\n  if (ruleSet === 'rule_110') {\n    // 1D automaton scrolling down\n    if (rule110Row === 0) {\n      // Initialize top row randomly if not already\n      for (let x = 0; x < cols; x++) {\n        if (grid[x] === 0 && Math.random() > 0.5) grid[x] = 1;\n      }\n      rule110Row = 1;\n    }\n    // Shift everything up\n    for (let y = 0; y < rows - 1; y++) {\n      for (let x = 0; x < cols; x++) {\n        nextGrid[y*cols+x] = grid[(y+1)*cols+x];\n      }\n    }\n    // Generate new bottom row from current bottom row\n    let lastRow = rows - 1;\n    for (let x = 0; x < cols; x++) {\n      let l = getCell(x-1, lastRow, bnd) > 0 ? 1 : 0;\n      let c = grid[lastRow*cols+x] > 0 ? 1 : 0;\n      let r = getCell(x+1, lastRow, bnd) > 0 ? 1 : 0;\n      let pattern = (l << 2) | (c << 1) | r;\n      let rule110 = 0b01101110; // Rule 110\n      nextGrid[lastRow*cols+x] = (rule110 >> pattern) & 1;\n    }\n    let tmp = grid; grid = nextGrid; nextGrid = tmp;\n    return;\n  }\n\n  for (let y = 0; y < rows; y++) {\n    for (let x = 0; x < cols; x++) {\n      let idx = y * cols + x;\n      let state = grid[idx];\n      let n = countNeighbors(x, y, bnd);\n\n      if (ruleSet === 'game_of_life') {\n        nextGrid[idx] = (state === 1) ? (n === 2 || n === 3 ? 1 : 0) : (n === 3 ? 1 : 0);\n      } else if (ruleSet === 'brians_brain') {\n        // 0=off, 1=on, 2=dying\n        if (state === 0) nextGrid[idx] = (n === 2) ? 1 : 0;\n        else if (state === 1) nextGrid[idx] = 2;\n        else nextGrid[idx] = 0;\n      } else if (ruleSet === 'cyclic') {\n        // N-state cyclic: advance if neighbor has next state\n        let nStates = 6;\n        let nextState = (state + 1) % nStates;\n        let hasNext = false;\n        for (let dy = -1; dy <= 1; dy++) {\n          for (let dx = -1; dx <= 1; dx++) {\n            if (dx === 0 && dy === 0) continue;\n            if (getCell(x+dx, y+dy, bnd) === nextState) { hasNext = true; break; }\n          }\n          if (hasNext) break;\n        }\n        nextGrid[idx] = hasNext ? nextState : state;\n      } else if (ruleSet === 'seeds') {\n        // B2/S (born with 2 neighbors, never survives)\n        nextGrid[idx] = (state === 0 && n === 2) ? 1 : 0;\n      } else if (ruleSet === 'day_and_night') {\n        // B3678/S34678\n        if (state === 0) nextGrid[idx] = (n===3||n===6||n===7||n===8) ? 1 : 0;\n        else nextGrid[idx] = (n===3||n===4||n===6||n===7||n===8) ? 1 : 0;\n      } else if (ruleSet === 'highlife') {\n        // B36/S23\n        if (state === 0) nextGrid[idx] = (n===3||n===6) ? 1 : 0;\n        else nextGrid[idx] = (n===2||n===3) ? 1 : 0;\n      } else if (ruleSet === 'diamoeba') {\n        // B35678/S5678\n        if (state === 0) nextGrid[idx] = (n===3||n===5||n===6||n===7||n===8) ? 1 : 0;\n        else nextGrid[idx] = (n===5||n===6||n===7||n===8) ? 1 : 0;\n      } else {\n        nextGrid[idx] = (state === 1) ? (n === 2 || n === 3 ? 1 : 0) : (n === 3 ? 1 : 0);\n      }\n    }\n  }\n  let tmp = grid; grid = nextGrid; nextGrid = tmp;\n}\n\nfunction samplePalette(palette, t) {\n  t = Math.max(0, Math.min(1, t));\n  let idx = t * (palette.length - 1);\n  let i = Math.floor(idx);\n  let f = idx - i;\n  let c1 = palette[Math.min(i, palette.length - 1)];\n  let c2 = palette[Math.min(i + 1, palette.length - 1)];\n  return [c1[0]+(c2[0]-c1[0])*f, c1[1]+(c2[1]-c1[1])*f, c1[2]+(c2[2]-c1[2])*f];\n}\n\np.setup = function() {\n  p.createCanvas(600, 600);\n};\n\np.draw = function() {\n  let ruleV = p.getSynthVar('rule_set') || 'game_of_life';\n  let resV = p.getSynthVar('grid_resolution') || 'medium';\n  let shapeV = p.getSynthVar('cell_shape') || 'square';\n  let palV = p.getSynthVar('color_palette') || 'thermal';\n  let cmapV = p.getSynthVar('color_mapping') || 'state';\n  let initV = p.getSynthVar('initial_pattern') || 'random';\n  let speedV = p.getSynthVar('evolution_speed') || 'medium';\n  let fadeV = p.getSynthVar('fade_mode') || 'none';\n  let gridLV = p.getSynthVar('grid_lines') || 'none';\n  let bndV = p.getSynthVar('boundary') || 'wrap';\n  let mutV = p.getSynthVar('mutation_rate') || 'none';\n\n  let gridSz = getGridSize(resV);\n  let params = ruleV + resV + initV + bndV;\n\n  // Re-init if structural params changed\n  if (params !== prevParams) {\n    prevParams = params;\n    cols = gridSz;\n    rows = gridSz;\n    cellSize = 600 / gridSz;\n    initGrid(initV, cols, rows);\n  }\n\n  let palette = PALETTES[palV] || PALETTES.thermal;\n  let evoFrames = getEvolutionFrames(speedV);\n  let mutProb = getMutationProb(mutV);\n\n  // Evolution step\n  frameAccum++;\n  if (frameAccum >= evoFrames) {\n    frameAccum = 0;\n    evolve(ruleV, bndV);\n    genCount++;\n\n    // Update age grid\n    for (let i = 0; i < cols * rows; i++) {\n      if (grid[i] > 0) ageGrid[i] = Math.min(ageGrid[i] + 1, 200);\n      else if (fadeV !== 'none') ageGrid[i] = Math.max(ageGrid[i] - 0.5, 0);\n      else ageGrid[i] = 0;\n    }\n\n    // Mutations\n    if (mutProb === -1) { // burst\n      if (genCount % 60 === 0) {\n        for (let i = 0; i < cols*rows*0.05; i++) {\n          let ri = Math.floor(Math.random()*cols*rows);\n          grid[ri] = grid[ri] > 0 ? 0 : 1;\n        }\n      }\n    } else if (mutProb > 0) {\n      for (let i = 0; i < cols*rows; i++) {\n        if (Math.random() < mutProb) grid[i] = grid[i] > 0 ? 0 : 1;\n      }\n    }\n  }\n\n  // Draw\n  p.background(15);\n  p.noStroke();\n\n  for (let y = 0; y < rows; y++) {\n    for (let x = 0; x < cols; x++) {\n      let idx = y * cols + x;\n      let state = grid[idx];\n      let age = ageGrid[idx];\n      let px = x * cellSize;\n      let py = y * cellSize;\n\n      // Skip empty cells with no fade\n      if (state === 0 && age <= 0 && fadeV === 'none') continue;\n\n      // Color\n      let colorT = 0;\n      let alpha = 255;\n\n      if (cmapV === 'state') {\n        if (ruleV === 'brians_brain') colorT = state / 2;\n        else if (ruleV === 'cyclic') colorT = state / 6;\n        else colorT = state > 0 ? 0.8 : 0.1;\n      } else if (cmapV === 'age') {\n        colorT = Math.min(1, age / 50);\n      } else if (cmapV === 'neighbors') {\n        let n = countNeighbors(x, y, bndV);\n        colorT = n / 8;\n      } else if (cmapV === 'gradient') {\n        colorT = (x / cols + y / rows) / 2;\n      } else if (cmapV === 'random') {\n        colorT = ((x * 7 + y * 13 + genCount) % 100) / 100;\n      } else { // pulse\n        colorT = (Math.sin(p.frameCount * 0.05 + x * 0.2 + y * 0.2) + 1) / 2;\n      }\n\n      if (state === 0 && age > 0) {\n        alpha = Math.min(255, age * 20);\n        if (fadeV === 'ghost') alpha *= 0.3;\n        else if (fadeV === 'afterglow') { alpha *= Math.max(0, 1 - (genCount % 10) / 5); colorT = Math.min(1, colorT + 0.3); }\n        else if (fadeV === 'echo') alpha *= 0.5;\n        else if (fadeV === 'psychedelic') { colorT = (colorT + p.frameCount * 0.01) % 1; alpha *= 0.6; }\n        else if (fadeV === 'trail') alpha *= 0.6;\n      }\n\n      if (alpha < 5) continue;\n\n      let col = samplePalette(palette, colorT);\n      p.fill(col[0], col[1], col[2], alpha);\n\n      let margin = cellSize * 0.08;\n      let sz = cellSize - margin * 2;\n\n      if (shapeV === 'square') {\n        p.rect(px + margin, py + margin, sz, sz);\n      } else if (shapeV === 'circle') {\n        p.ellipse(px + cellSize/2, py + cellSize/2, sz, sz);\n      } else if (shapeV === 'diamond') {\n        p.push();\n        p.translate(px + cellSize/2, py + cellSize/2);\n        p.rotate(Math.PI / 4);\n        p.rect(-sz*0.35, -sz*0.35, sz*0.7, sz*0.7);\n        p.pop();\n      } else if (shapeV === 'hexagon') {\n        p.push();\n        p.translate(px + cellSize/2, py + cellSize/2);\n        p.beginShape();\n        for (let a = 0; a < 6; a++) {\n          let angle = a * Math.PI / 3 - Math.PI / 6;\n          p.vertex(Math.cos(angle)*sz*0.45, Math.sin(angle)*sz*0.45);\n        }\n        p.endShape(p.CLOSE);\n        p.pop();\n      } else if (shapeV === 'triangle') {\n        let flip = (x + y) % 2 === 0;\n        if (flip) p.triangle(px+margin, py+sz+margin, px+cellSize/2, py+margin, px+sz+margin, py+sz+margin);\n        else p.triangle(px+margin, py+margin, px+cellSize/2, py+sz+margin, px+sz+margin, py+margin);\n      } else { // organic\n        let wobble = Math.sin(age * 0.3 + x + y) * sz * 0.1;\n        p.ellipse(px + cellSize/2 + wobble, py + cellSize/2, sz * (0.8 + Math.sin(age*0.2)*0.2), sz);\n      }\n    }\n  }\n\n  // Grid lines\n  if (gridLV !== 'none') {\n    let glAlpha, glWeight;\n    if (gridLV === 'subtle') { glAlpha = 25; glWeight = 0.5; }\n    else if (gridLV === 'visible') { glAlpha = 60; glWeight = 1; }\n    else if (gridLV === 'bold') { glAlpha = 120; glWeight = 2; }\n    else if (gridLV === 'glow') { glAlpha = 40; glWeight = 2; }\n    else if (gridLV === 'dashed') { glAlpha = 50; glWeight = 1; }\n    else { glAlpha = 30; glWeight = 0.5; }\n\n    if (gridLV === 'glow') {\n      p.stroke(100, 150, 255, glAlpha);\n    } else {\n      p.stroke(255, 255, 255, glAlpha);\n    }\n    p.strokeWeight(glWeight);\n\n    if (gridLV === 'dashed') {\n      p.drawingContext.setLineDash([3, 3]);\n    }\n\n    for (let x = 0; x <= cols; x++) {\n      p.line(x * cellSize, 0, x * cellSize, 600);\n    }\n    for (let y = 0; y <= rows; y++) {\n      p.line(0, y * cellSize, 600, y * cellSize);\n    }\n\n    if (gridLV === 'dashed') {\n      p.drawingContext.setLineDash([]);\n    }\n  }\n};"
+}

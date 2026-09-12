@@ -1,0 +1,115 @@
+{
+  "promptTemplate": "{{time_of_day}} city skyline, {{building_density}} buildings, {{rooftop_detail}} detail, {{atmosphere}} atmosphere",
+  "variables": [
+    {
+      "name": "time_of_day",
+      "feature_name": "Time of Day",
+      "values": [
+        {
+          "text": "twilight",
+          "weight": 2
+        },
+        {
+          "text": "neon",
+          "weight": 2
+        },
+        {
+          "text": "dawn",
+          "weight": 2
+        },
+        {
+          "text": "golden",
+          "weight": 2
+        },
+        {
+          "text": "midnight",
+          "weight": 1
+        },
+        {
+          "text": "rainy",
+          "weight": 2
+        },
+        {
+          "text": "sunset",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "building_density",
+      "feature_name": "Building Density",
+      "values": [
+        {
+          "text": "sparse",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "dense",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "rooftop_detail",
+      "feature_name": "Rooftop Detail",
+      "values": [
+        {
+          "text": "minimal",
+          "weight": 1
+        },
+        {
+          "text": "standard",
+          "weight": 3
+        },
+        {
+          "text": "detailed",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "atmosphere",
+      "feature_name": "Atmosphere",
+      "values": [
+        {
+          "text": "birds",
+          "weight": 3
+        },
+        {
+          "text": "still",
+          "weight": 1
+        },
+        {
+          "text": "foggy",
+          "weight": 2
+        },
+        {
+          "text": "starry",
+          "weight": 2
+        },
+        {
+          "text": "rainy",
+          "weight": 2
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Urban Skyline — Deluxe Edition\n// Adapted from GenerativeArtGallery / artwork11\n// Parallax layers, water reflection, twinkling stars, crescent moon,\n// drifting clouds, wing-flapping birds, window flicker, pulsing beacons,\n// neon signs, rain, fog, ripple shimmer, 7 curated palettes\n\nlet us = { bg:[], fg:[], stars:[], clouds:[], birds:[], prevD:'', prevT:'' };\n\nlet usPal = {\n  twilight: { s1:[268,55,42], s2:[240,40,18], bl:[240,18,38], bk:[240,12,25], wn:[42,82,96],  wt:[230,40,18], moon:1, star:1, rain:0 },\n  neon:     { s1:[260,85,14], s2:[240,70,6],  bl:[260,30,15], bk:[260,20,10], wn:[300,92,100], wt:[270,50,8],  moon:0, star:0, rain:0 },\n  dawn:     { s1:[15,65,90],  s2:[30,40,75],  bl:[20,28,36],  bk:[20,18,24],  wn:[48,72,96],   wt:[20,30,42],  moon:0, star:0, rain:0 },\n  golden:   { s1:[38,75,92],  s2:[25,50,72],  bl:[25,35,30],  bk:[25,25,20],  wn:[50,82,100],  wt:[30,40,38],  moon:0, star:0, rain:0 },\n  midnight: { s1:[225,50,12], s2:[230,40,5],  bl:[220,18,18], bk:[220,12,12], wn:[200,50,78],  wt:[220,35,8],  moon:1, star:1, rain:0 },\n  rainy:    { s1:[210,20,45], s2:[200,15,30], bl:[200,12,32], bk:[200,8,20],  wn:[45,55,82],   wt:[205,18,22], moon:0, star:0, rain:1 },\n  sunset:   { s1:[10,80,95],  s2:[340,60,55], bl:[350,25,28], bk:[350,18,18], wn:[40,75,95],   wt:[350,35,28], moon:0, star:0, rain:0 }\n};\n\nfunction usGen(dens, isBg) {\n  let bs = [], sp = dens === 'sparse' ? 62 : dens === 'medium' ? 40 : 26;\n  let hm = isBg ? 0.5 : 1, x = -sp;\n  while (x < 420) {\n    let w = sp * (0.55 + Math.random() * 0.85);\n    let h = (42 + Math.random() * Math.random() * (isBg ? 150 : 290)) * hm;\n    let wc = Math.max(1, Math.floor(w / (isBg ? 22 : 16)));\n    let wr = Math.max(1, Math.floor(h / (isBg ? 26 : 19)));\n    let wins = [];\n    for (let r = 0; r < wr; r++)\n      for (let c = 0; c < wc; c++)\n        wins.push({ r:r, c:c, lit: Math.random() > 0.22 });\n    let rt = Math.random();\n    bs.push({\n      x:x, w:w, h:h, wins:wins, wc:wc, wr:wr,\n      ant: !isBg && Math.random() > 0.5,\n      roof: rt < 0.58 ? 0 : rt < 0.8 ? 1 : 2,\n      stepH: 7 + Math.random() * 14,\n      stepW: w * (0.35 + Math.random() * 0.3),\n      nH: Math.random() * 360,\n      nW: 8 + Math.random() * 18,\n      nHt: 4 + Math.random() * 7,\n      nY: Math.random() * 0.3\n    });\n    x += w + Math.random() * 5;\n  }\n  return bs;\n}\n\np.setup = function() {\n  p.createCanvas(400, 500);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n  us.bg = usGen('medium', true);\n  us.fg = usGen('medium', false);\n  for (let i = 0; i < 85; i++)\n    us.stars.push({ x: Math.random()*400, y: Math.random()*265, s: 0.5+Math.random()*2.5, ph: Math.random()*6.28, sp: 0.02+Math.random()*0.04 });\n  for (let i = 0; i < 4; i++)\n    us.clouds.push({ x: Math.random()*500-50, y: 22+Math.random()*110, w: 80+Math.random()*130, h: 18+Math.random()*28, sp: 0.12+Math.random()*0.28 });\n  for (let i = 0; i < 6; i++)\n    us.birds.push({ x: Math.random()*400, y: 20+Math.random()*85, vx: 0.5+Math.random()*1.6, sz: 1+Math.random()*2.2 });\n};\n\nfunction usDrawB(blds, gY, bc, wc, det, t, neon) {\n  blds.forEach(function(b) {\n    let by = gY - b.h;\n    p.noStroke();\n    p.fill(bc[0], bc[1], bc[2], 100);\n    p.rect(b.x, by, b.w, b.h);\n    if (det !== 'minimal') {\n      if (b.roof === 1) p.rect(b.x + (b.w - b.stepW) / 2, by - b.stepH, b.stepW, b.stepH);\n      else if (b.roof === 2) p.triangle(b.x, by, b.x + b.w, by, b.x + b.w / 2, by - b.stepH);\n    }\n    let wW = b.w / (b.wc + 1), wH = b.h / (b.wr + 1);\n    b.wins.forEach(function(w) {\n      let wx = b.x + (w.c + 0.5) * wW;\n      let wy = by + (w.r + 0.5) * wH;\n      if (w.lit) p.fill(wc[0], wc[1], wc[2], 92);\n      else p.fill(bc[0], bc[1] * 0.3, bc[2] * 0.5, 62);\n      p.rect(wx, wy, wW * 0.48, wH * 0.48);\n    });\n    if (b.ant && det !== 'minimal') {\n      let ax = b.x + b.w * 0.5;\n      p.stroke(bc[0], bc[1] + 10, bc[2] + 22, 65);\n      p.strokeWeight(1.5);\n      p.line(ax, by, ax, by - 24);\n      if (det === 'detailed') {\n        let ba = (Math.sin(t * 0.08) * 0.5 + 0.5) * 80 + 15;\n        p.noStroke();\n        p.fill(0, 85, 95, ba);\n        p.ellipse(ax, by - 25, 5, 5);\n        p.fill(0, 68, 95, ba * 0.3);\n        p.ellipse(ax, by - 25, 14, 14);\n      }\n    }\n    if (neon) {\n      let ny = by + b.h * b.nY + 8;\n      let pulse = Math.sin(t * 0.06 + b.nH) * 0.5 + 0.5;\n      p.noStroke();\n      p.fill(b.nH, 88, 96, 35 + pulse * 55);\n      p.rect(b.x + 3, ny, b.nW, b.nHt, 1);\n      p.fill(b.nH, 78, 96, 8 + pulse * 18);\n      p.rect(b.x - 1, ny - 4, b.nW + 8, b.nHt + 8, 3);\n    }\n  });\n}\n\np.draw = function() {\n  let tStr = p.getSynthVar('time_of_day') || 'twilight';\n  let dStr = p.getSynthVar('building_density') || 'medium';\n  let det  = p.getSynthVar('rooftop_detail') || 'standard';\n  let atm  = p.getSynthVar('atmosphere') || 'birds';\n\n  if (dStr !== us.prevD) {\n    us.bg = usGen(dStr, true);\n    us.fg = usGen(dStr, false);\n    us.prevD = dStr;\n  }\n\n  let P = usPal[tStr] || usPal.twilight;\n  let t = p.frameCount;\n  let gY = 340, wH = 160;\n  let isNeon = tStr === 'neon';\n\n  // ── Sky gradient (14 bands) ──\n  p.noStroke();\n  for (let i = 0; i < 14; i++) {\n    let f = i / 14;\n    p.fill(p.lerp(P.s1[0],P.s2[0],f), p.lerp(P.s1[1],P.s2[1],f), p.lerp(P.s1[2],P.s2[2],f), 100);\n    p.rect(0, i * (gY / 14), 400, gY / 14 + 1);\n  }\n\n  // ── Stars ──\n  if (P.star || atm === 'starry') {\n    us.stars.forEach(function(st) {\n      let tw = Math.sin(t * st.sp + st.ph) * 0.5 + 0.5;\n      p.noStroke();\n      p.fill(45, 10, 100, 16 + tw * 72);\n      p.ellipse(st.x, st.y, st.s, st.s);\n    });\n  }\n\n  // ── Moon ──\n  if (P.moon) {\n    p.noStroke();\n    p.fill(45, 8, 100, 6);  p.ellipse(320, 60, 85, 85);\n    p.fill(45, 8, 100, 13); p.ellipse(320, 60, 50, 50);\n    p.fill(45, 10, 98, 88); p.ellipse(320, 60, 28, 28);\n    p.fill(P.s1[0], P.s1[1], P.s1[2] * 0.6, 72);\n    p.ellipse(326, 58, 22, 25);\n  }\n\n  // ── Clouds ──\n  us.clouds.forEach(function(cl) {\n    cl.x += cl.sp;\n    if (cl.x > 470) cl.x = -cl.w - 30;\n    let ca = P.rain ? 38 : 18;\n    p.noStroke();\n    p.fill(P.s1[0], P.s1[1] * 0.35, Math.min(100, P.s1[2] * 1.35), ca);\n    p.ellipse(cl.x, cl.y, cl.w, cl.h);\n    p.ellipse(cl.x + cl.w * 0.28, cl.y - cl.h * 0.22, cl.w * 0.6, cl.h * 0.85);\n    p.ellipse(cl.x - cl.w * 0.22, cl.y + cl.h * 0.12, cl.w * 0.48, cl.h * 0.72);\n  });\n\n  // ── Background buildings ──\n  usDrawB(us.bg, gY, P.bk, P.wn, det, t, false);\n\n  // ── Foreground buildings ──\n  usDrawB(us.fg, gY, P.bl, P.wn, det, t, isNeon);\n\n  // ── Window flicker (every ~3s toggle ~4% of windows) ──\n  if (t % 90 === 0) {\n    [us.fg, us.bg].forEach(function(layer) {\n      layer.forEach(function(b) {\n        b.wins.forEach(function(w) { if (Math.random() < 0.04) w.lit = !w.lit; });\n      });\n    });\n  }\n\n  // ── Capture scene for water reflection ──\n  let reflImg = p.get(0, 0, 400, gY);\n\n  // ── Water base gradient ──\n  p.noStroke();\n  for (let i = 0; i < 8; i++) {\n    let f = i / 8;\n    p.fill(P.wt[0], P.wt[1], p.lerp(P.wt[2], P.wt[2] * 0.3, f), 100);\n    p.rect(0, gY + i * (wH / 8), 400, wH / 8 + 1);\n  }\n\n  // ── Reflected image (flipped vertically below waterline) ──\n  p.push();\n  p.translate(0, gY * 2);\n  p.scale(1, -1);\n  p.image(reflImg, 0, 0);\n  p.pop();\n\n  // ── Water tint overlay ──\n  p.noStroke();\n  p.fill(P.wt[0], P.wt[1] + 5, P.wt[2], 50);\n  p.rect(0, gY, 400, wH);\n\n  // ── Ripple lines ──\n  for (let ry = gY; ry < gY + wH; ry += 3) {\n    let d = ry - gY;\n    let ra = p.map(d, 0, wH, 2, 22);\n    let xo = Math.sin(t * 0.025 + ry * 0.07) * (1 + d * 0.018);\n    p.stroke(P.wt[0], P.wt[1] + 12, Math.min(100, P.wt[2] * 1.5), ra);\n    p.strokeWeight(0.6);\n    p.line(xo, ry, 400 + xo, ry);\n  }\n\n  // ── Light shimmer on water ──\n  if (isNeon || tStr === 'golden' || tStr === 'sunset') {\n    for (let i = 0; i < 10; i++) {\n      let sx = p.noise(i * 3.7, t * 0.01) * 400;\n      let sy = gY + p.noise(i * 5.1, t * 0.008) * wH;\n      let sa = (Math.sin(t * 0.05 + i * 2.4) * 0.5 + 0.5) * 50;\n      p.noStroke();\n      p.fill(P.wn[0], P.wn[1] * 0.4, 100, sa);\n      p.ellipse(sx, sy, 3, 1.5);\n    }\n  }\n\n  // ── Shoreline highlight ──\n  p.noStroke();\n  p.fill(P.wt[0], P.wt[1] * 0.4, Math.min(100, P.wt[2] * 2.2), 20);\n  p.rect(0, gY - 1, 400, 3);\n\n  // ── Birds with wing flap ──\n  if (atm === 'birds') {\n    us.birds.forEach(function(b) {\n      b.x += b.vx;\n      if (b.x > 420) { b.x = -14; b.y = 18 + Math.random() * 90; }\n      let wf = Math.sin(t * 0.12 + b.x * 0.1) * b.sz * 1.2;\n      p.noFill();\n      p.stroke(P.bl[0], P.bl[1] * 0.4, Math.min(100, P.bl[2] + 28), 52);\n      p.strokeWeight(1);\n      p.arc(b.x, b.y, b.sz * 3.5, b.sz * 2 + wf, p.PI, p.TWO_PI);\n      p.arc(b.x + b.sz * 3.5, b.y, b.sz * 3.5, b.sz * 2 + wf, p.PI, p.TWO_PI);\n    });\n  }\n\n  // ── Rain ──\n  if (P.rain || atm === 'rainy') {\n    p.stroke(P.s1[0], P.s1[1] * 0.4, Math.min(100, P.s1[2] + 32), 30);\n    p.strokeWeight(1);\n    for (let i = 0; i < 80; i++) {\n      let rx = (i * 53 + t * 4.1) % 460 - 30;\n      let ry = (i * 79 + t * 9) % (gY + 50);\n      p.line(rx, ry, rx - 2.5, ry + 14);\n    }\n  }\n\n  // ── Fog ──\n  if (atm === 'foggy') {\n    p.noStroke();\n    for (let i = 0; i < 5; i++) {\n      let fy = gY - 55 + i * 26;\n      p.fill(P.s1[0], P.s1[1] * 0.28, Math.min(100, P.s1[2] * 1.18), 13);\n      p.ellipse(200 + Math.sin(t * 0.008 + i) * 28, fy, 500, 65);\n    }\n  }\n};",
+  "tags": [
+    {
+      "id": "tag_urban_skyline_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork11 (Urban Cityscape — Deluxe)",
+      "description": "Major upgrade of the procedural city sketch. Two-layer parallax skyline (background muted, foreground full detail). Full water reflection via p.get() + vertically flipped p.image() below the horizon, overlaid with tinted gradient and animated ripple lines. 85 twinkling stars (sin-phase brightness). Crescent moon with triple-ring glow. 4 drifting multi-blob clouds. Wing-flapping birds (arc height modulated by sin). Window flicker toggles ~4% of lights every 3 seconds. Pulsing red antenna beacons with glow halo. Neon mode adds per-building pulsing coloured signs. Rain uses deterministic index+frameCount positioning (no array needed). Light shimmer dots on water for neon/golden/sunset. 7 curated HSB palettes. 400×500 canvas."
+    },
+    {
+      "id": "tag_urban_skyline_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

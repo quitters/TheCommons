@@ -1,0 +1,113 @@
+{
+  "promptTemplate": "{{branch_style}} {{color_theme}} tree, {{depth}} branches, {{leaf_style}} leaves, {{wind_strength}} wind",
+  "variables": [
+    {
+      "name": "branch_style",
+      "feature_name": "Branch Style",
+      "values": [
+        {
+          "text": "delicate",
+          "weight": 2
+        },
+        {
+          "text": "balanced",
+          "weight": 3
+        },
+        {
+          "text": "gnarled",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "color_theme",
+      "feature_name": "Color Theme",
+      "values": [
+        {
+          "text": "spring",
+          "weight": 3
+        },
+        {
+          "text": "autumn",
+          "weight": 2
+        },
+        {
+          "text": "night",
+          "weight": 1
+        },
+        {
+          "text": "desert",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "depth",
+      "feature_name": "Depth",
+      "values": [
+        {
+          "text": "shallow",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "deep",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "leaf_style",
+      "feature_name": "Leaf Style",
+      "values": [
+        {
+          "text": "none",
+          "weight": 1
+        },
+        {
+          "text": "sparse",
+          "weight": 3
+        },
+        {
+          "text": "lush",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "wind_strength",
+      "feature_name": "Wind Strength",
+      "values": [
+        {
+          "text": "calm",
+          "weight": 2
+        },
+        {
+          "text": "breeze",
+          "weight": 3
+        },
+        {
+          "text": "storm",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Botanical Growth\n// Adapted from GenerativeArtGallery / artwork4\n\nlet botBranches = [];\nlet botPrevStyle = '';\nlet botPrevDepth = '';\n\nfunction botBuild(style, maxDepth) {\n  let branches = [];\n  let trunkLen = style === 'delicate' ? 60 : style === 'balanced' ? 80 : 72;\n  let jitterAmt = style === 'gnarled' ? 0.38 : style === 'delicate' ? 0.12 : 0.22;\n\n  function recurse(x, y, angle, len, depth, seed) {\n    if (depth > maxDepth || len < 3) return;\n    let jitter = (Math.random() - 0.5) * jitterAmt * 2;\n    let a = angle + jitter;\n    let ex = x + Math.cos(a) * len;\n    let ey = y + Math.sin(a) * len;\n    branches.push({ x1: x, y1: y, x2: ex, y2: ey, depth: depth, len: len, angle: a, seed: seed });\n    let brAngle = 0.42 + Math.random() * 0.24;\n    let brLen   = len * (0.68 + Math.random() * 0.1);\n    recurse(ex, ey, a - brAngle, brLen, depth + 1, seed * 2.11 + 0.3);\n    recurse(ex, ey, a + brAngle, brLen, depth + 1, seed * 3.73 + 0.7);\n  }\n\n  recurse(0, 0, -Math.PI / 2, trunkLen, 0, 1.0);\n  return branches;\n}\n\np.setup = function() {\n  p.createCanvas(400, 400);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n  botBranches = botBuild('balanced', 8);\n};\n\np.draw = function() {\n  let styleStr = p.getSynthVar('branch_style') || 'balanced';\n  let colorStr = p.getSynthVar('color_theme')  || 'spring';\n  let depthStr = p.getSynthVar('depth')         || 'medium';\n  let leafStr  = p.getSynthVar('leaf_style')    || 'sparse';\n  let windStr  = p.getSynthVar('wind_strength') || 'breeze';\n\n  let maxDepth = depthStr === 'shallow' ? 6 : depthStr === 'medium' ? 8 : 9;\n  let windAmt  = windStr === 'calm' ? 0.055 : windStr === 'breeze' ? 0.26 : 0.82;\n\n  if (styleStr !== botPrevStyle || depthStr !== botPrevDepth) {\n    botBranches = botBuild(styleStr, maxDepth);\n    botPrevStyle = styleStr;\n    botPrevDepth = depthStr;\n  }\n\n  let colH = colorStr === 'spring' ? 100 : colorStr === 'autumn' ? 22 : colorStr === 'night' ? 250 : 35;\n  let bgH  = colorStr === 'spring' ? 140 : colorStr === 'autumn' ? 28 : colorStr === 'night' ? 230 : 32;\n  let bgS  = colorStr === 'night' ? 22 : 7;\n  let bgB  = colorStr === 'night' ? 8 : 94;\n\n  p.background(bgH, bgS, bgB, 22);\n\n  p.push();\n  p.translate(p.width / 2, p.height * 0.92);\n\n  let t = p.frameCount;\n\n  botBranches.forEach(function(b) {\n    if (b.depth > maxDepth) return;\n\n    // Per-branch wind: deeper = more sway, unique phase from seed\n    let depthFrac = b.depth / maxDepth;\n    let windOff = Math.sin(t * 0.018 + b.depth * 0.65 + b.seed * 2.4) * windAmt * depthFrac;\n    let wx = (Math.cos(b.angle + windOff) - Math.cos(b.angle)) * b.len;\n    let wy = (Math.sin(b.angle + windOff) - Math.sin(b.angle)) * b.len;\n\n    let thick = Math.max(0.4, (maxDepth - b.depth) * 1.5);\n    let sat   = p.map(b.depth, 0, maxDepth, 65, 38);\n    let bri   = p.map(b.depth, 0, maxDepth, 33, 74);\n\n    p.stroke(colH, sat, bri, 90);\n    p.strokeWeight(thick);\n    p.line(b.x1, b.y1, b.x2 + wx, b.y2 + wy);\n\n    // Leaves at terminal branches using deterministic noise positions\n    if (b.depth >= maxDepth - 1 && leafStr !== 'none') {\n      let lCount = leafStr === 'sparse' ? 2 : 5;\n      p.noStroke();\n      for (let i = 0; i < lCount; i++) {\n        let noiseA = p.noise(b.seed * 4.1 + 10, i * 2.3) * p.TWO_PI;\n        let noiseR = p.noise(b.seed * 3.2 + 20, i * 1.7) * 14 + 4;\n        let lx = b.x2 + wx + Math.cos(noiseA) * noiseR;\n        let ly = b.y2 + wy + Math.sin(noiseA) * noiseR;\n        p.fill((colH + 28) % 360, 55, 72, 58);\n        p.ellipse(lx, ly, 7, 11);\n      }\n    }\n  });\n\n  p.pop();\n};",
+  "tags": [
+    {
+      "id": "tag_botanical_growth_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork4 (Botanical Growth)",
+      "description": "Adapted from the L-system botanical sketch. Tree structure is pre-computed via recursive branching (max depth 6–9) and cached, rebuilding only when style or depth changes. Each branch stores its angle and seed value. Per-frame wind applies a sin-based sway to each branch endpoint proportional to depth fraction and the branch's unique seed phase. Leaf positions are deterministic via p.noise() so they don't flicker."
+    },
+    {
+      "id": "tag_botanical_growth_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

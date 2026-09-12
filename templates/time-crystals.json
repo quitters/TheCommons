@@ -1,0 +1,99 @@
+{
+  "promptTemplate": "{{crystal_count}} crystals with {{vertex_range}} facets, {{color_mode}} palette, {{pulse_speed}} pulse",
+  "variables": [
+    {
+      "name": "crystal_count",
+      "feature_name": "Crystal Count",
+      "values": [
+        {
+          "text": "few",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "many",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "vertex_range",
+      "feature_name": "Vertex Range",
+      "values": [
+        {
+          "text": "sharp",
+          "weight": 2
+        },
+        {
+          "text": "balanced",
+          "weight": 3
+        },
+        {
+          "text": "complex",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "color_mode",
+      "feature_name": "Color Mode",
+      "values": [
+        {
+          "text": "spectrum",
+          "weight": 3
+        },
+        {
+          "text": "cool",
+          "weight": 2
+        },
+        {
+          "text": "warm",
+          "weight": 2
+        },
+        {
+          "text": "ember",
+          "weight": 1
+        },
+        {
+          "text": "void",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "pulse_speed",
+      "feature_name": "Pulse Speed",
+      "values": [
+        {
+          "text": "gentle",
+          "weight": 2
+        },
+        {
+          "text": "moderate",
+          "weight": 3
+        },
+        {
+          "text": "wild",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Time Crystals — Rosette of Pulsing Polygons\n// Adapted from GenerativeArtGallery / artwork16\n\nlet tcCrystals = [];\nlet tcPrevCount = '';\nlet tcPrevVerts = '';\n\nfunction tcBuild(count, vMin, vMax) {\n  let crysts = [];\n  let rOuter = 155;\n  for (let i = 0; i < count; i++) {\n    let angle = i * Math.PI * 2 / count;\n    let radius = rOuter * (0.7 + 0.3 * Math.sin(i * 1.7));\n    let verts = Math.floor(Math.random() * (vMax - vMin + 1)) + vMin;\n    crysts.push({\n      cx: Math.cos(angle) * radius,\n      cy: Math.sin(angle) * radius,\n      size: 30 + Math.random() * 30,\n      verts: verts,\n      vAngles: Array.from({length: verts}, function(_, j) { return j * Math.PI * 2 / verts; }),\n      baseHue: (angle * 180 / Math.PI + 360) % 360,\n      tPhase: Math.random() * Math.PI * 2,\n      tSpeed: 0.01 + Math.random() * 0.014,\n      rot: Math.random() * Math.PI * 2,\n      rotSpd: (Math.random() - 0.5) * 0.014\n    });\n  }\n  return crysts;\n}\n\np.setup = function() {\n  p.createCanvas(400, 400, p.WEBGL);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n  tcCrystals = tcBuild(24, 4, 6);\n};\n\np.draw = function() {\n  let countStr = p.getSynthVar('crystal_count') || 'medium';\n  let vertStr = p.getSynthVar('vertex_range') || 'balanced';\n  let colorStr = p.getSynthVar('color_mode') || 'spectrum';\n  let pulseStr = p.getSynthVar('pulse_speed') || 'moderate';\n\n  let count = countStr === 'few' ? 12 : countStr === 'medium' ? 24 : 48;\n  let vMin = vertStr === 'sharp' ? 3 : vertStr === 'balanced' ? 4 : 5;\n  let vMax = vertStr === 'sharp' ? 4 : vertStr === 'balanced' ? 6 : 8;\n  let pulseSpd = pulseStr === 'gentle' ? 0.6 : pulseStr === 'moderate' ? 1 : 2;\n\n  if (countStr !== tcPrevCount || vertStr !== tcPrevVerts) {\n    tcCrystals = tcBuild(count, vMin, vMax);\n    tcPrevCount = countStr;\n    tcPrevVerts = vertStr;\n  }\n\n  p.background(240, 20, 6);\n\n  for (let i = 0; i < tcCrystals.length; i++) {\n    let c = tcCrystals[i];\n    c.rot += c.rotSpd;\n    c.tPhase += c.tSpeed * pulseSpd;\n\n    let hue;\n    if (colorStr === 'spectrum') hue = (c.baseHue + 60 * Math.sin(c.tPhase)) % 360;\n    else if (colorStr === 'cool') hue = (200 + 35 * Math.sin(c.tPhase + i * 0.3)) % 360;\n    else if (colorStr === 'warm') hue = (20 + 30 * Math.sin(c.tPhase + i * 0.3)) % 360;\n    else if (colorStr === 'ember') hue = (8 + 22 * Math.abs(Math.sin(c.tPhase))) % 360;\n    else hue = (220 + 15 * Math.sin(c.tPhase * 0.5)) % 360;\n\n    let scOsc = 1 + 0.12 * Math.sin(c.tPhase * 1.4);\n\n    p.push();\n    p.translate(c.cx, c.cy, 0);\n    p.rotateZ(c.rot);\n    p.scale(scOsc);\n\n    p.fill(hue, 80, 68, 85);\n    p.stroke((hue + 30) % 360, 70, 40, 70);\n    p.strokeWeight(1.5);\n    p.beginShape();\n    for (let j = 0; j < c.verts; j++) {\n      let a = c.vAngles[j];\n      let r = c.size * (0.92 + 0.12 * Math.sin(c.tPhase + a * 2));\n      p.vertex(Math.cos(a) * r, Math.sin(a) * r, 0);\n    }\n    p.endShape(p.CLOSE);\n\n    p.fill((hue + 180) % 360, 55, 42, 70);\n    p.noStroke();\n    p.beginShape();\n    for (let j = 0; j < c.verts; j++) {\n      let a = c.vAngles[j] + Math.PI / c.verts;\n      let r = c.size * 0.44 * (0.9 + 0.1 * Math.sin(c.tPhase * 1.3 + a));\n      p.vertex(Math.cos(a) * r, Math.sin(a) * r, 0);\n    }\n    p.endShape(p.CLOSE);\n\n    p.pop();\n  }\n};",
+  "tags": [
+    {
+      "id": "tag_time_crystals_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork16 (Time Crystals)",
+      "description": "Adapted from the ultra-optimised geometric crystal rosette sketch. Crystals arranged in a rosette pattern with radius variation (0.7–1.0× rOuter * sin(i*1.7)). Each crystal rotates independently and pulses via sin(tPhase * 1.4). Outer polygon uses main hue, inner uses complementary hue+180. WEBGL for smooth polygon rendering. Rebuilds crystal array on count or vertex-range change."
+    },
+    {
+      "id": "tag_time_crystals_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

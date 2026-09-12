@@ -1,0 +1,97 @@
+{
+  "promptTemplate": "Generate an elaborate collage featuring portraits of the following notable figures, in their most iconic styles and settings in a {{rows}} by {{cols}} grid, with {{saturation}} color saturation.\n The layout should be structured yet unexpected, and invoke feelings of curiosity and intrigue. Don't hesitate to use creative freedom to construct a piece of art that is unique and original; ultimately carving out an encapsulating visual journey through the myriad of personalities. \nConsider color balance, composition, and arrangement of images for a vibrant and intriguing visual narrative. Feel free to use artistic freedom for creativity and originality.",
+  "variables": [
+    {
+      "name": "rows",
+      "feature_name": "Rows",
+      "values": [
+        {
+          "text": "5",
+          "weight": 3
+        },
+        {
+          "text": "6",
+          "weight": 2
+        },
+        {
+          "text": "4",
+          "weight": 1
+        },
+        {
+          "text": "7",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "cols",
+      "feature_name": "Cols",
+      "values": [
+        {
+          "text": "4",
+          "weight": 3
+        },
+        {
+          "text": "3",
+          "weight": 3
+        },
+        {
+          "text": "5",
+          "weight": 2
+        },
+        {
+          "text": "2",
+          "weight": 2
+        },
+        {
+          "text": "6",
+          "weight": 1
+        },
+        {
+          "text": "1",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "saturation",
+      "feature_name": "Saturation",
+      "values": [
+        {
+          "text": "0",
+          "weight": 1
+        },
+        {
+          "text": "12",
+          "weight": 1
+        },
+        {
+          "text": "20",
+          "weight": 1
+        },
+        {
+          "text": "75",
+          "weight": 1
+        },
+        {
+          "text": "110",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "// ═══════════════════════════════════════════════════════════════════\n// HOLLYWOOD SQUARES - Grid portrait collage (Animated)\n// Synthograsizer Workflow Template\n// ═══════════════════════════════════════════════════════════════════\n\nconst CW = 896;\nconst CH = 1152;\n\n// Grid cell data — regenerated when cols/rows change\nlet cells = [];\nlet _prevCols = null;\nlet _prevRows = null;\n\n// Seeded random for deterministic cell look\nlet _seed = 1;\nfunction sRand() {\n  _seed = (_seed * 16807 + 0) % 2147483647;\n  return (_seed - 1) / 2147483646;\n}\nfunction sRandRange(a, b) { return a + sRand() * (b - a); }\n\nfunction buildGrid(cols, rows) {\n  cells = [];\n  _seed = 42;\n  let w = CW / cols;\n  let h = CH / rows;\n  for (let i = 0; i < cols; i++) {\n    for (let j = 0; j < rows; j++) {\n      cells.push({\n        col: i, row: j,\n        x: i * w, y: j * h, w: w, h: h,\n        hue: sRandRange(0, 360),\n        bgBright: sRandRange(60, 100),\n        bgAlpha: sRandRange(15, 30),\n        borderW: sRandRange(0, 6),\n        skinBrightBase: sRandRange(10, 150),\n        headSize: sRandRange(0.4, 0.66),\n        bodySize: sRandRange(0.4, 0.5),\n        headYDiv: sRandRange(1.35, 1.5),\n        bodyYDiv: sRandRange(1.15, 1.35),\n        strokeHue: sRandRange(0, 100),\n        strokeSat: sRandRange(50, 256),\n        strokeAlpha: sRandRange(0.45, 0.95),\n        strokeW: sRandRange(0, 24),\n        phase: sRandRange(0, 6.28),\n        pulseSpeed: sRandRange(0.015, 0.04),\n        bobAmt: sRandRange(2, 8),\n        bobSpeed: sRandRange(0.02, 0.05)\n      });\n    }\n  }\n}\n\np.setup = function() {\n  p.createCanvas(CW, CH);\n  p.colorMode(p.HSB, 360, 255, 360, 100);\n  buildGrid(3, 5);\n};\n\np.draw = function() {\n  let cols = parseInt(p.getSynthVar('cols')) || 3;\n  let rows = parseInt(p.getSynthVar('rows')) || 5;\n  let saturation = parseFloat(p.getSynthVar('saturation')) || 20;\n\n  // Rebuild grid when structure changes\n  if (cols !== _prevCols || rows !== _prevRows) {\n    _prevCols = cols;\n    _prevRows = rows;\n    buildGrid(cols, rows);\n  }\n\n  let t = p.frameCount;\n\n  p.background(0, 0, 350);\n\n  for (let c of cells) {\n    // Animated brightness pulse\n    let pulse = Math.sin(t * c.pulseSpeed + c.phase) * 0.5 + 0.5;\n    let bright = c.bgBright + pulse * 40;\n\n    // Hue slowly drifts\n    let hue = (c.hue + t * 0.15) % 360;\n\n    // Cell background\n    p.fill(hue, saturation * 2.5, bright + 200, c.bgAlpha + pulse * 8);\n    p.stroke(0, 0, 30, 8);\n    p.strokeWeight(c.borderW);\n    p.rect(c.x, c.y, c.w, c.h);\n\n    // Portrait position with bob\n    let cx = c.x + c.w / 2;\n    let headY = c.y + c.h / c.headYDiv;\n    let bob = Math.sin(t * c.bobSpeed + c.phase) * c.bobAmt;\n    let headR = Math.min(c.w, c.h) * c.headSize;\n\n    // Glow behind the portrait head\n    p.noStroke();\n    let glowAlpha = 5 + pulse * 10;\n    p.fill(hue, saturation * 3, bright + 100, glowAlpha);\n    p.ellipse(cx, headY + bob, headR * 1.5, headR * 1.5);\n\n    // Skin tone based on grid position\n    let skinHue = (c.col + c.row) / (cols + rows) * 100;\n    let skinSat = (c.col + c.row) / (cols + rows) * 160 + 10;\n    let skinBright = c.skinBrightBase + pulse * 40 + 140;\n\n    // Portrait head\n    p.fill(skinHue, skinSat, skinBright);\n    p.stroke(c.strokeHue, c.strokeSat, 256, c.strokeAlpha * (50 + pulse * 40));\n    p.strokeWeight(c.strokeW * (0.6 + pulse * 0.4));\n    p.ellipse(cx, headY + bob, headR);\n\n    // Portrait body\n    let bodyY = c.y + c.h / c.bodyYDiv;\n    let bodyR = Math.min(c.w, c.h) * c.bodySize;\n    p.noStroke();\n    p.fill(skinHue, skinSat * 0.8, skinBright * 0.85);\n    p.ellipse(cx, bodyY + bob * 0.5, bodyR);\n\n    // Tiny eye dots with occasional blink\n    let eyeY = headY + bob - headR * 0.05;\n    let eyeSpread = headR * 0.14;\n    let eyeSize = headR * 0.07;\n    let blinkCycle = Math.sin(t * 0.025 + c.phase * 3);\n    if (blinkCycle > -0.93) {\n      p.fill(0, 0, 30);\n      let eyeH = eyeSize * (0.8 + (blinkCycle + 1) * 0.2);\n      p.ellipse(cx - eyeSpread, eyeY, eyeSize, eyeH);\n      p.ellipse(cx + eyeSpread, eyeY, eyeSize, eyeH);\n    }\n  }\n};",
+  "tags": [
+    {
+      "id": "tag_hollywoodsquares01",
+      "type": "source",
+      "label": "Hollywood Squares — Synthograsizer Template",
+      "description": "Converted from Synthograsizer p5+img2img pipeline. p5 code converted from global mode to Synthograsizer instance mode. variables[] and pseudorandom() calls replaced with p.getSynthVar() and p.random()."
+    },
+    {
+      "id": "tag_hollywoodsquares02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

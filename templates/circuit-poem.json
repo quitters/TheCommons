@@ -1,0 +1,99 @@
+{
+  "promptTemplate": "{{color_palette}} circuit grid, {{grid_density}} nodes, {{energy_rate}} energy rate, {{glow_style}} glow",
+  "variables": [
+    {
+      "name": "color_palette",
+      "feature_name": "Color Palette",
+      "values": [
+        {
+          "text": "cyberpunk",
+          "weight": 3
+        },
+        {
+          "text": "pastel",
+          "weight": 2
+        },
+        {
+          "text": "warm",
+          "weight": 2
+        },
+        {
+          "text": "cool",
+          "weight": 2
+        },
+        {
+          "text": "mono",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "grid_density",
+      "feature_name": "Grid Density",
+      "values": [
+        {
+          "text": "coarse",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "fine",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "energy_rate",
+      "feature_name": "Energy Rate",
+      "values": [
+        {
+          "text": "low",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "high",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "glow_style",
+      "feature_name": "Glow Style",
+      "values": [
+        {
+          "text": "none",
+          "weight": 1
+        },
+        {
+          "text": "soft",
+          "weight": 3
+        },
+        {
+          "text": "intense",
+          "weight": 2
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Circuit Poem — Energy Grid\n// Adapted from GenerativeArtGallery / artwork7\n\nlet cpGrid = [];\nlet cpCols = 10;\nlet cpRows = 10;\nlet cpPrevDens = '';\n\nlet cpPalettes = {\n  cyberpunk: { bg: [240, 80, 8],  node: [300, 80, 80], energy: [200, 90, 100], wire: [280, 60, 60] },\n  pastel:    { bg: [200, 14, 92], node: [200, 48, 78], energy: [40,  68, 95],  wire: [180, 28, 68] },\n  warm:      { bg: [25,  38, 12], node: [30,  68, 78], energy: [50,  88, 100], wire: [20,  48, 58] },\n  cool:      { bg: [205, 58, 10], node: [190, 68, 74], energy: [160, 80, 95],  wire: [210, 48, 52] },\n  mono:      { bg: [0,   0,  7],  node: [0,   0,  68], energy: [0,   0,  100], wire: [0,   0,  38] }\n};\n\nfunction cpBuild(cs) {\n  cpCols = Math.floor(400 / cs);\n  cpRows = Math.floor(400 / cs);\n  let grid = [];\n  for (let i = 0; i < cpCols; i++) {\n    grid[i] = [];\n    for (let j = 0; j < cpRows; j++) {\n      let roll = Math.random();\n      grid[i][j] = {\n        energy: 0,\n        type: roll < 0.12 ? 'power' : roll < 0.22 ? 'relay' : 'node'\n      };\n    }\n  }\n  return grid;\n}\n\np.setup = function() {\n  p.createCanvas(400, 400);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n  cpGrid = cpBuild(40);\n};\n\np.draw = function() {\n  let palStr   = p.getSynthVar('color_palette') || 'cyberpunk';\n  let densStr  = p.getSynthVar('grid_density') || 'medium';\n  let rateStr  = p.getSynthVar('energy_rate') || 'medium';\n  let glowStr  = p.getSynthVar('glow_style') || 'soft';\n\n  let cs = densStr === 'coarse' ? 60 : densStr === 'medium' ? 40 : 28;\n  if (densStr !== cpPrevDens) { cpGrid = cpBuild(cs); cpPrevDens = densStr; }\n\n  let spawnChance = rateStr === 'low' ? 0.01 : rateStr === 'medium' ? 0.045 : 0.11;\n  let decay       = rateStr === 'low' ? 0.91 : rateStr === 'medium' ? 0.94 : 0.97;\n  let pal         = cpPalettes[palStr] || cpPalettes.cyberpunk;\n\n  p.background(pal.bg[0], pal.bg[1], pal.bg[2], 100);\n\n  // Propagate energy into a new buffer\n  let next = [];\n  for (let i = 0; i < cpCols; i++) {\n    next[i] = [];\n    for (let j = 0; j < cpRows; j++) next[i][j] = cpGrid[i][j].energy * decay;\n  }\n  for (let i = 0; i < cpCols; i++) {\n    for (let j = 0; j < cpRows; j++) {\n      let e = cpGrid[i][j].energy;\n      if (e > 0.05) {\n        let spread = cpGrid[i][j].type === 'relay' ? 0.72 : 0.62;\n        let dirs = [[1,0],[-1,0],[0,1],[0,-1]];\n        dirs.forEach(function(d) {\n          let ni = i + d[0], nj = j + d[1];\n          if (ni >= 0 && ni < cpCols && nj >= 0 && nj < cpRows) {\n            next[ni][nj] = Math.max(next[ni][nj], e * spread);\n          }\n        });\n      }\n    }\n  }\n  if (Math.random() < spawnChance) {\n    let si = Math.floor(Math.random() * cpCols);\n    let sj = Math.floor(Math.random() * cpRows);\n    next[si][sj] = 1;\n  }\n  for (let i = 0; i < cpCols; i++) for (let j = 0; j < cpRows; j++) cpGrid[i][j].energy = next[i][j];\n\n  // Draw wires\n  for (let i = 0; i < cpCols; i++) {\n    for (let j = 0; j < cpRows; j++) {\n      let x = i * cs + cs / 2, y = j * cs + cs / 2;\n      let e = cpGrid[i][j].energy;\n      if (i < cpCols - 1) {\n        let we = Math.max(e, cpGrid[i+1][j].energy);\n        if (we > 0.04) {\n          p.stroke(pal.wire[0], pal.wire[1], pal.wire[2], p.map(we, 0, 1, 5, 62));\n          p.strokeWeight(we * 2.2);\n          p.line(x, y, x + cs, y);\n        }\n      }\n      if (j < cpRows - 1) {\n        let we = Math.max(e, cpGrid[i][j+1].energy);\n        if (we > 0.04) {\n          p.stroke(pal.wire[0], pal.wire[1], pal.wire[2], p.map(we, 0, 1, 5, 62));\n          p.strokeWeight(we * 2.2);\n          p.line(x, y, x, y + cs);\n        }\n      }\n    }\n  }\n\n  // Draw nodes\n  for (let i = 0; i < cpCols; i++) {\n    for (let j = 0; j < cpRows; j++) {\n      let x = i * cs + cs / 2, y = j * cs + cs / 2;\n      let e    = cpGrid[i][j].energy;\n      let type = cpGrid[i][j].type;\n      let ns   = type === 'power' ? cs * 0.34 : type === 'relay' ? cs * 0.2 : cs * 0.13;\n\n      // Glow\n      if (e > 0.08 && glowStr !== 'none') {\n        let glowR = ns * (glowStr === 'intense' ? 5 : 3) * e;\n        p.noStroke();\n        p.fill(pal.energy[0], pal.energy[1], pal.energy[2], e * (glowStr === 'intense' ? 35 : 20));\n        p.ellipse(x, y, glowR * 2, glowR * 2);\n      }\n\n      p.noStroke();\n      if (e > 0.04) {\n        p.fill(pal.energy[0], pal.energy[1], p.map(e, 0, 1, 42, 96), p.map(e, 0, 1, 18, 96));\n      } else {\n        p.fill(pal.node[0], pal.node[1], pal.node[2], 48);\n      }\n\n      if (type === 'power') {\n        p.rect(x - ns / 2, y - ns / 2, ns, ns, 2);\n      } else if (type === 'relay') {\n        p.push(); p.translate(x, y); p.rotate(p.PI / 4);\n        p.rect(-ns / 2, -ns / 2, ns, ns, 1);\n        p.pop();\n      } else {\n        p.ellipse(x, y, ns * 2, ns * 2);\n      }\n    }\n  }\n};",
+  "tags": [
+    {
+      "id": "tag_circuit_poem_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork7 (Circuit Poem)",
+      "description": "Adapted from the grid energy propagation sketch. A grid of nodes (circle), power nodes (square), and relay nodes (rotated square at 45°) propagates energy outward each frame at configurable decay and spawn rates. Energy lights wires between adjacent cells proportionally. Glow halos scale with energy level. Grid rebuilds on density change. Three node types have different propagation multipliers."
+    },
+    {
+      "id": "tag_circuit_poem_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

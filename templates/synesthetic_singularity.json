@@ -1,0 +1,293 @@
+{
+  "promptTemplate": "An abstract artwork that represents the epitome of creative brilliance and never-before-seen synesthetic aesthetics, in a square {{background}} frame with {{Margin}} margins, packed with hidden details, textured canvas, vibrant {{palette}} color palette, artfully raw (((very thick impasto paint textures))), {{maxparticles}} particle density, chaos level {{chaos}}",
+  "variables": [
+    {
+      "name": "palette",
+      "feature_name": "Palette",
+      "values": [
+        {
+          "text": "neon",
+          "weight": 3
+        },
+        {
+          "text": "pastel",
+          "weight": 3
+        },
+        {
+          "text": "rainbow",
+          "weight": 3
+        },
+        {
+          "text": "msdos",
+          "weight": 2
+        },
+        {
+          "text": "win95",
+          "weight": 2
+        },
+        {
+          "text": "nes",
+          "weight": 2
+        },
+        {
+          "text": "greyscale",
+          "weight": 2
+        },
+        {
+          "text": "sunset",
+          "weight": 2
+        },
+        {
+          "text": "ocean",
+          "weight": 2
+        },
+        {
+          "text": "forest",
+          "weight": 2
+        },
+        {
+          "text": "autumn",
+          "weight": 2
+        },
+        {
+          "text": "retro",
+          "weight": 2
+        },
+        {
+          "text": "cyberpunk",
+          "weight": 2
+        },
+        {
+          "text": "candy",
+          "weight": 2
+        },
+        {
+          "text": "fire",
+          "weight": 1
+        },
+        {
+          "text": "ice",
+          "weight": 1
+        },
+        {
+          "text": "tropical",
+          "weight": 1
+        },
+        {
+          "text": "galaxy",
+          "weight": 1
+        },
+        {
+          "text": "artDeco",
+          "weight": 1
+        },
+        {
+          "text": "gothic",
+          "weight": 1
+        },
+        {
+          "text": "abstract",
+          "weight": 1
+        },
+        {
+          "text": "bold",
+          "weight": 1
+        },
+        {
+          "text": "nightSky",
+          "weight": 1
+        },
+        {
+          "text": "futuristic",
+          "weight": 1
+        },
+        {
+          "text": "victorian",
+          "weight": 1
+        },
+        {
+          "text": "baroque",
+          "weight": 1
+        },
+        {
+          "text": "artNouveau",
+          "weight": 1
+        },
+        {
+          "text": "bohemian",
+          "weight": 1
+        },
+        {
+          "text": "soothing",
+          "weight": 1
+        },
+        {
+          "text": "muted",
+          "weight": 1
+        },
+        {
+          "text": "monochrome",
+          "weight": 1
+        },
+        {
+          "text": "citrus",
+          "weight": 1
+        },
+        {
+          "text": "space",
+          "weight": 1
+        },
+        {
+          "text": "desert",
+          "weight": 1
+        },
+        {
+          "text": "winter",
+          "weight": 1
+        },
+        {
+          "text": "spring",
+          "weight": 1
+        },
+        {
+          "text": "vintage",
+          "weight": 1
+        },
+        {
+          "text": "jewelTones",
+          "weight": 1
+        },
+        {
+          "text": "earthy",
+          "weight": 1
+        },
+        {
+          "text": "pastoral",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "background",
+      "feature_name": "Background",
+      "values": [
+        {
+          "text": "contrasting",
+          "weight": 3
+        },
+        {
+          "text": "black",
+          "weight": 2
+        },
+        {
+          "text": "gold",
+          "weight": 2
+        },
+        {
+          "text": "white",
+          "weight": 1
+        },
+        {
+          "text": "gray",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "chaos",
+      "feature_name": "Chaos",
+      "values": [
+        {
+          "text": "0.5",
+          "weight": 3
+        },
+        {
+          "text": "1.5",
+          "weight": 2
+        },
+        {
+          "text": "0.1",
+          "weight": 1
+        },
+        {
+          "text": "4",
+          "weight": 1
+        },
+        {
+          "text": "12",
+          "weight": 1
+        },
+        {
+          "text": "24",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "maxparticles",
+      "feature_name": "Max Particles",
+      "values": [
+        {
+          "text": "200",
+          "weight": 1
+        },
+        {
+          "text": "512",
+          "weight": 1
+        },
+        {
+          "text": "128",
+          "weight": 1
+        },
+        {
+          "text": "1024",
+          "weight": 1
+        },
+        {
+          "text": "2048",
+          "weight": 1
+        },
+        {
+          "text": "64",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "Margin",
+      "feature_name": "Margin",
+      "values": [
+        {
+          "text": "regular",
+          "weight": 3
+        },
+        {
+          "text": "regular2",
+          "weight": 3
+        },
+        {
+          "text": "huge",
+          "weight": 1
+        },
+        {
+          "text": "square",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "// ═══════════════════════════════════════════════════════════════════\n// SYNESTHETIC SINGULARITY 2.0 - Flow field particle system\n// Synthograsizer Workflow Template\n// Created by Alexander Heemskerk, in collaboration with chatGPT, 2024\n// ═══════════════════════════════════════════════════════════════════\n\nconst CW = 512;\n\n// ─── PALETTES ────────────────────────────────────────────────────\nconst PALETTES = {\n  neon:       [\"#ff073a\",\"#fe7f92\",\"#fffb00\",\"#08f7fe\",\"#09fbd3\"],\n  pastel:     [\"#ffadad\",\"#ffd6a5\",\"#fdffb6\",\"#caffbf\",\"#9bf6ff\"],\n  msdos:      [\"#0000ff\",\"#008000\",\"#00ffff\",\"#ff00ff\",\"#808080\"],\n  win95:      [\"#000080\",\"#008080\",\"#800080\",\"#808000\",\"#c0c0c0\"],\n  nes:        [\"#ff0040\",\"#0000d7\",\"#d70039\",\"#e4d00a\",\"#006413\"],\n  rainbow:    [\"#ff0000\",\"#ffa500\",\"#ffff00\",\"#008000\",\"#0000ff\"],\n  greyscale:  [\"#222222\",\"#555555\",\"#888888\",\"#bbbbbb\",\"#eeeeee\"],\n  sunset:     [\"#ff5e57\",\"#ffac81\",\"#ffcc70\",\"#c2ff68\",\"#80ffea\"],\n  ocean:      [\"#03045e\",\"#0077b6\",\"#00b4d8\",\"#90e0ef\",\"#caf0f8\"],\n  forest:     [\"#014421\",\"#355e3b\",\"#6b8f71\",\"#b8c6a7\",\"#e3e4db\"],\n  autumn:     [\"#ffba08\",\"#faa307\",\"#f48c06\",\"#e85d04\",\"#dc2f02\"],\n  retro:      [\"#f72585\",\"#b5179e\",\"#7209b7\",\"#560bad\",\"#480ca8\"],\n  cyberpunk:  [\"#ff2079\",\"#ff7c7c\",\"#ff9a8c\",\"#ffb6b9\",\"#ffcbdb\"],\n  monochrome: [\"#000000\",\"#2b2b2b\",\"#555555\",\"#808080\",\"#ababab\"],\n  earthy:     [\"#a66321\",\"#bf9b30\",\"#d2bf55\",\"#e9dfc7\",\"#f5f1de\"],\n  jewelTones: [\"#105652\",\"#417b5a\",\"#66a182\",\"#82c4c3\",\"#aef4f1\"],\n  vintage:    [\"#6b7a8f\",\"#f7882f\",\"#f7c331\",\"#dcc7aa\",\"#2a324b\"],\n  spring:     [\"#b4e197\",\"#a5d297\",\"#95bf97\",\"#86ac97\",\"#779998\"],\n  winter:     [\"#5c6b73\",\"#a7bbc7\",\"#d9e3f0\",\"#e6ebf5\",\"#f4f7fa\"],\n  desert:     [\"#c9d6ff\",\"#e2e2e2\",\"#f9d89c\",\"#ffb6b9\",\"#fae3d9\"],\n  candy:      [\"#ff6384\",\"#ff9f40\",\"#ffcd56\",\"#4bc0c0\",\"#36a2eb\"],\n  fire:       [\"#ff5733\",\"#c70039\",\"#900c3f\",\"#571845\",\"#2e003e\"],\n  ice:        [\"#75e6da\",\"#189ab4\",\"#05445e\",\"#d4f1f4\",\"#ffffff\"],\n  tropical:   [\"#ffbe0b\",\"#fb5607\",\"#ff006e\",\"#8338ec\",\"#3a86ff\"],\n  galaxy:     [\"#1b2949\",\"#2c3c6e\",\"#3e518d\",\"#6674a3\",\"#8997b8\"],\n  artDeco:    [\"#eab464\",\"#eb6b6f\",\"#7c7c7c\",\"#8ead89\",\"#b2dfdb\"],\n  victorian:  [\"#f4d35e\",\"#ee964b\",\"#f95738\",\"#a4031f\",\"#240b36\"],\n  gothic:     [\"#10002b\",\"#240046\",\"#3c096c\",\"#5a189a\",\"#7b2cbf\"],\n  pastoral:   [\"#8ca99e\",\"#a7c4b5\",\"#bfe1d9\",\"#d8f3dc\",\"#ebfffa\"],\n  abstract:   [\"#f72585\",\"#7209b7\",\"#3a0ca3\",\"#4361ee\",\"#4cc9f0\"],\n  soothing:   [\"#d8e2dc\",\"#ffe5d9\",\"#ffcad4\",\"#f4acb7\",\"#9d8189\"],\n  bold:       [\"#ff0000\",\"#ff8400\",\"#ffe600\",\"#3db2ff\",\"#b28dff\"],\n  muted:      [\"#9ba2ff\",\"#a79cb0\",\"#b8a9c9\",\"#c3bac6\",\"#dcd6f7\"],\n  citrus:     [\"#fde74c\",\"#e5e5e5\",\"#9bc53d\",\"#5bc0eb\",\"#c3423f\"],\n  nightSky:   [\"#000814\",\"#001d3d\",\"#003566\",\"#ffc857\",\"#ffffc7\"],\n  space:      [\"#0b3d91\",\"#1862ab\",\"#1c7293\",\"#14919b\",\"#c1dbb3\"],\n  artNouveau: [\"#f7b267\",\"#f79d65\",\"#f4845f\",\"#f27059\",\"#f25c54\"],\n  baroque:    [\"#9a8c98\",\"#c9ada7\",\"#f2e9e4\",\"#c2c5bb\",\"#8e9aaf\"],\n  futuristic: [\"#00f5d4\",\"#00bbf9\",\"#003566\",\"#252a34\",\"#1b1b2f\"],\n  bohemian:   [\"#d8e2dc\",\"#ffe5d9\",\"#ffcad4\",\"#f4acb7\",\"#9d8189\"]\n};\n\n// ─── MARGIN MAP ───────────────────────────────────────────────────\nconst MARGINS = {\n  regular:  0.11,\n  regular2: 0.08,\n  huge:     0.01,\n  square:   0.15\n};\n\n// ─── STATE ────────────────────────────────────────────────────────\nlet flowField;\nlet particles = [];\nlet zoff = 0;\nlet scale = 12;\nlet cols, rows;\nlet noiseScale = 0.005;\n\n// tracked previous values to detect changes requiring reinit\nlet _prevPaletteName  = null;\nlet _prevBackground   = null;\nlet _prevMaxParticles = null;\n\n// ─── SETUP ────────────────────────────────────────────────────────\np.setup = function() {\n  p.createCanvas(CW, CW);\n\n  cols = p.floor(CW / scale);\n  rows = p.floor(CW / scale);\n  flowField = new Array(cols * rows);\n\n  // Read initial vars and build scene\n  initScene();\n};\n\n// ─── initScene: (re)draw background, (re)spawn particles ─────────\nfunction initScene() {\n  let paletteName    = p.getSynthVar('palette')    || 'neon';\n  let bgMode         = p.getSynthVar('background') || 'contrasting';\n  let maxParticles   = parseInt(p.getSynthVar('maxparticles')) || 200;\n  let palette        = PALETTES[paletteName] || PALETTES['neon'];\n\n  _prevPaletteName  = paletteName;\n  _prevBackground   = bgMode;\n  _prevMaxParticles = maxParticles;\n\n  // Draw gradient base\n  for (let i = 0; i < CW; i++) {\n    let inter = p.map(i, 0, CW, 0, 1);\n    let c = p.lerpColor(p.color(\"#000000\"), p.color(\"#ffffff\"), inter);\n    p.stroke(c);\n    p.line(0, i, CW, i);\n  }\n\n  // Drop-shadow framed box\n  p.drawingContext.shadowOffsetX = 5;\n  p.drawingContext.shadowOffsetY = 5;\n  p.drawingContext.shadowBlur    = 10;\n  p.drawingContext.shadowColor   = \"black\";\n  p.fill(50);\n  p.noStroke();\n  p.rectMode(p.CENTER);\n  p.rect(CW / 2, CW / 2, CW - 100, CW - 100);\n  p.drawingContext.shadowOffsetX = 1;\n  p.drawingContext.shadowOffsetY = 1;\n  p.drawingContext.shadowBlur    = 1;\n\n  // Background colour\n  applyBackground(bgMode, palette);\n\n  p.noFill();\n\n  // Spawn particles\n  particles = [];\n  for (let i = 0; i < maxParticles; i++) {\n    particles.push(new Particle(palette[p.floor(p.random(palette.length))]));\n  }\n}\n\nfunction applyBackground(bgMode, palette) {\n  switch (bgMode) {\n    case 'contrasting': p.background(palette[p.floor(p.random(palette.length))]); break;\n    case 'white':       p.background(255);           break;\n    case 'black':       p.background(0);             break;\n    case 'gray':        p.background(127);           break;\n    case 'gold':        p.background(255, 215, 0);   break;\n    default:            p.background(255);\n  }\n}\n\n// ─── DRAW ─────────────────────────────────────────────────────────\np.draw = function() {\n  // Read all vars every frame\n  let paletteName  = p.getSynthVar('palette')      || 'neon';\n  let bgMode       = p.getSynthVar('background')   || 'contrasting';\n  let maxParticles = parseInt(p.getSynthVar('maxparticles')) || 200;\n  let chaos        = parseFloat(p.getSynthVar('chaos'))      || 0.5;\n  let marginKey    = p.getSynthVar('Margin')                 || 'regular';\n  let palette      = PALETTES[paletteName] || PALETTES['neon'];\n\n  // Reinit if background or particle count changed\n  if (bgMode !== _prevBackground || maxParticles !== _prevMaxParticles) {\n    initScene();\n    return;\n  }\n\n  // Re-colour existing particles when palette changes\n  if (paletteName !== _prevPaletteName) {\n    for (let particle of particles) {\n      particle.color = palette[p.floor(p.random(palette.length))];\n    }\n    _prevPaletteName = paletteName;\n  }\n\n  generateFrame(chaos, marginKey, palette);\n};\n\n// ─── FLOW FIELD + PARTICLE STEP ───────────────────────────────────\nfunction generateFrame(chaos, marginKey, palette) {\n  let yoff = 0;\n  for (let y = 0; y < rows; y++) {\n    let xoff = 0;\n    for (let x = 0; x < cols; x++) {\n      let index = x + y * cols;\n      let angle = p.noise(xoff, yoff, zoff) * p.TWO_PI * chaos;\n      let v = p5.Vector.fromAngle(angle);\n      v.setMag(1);\n      flowField[index] = v;\n      xoff += noiseScale;\n    }\n    yoff += noiseScale;\n  }\n\n  for (let particle of particles) {\n    particle.follow(flowField);\n    particle.update();\n    particle.edges(marginKey);\n    particle.show();\n  }\n\n  zoff += 0.005;\n}\n\n// ─── PARTICLE CLASS ───────────────────────────────────────────────\nclass Particle {\n  constructor(col) {\n    this.pos = p.createVector(\n      p.random(CW * 0.1, CW * 0.9),\n      p.random(CW * 0.1, CW * 0.9)\n    );\n    this.vel      = p.createVector(0, 0);\n    this.acc      = p.createVector(0, 0);\n    this.color    = col;\n    this.maxSpeed = p.random(2, 5);\n    this.prevPos  = this.pos.copy();\n  }\n\n  follow(vectors) {\n    let x = p.floor(this.pos.x / scale);\n    let y = p.floor(this.pos.y / scale);\n    let index = x + y * cols;\n    let force = vectors[index];\n    if (force) this.applyForce(force);\n  }\n\n  applyForce(force) { this.acc.add(force); }\n\n  update() {\n    this.vel.add(this.acc);\n    this.vel.limit(this.maxSpeed);\n    this.pos.add(this.vel);\n    this.acc.mult(0);\n  }\n\n  edges(marginKey) {\n    let margin  = MARGINS[marginKey] || MARGINS['regular'];\n    let wrapped = false;\n    if (this.pos.x > CW * (1 - margin)) { this.pos.x = CW * margin;       wrapped = true; }\n    if (this.pos.x < CW * margin)        { this.pos.x = CW * (1 - margin); wrapped = true; }\n    if (this.pos.y > CW * (1 - margin)) { this.pos.y = CW * margin;       wrapped = true; }\n    if (this.pos.y < CW * margin)        { this.pos.y = CW * (1 - margin); wrapped = true; }\n    if (wrapped) this.updatePrev();\n  }\n\n  show() {\n    p.stroke(this.color);\n    p.strokeWeight(p.random(3, 12));\n    p.line(this.prevPos.x, this.prevPos.y, this.pos.x, this.pos.y);\n    this.updatePrev();\n  }\n\n  updatePrev() {\n    this.prevPos.x = this.pos.x;\n    this.prevPos.y = this.pos.y;\n  }\n}",
+  "tags": [
+    {
+      "id": "tag_synesthetic01",
+      "type": "source",
+      "label": "The Synesthetic Singularity 2.0 — Synthograsizer Template",
+      "description": "Converted from Synthograsizer p52vid+txt2img+vid2vid pipeline. p5 code converted from global mode to Synthograsizer instance mode. pseudorandom()/pseudorandomSeed()/variables[] replaced with p.random()/p.getSynthVar(). All 40 palettes preserved verbatim."
+    },
+    {
+      "id": "tag_synesthetic02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

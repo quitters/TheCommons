@@ -1,0 +1,113 @@
+{
+  "promptTemplate": "{{particle_count}} particles, {{attractor_count}} {{attractor_mass}} attractors, {{color_mode}} palette, {{trail_mode}} trails",
+  "variables": [
+    {
+      "name": "particle_count",
+      "feature_name": "Particle Count",
+      "values": [
+        {
+          "text": "sparse",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "dense",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "attractor_count",
+      "feature_name": "Attractor Count",
+      "values": [
+        {
+          "text": "few",
+          "weight": 2
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "many",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "attractor_mass",
+      "feature_name": "Attractor Mass",
+      "values": [
+        {
+          "text": "light",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "heavy",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "trail_mode",
+      "feature_name": "Trail Mode",
+      "values": [
+        {
+          "text": "short",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "long",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "color_mode",
+      "feature_name": "Color Mode",
+      "values": [
+        {
+          "text": "nebula",
+          "weight": 3
+        },
+        {
+          "text": "fire",
+          "weight": 2
+        },
+        {
+          "text": "ice",
+          "weight": 2
+        },
+        {
+          "text": "spectrum",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Particle Nebula\n// Adapted from GenerativeArtGallery / artwork10\n\nlet nbPts = [];\nlet nbAtts = [];\nlet nbPrevPart = '';\nlet nbPrevAtt = '';\n\nfunction nbMakePts(n) {\n  let pts = [];\n  for (let i = 0; i < n; i++) {\n    pts.push({\n      x: Math.random() * 400, y: Math.random() * 400,\n      vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2,\n      mass: 0.5 + Math.random() * 1.5,\n      hue: Math.random() * 360, hist: []\n    });\n  }\n  return pts;\n}\n\nfunction nbMakeAtts(n, massBase) {\n  let atts = [];\n  for (let i = 0; i < n; i++) {\n    atts.push({\n      x: 60 + Math.random() * 280, y: 60 + Math.random() * 280,\n      mass: massBase * (0.7 + Math.random() * 0.6),\n      life: Math.floor(300 + Math.random() * 300),\n      maxLife: 450\n    });\n  }\n  return atts;\n}\n\np.setup = function() {\n  p.createCanvas(400, 400);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n  nbPts = nbMakePts(200);\n  nbAtts = nbMakeAtts(4, 80);\n};\n\np.draw = function() {\n  let partStr  = p.getSynthVar('particle_count') || 'medium';\n  let attStr   = p.getSynthVar('attractor_count') || 'medium';\n  let massStr  = p.getSynthVar('attractor_mass') || 'medium';\n  let trailStr = p.getSynthVar('trail_mode') || 'medium';\n  let colorStr = p.getSynthVar('color_mode') || 'nebula';\n\n  let partN    = partStr === 'sparse' ? 80 : partStr === 'medium' ? 200 : 380;\n  let attN     = attStr === 'few' ? 2 : attStr === 'medium' ? 5 : 8;\n  let massBase = massStr === 'light' ? 40 : massStr === 'medium' ? 80 : 160;\n  let histLen  = trailStr === 'short' ? 8 : trailStr === 'medium' ? 18 : 38;\n\n  if (partStr !== nbPrevPart) { nbPts = nbMakePts(partN); nbPrevPart = partStr; }\n  if (attStr !== nbPrevAtt)   { nbAtts = nbMakeAtts(attN, massBase); nbPrevAtt = attStr; }\n\n  p.background(240, 20, 5, 12);\n\n  // Attractor lifecycle + glow\n  for (let i = 0; i < nbAtts.length; i++) {\n    let a = nbAtts[i];\n    a.life--;\n    if (a.life <= 0) {\n      nbAtts[i] = {\n        x: 60 + Math.random() * 280, y: 60 + Math.random() * 280,\n        mass: massBase * (0.7 + Math.random() * 0.6),\n        life: Math.floor(300 + Math.random() * 300), maxLife: 450\n      };\n      a = nbAtts[i];\n    }\n    let alpha = p.map(a.life, 0, a.maxLife, 0, 35);\n    p.noStroke();\n    p.fill(220, 35, 80, alpha);\n    p.ellipse(a.x, a.y, Math.sqrt(a.mass) * 4, Math.sqrt(a.mass) * 4);\n  }\n\n  // Particle physics + trail\n  let active = nbPts.slice(0, partN);\n  active.forEach(function(pt) {\n    let fx = 0, fy = 0;\n    nbAtts.forEach(function(a) {\n      let dx = a.x - pt.x, dy = a.y - pt.y;\n      let raw = Math.sqrt(dx * dx + dy * dy);\n      let d   = Math.max(5, Math.min(raw, 30));\n      let str = (a.mass * pt.mass) / (d * d);\n      fx += dx / (raw + 0.001) * str;\n      fy += dy / (raw + 0.001) * str;\n    });\n    let na = p.noise(pt.x * 0.005, pt.y * 0.005, p.frameCount * 0.002) * p.TWO_PI * 2;\n    fx += Math.cos(na) * 0.1;\n    fy += Math.sin(na) * 0.1;\n\n    pt.vx = (pt.vx + fx * 0.02) * 0.98;\n    pt.vy = (pt.vy + fy * 0.02) * 0.98;\n    let spd = Math.sqrt(pt.vx * pt.vx + pt.vy * pt.vy);\n    if (spd > 10) { pt.vx = pt.vx / spd * 10; pt.vy = pt.vy / spd * 10; }\n\n    pt.hist.push({ x: pt.x, y: pt.y });\n    if (pt.hist.length > histLen) pt.hist.shift();\n\n    pt.x += pt.vx; pt.y += pt.vy;\n    if (pt.x < 0 || pt.x > 400) { pt.vx *= -1; pt.x = Math.max(0, Math.min(pt.x, 400)); }\n    if (pt.y < 0 || pt.y > 400) { pt.vy *= -1; pt.y = Math.max(0, Math.min(pt.y, 400)); }\n\n    let hue = colorStr === 'nebula'   ? p.map(p.noise(pt.x * 0.008, pt.y * 0.008), 0, 1, 200, 300) :\n              colorStr === 'fire'     ? p.map(spd, 0, 10, 0, 50) :\n              colorStr === 'ice'      ? p.map(p.noise(pt.x * 0.008, pt.y * 0.008), 0, 1, 170, 220) :\n              (pt.hue + 0.15) % 360;\n    pt.hue = hue;\n\n    for (let k = 1; k < pt.hist.length; k++) {\n      let alpha = p.map(k, 0, pt.hist.length, 4, 60);\n      p.stroke(hue, 70, 90, alpha);\n      p.strokeWeight(1);\n      p.line(pt.hist[k-1].x, pt.hist[k-1].y, pt.hist[k].x, pt.hist[k].y);\n    }\n  });\n};",
+  "tags": [
+    {
+      "id": "tag_particle_nebula_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork10 (Particle Nebula)",
+      "description": "Adapted from the gravitational attractor particle system. Up to 380 particles influenced by up to 8 attractors using inverse-square gravity (distance clamped 5–30px). Attractors have a lifespan and respawn at new positions. A Perlin noise force adds organic drift. Trail history per particle. Color mapped to noise position (nebula), speed (fire), or position (ice)."
+    },
+    {
+      "id": "tag_particle_nebula_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

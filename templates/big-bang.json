@@ -1,0 +1,179 @@
+{
+  "promptTemplate": "{{color_palette}} cosmic big bang explosion with particle nebula, film grain, and chromatic aberration",
+  "variables": [
+    {
+      "name": "color_palette",
+      "feature_name": "Color Palette",
+      "values": [
+        {
+          "text": "Northern Lights",
+          "weight": 1
+        },
+        {
+          "text": "Golden Sunset",
+          "weight": 1
+        },
+        {
+          "text": "Ocean Depths",
+          "weight": 1
+        },
+        {
+          "text": "Cherry Blossom",
+          "weight": 1
+        },
+        {
+          "text": "Autumn Leaves",
+          "weight": 1
+        },
+        {
+          "text": "Neon Nights",
+          "weight": 1
+        },
+        {
+          "text": "Pastel Dream",
+          "weight": 1
+        },
+        {
+          "text": "Deep Space",
+          "weight": 1
+        },
+        {
+          "text": "Tropical Paradise",
+          "weight": 1
+        },
+        {
+          "text": "Arctic Frost",
+          "weight": 1
+        },
+        {
+          "text": "Volcanic Eruption",
+          "weight": 1
+        },
+        {
+          "text": "Enchanted Forest",
+          "weight": 1
+        },
+        {
+          "text": "Nebula Burst",
+          "weight": 1
+        },
+        {
+          "text": "Desert Sunset",
+          "weight": 1
+        },
+        {
+          "text": "Cotton Candy",
+          "weight": 1
+        },
+        {
+          "text": "Emerald City",
+          "weight": 1
+        },
+        {
+          "text": "Midnight Oil",
+          "weight": 1
+        },
+        {
+          "text": "Coral Reef",
+          "weight": 1
+        },
+        {
+          "text": "Lavender Fields",
+          "weight": 1
+        },
+        {
+          "text": "Citrus Burst",
+          "weight": 1
+        },
+        {
+          "text": "Rose Garden",
+          "weight": 1
+        },
+        {
+          "text": "Twilight Sky",
+          "weight": 1
+        },
+        {
+          "text": "Mango Tango",
+          "weight": 1
+        },
+        {
+          "text": "Mystic Moonlight",
+          "weight": 1
+        },
+        {
+          "text": "Peacock Feathers",
+          "weight": 1
+        },
+        {
+          "text": "Strawberry Fields",
+          "weight": 1
+        },
+        {
+          "text": "Frosted Mint",
+          "weight": 1
+        },
+        {
+          "text": "Amethyst Dream",
+          "weight": 1
+        },
+        {
+          "text": "Sunflower Meadow",
+          "weight": 1
+        },
+        {
+          "text": "Ocean Breeze",
+          "weight": 1
+        },
+        {
+          "text": "Cool Blue",
+          "weight": 1
+        },
+        {
+          "text": "Fiery Red",
+          "weight": 1
+        },
+        {
+          "text": "Lush Green",
+          "weight": 1
+        },
+        {
+          "text": "Cosmic Purple",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "animation_speed",
+      "feature_name": "Animation Speed",
+      "values": [
+        {
+          "text": "slow",
+          "weight": 1
+        },
+        {
+          "text": "normal",
+          "weight": 2
+        },
+        {
+          "text": "fast",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "const BB_PALETTES = {\n  \"Northern Lights\":   {bg:[0,0,32],   px:[[0,255,127],[64,224,208],[0,191,255]]},\n  \"Golden Sunset\":     {bg:[64,50,12], px:[[255,100,50],[255,150,0],[255,200,100]]},\n  \"Ocean Depths\":      {bg:[0,6,12],   px:[[0,100,200],[50,150,255],[100,200,255]]},\n  \"Cherry Blossom\":    {bg:[64,57,60], px:[[255,183,197],[255,136,160],[255,200,220]]},\n  \"Autumn Leaves\":     {bg:[35,17,5],  px:[[255,69,0],[255,140,0],[255,165,0]]},\n  \"Neon Nights\":       {bg:[0,0,0],    px:[[255,0,255],[0,255,255],[255,255,0]]},\n  \"Pastel Dream\":      {bg:[64,60,61], px:[[255,182,193],[173,216,230],[255,218,185]]},\n  \"Deep Space\":        {bg:[6,6,28],   px:[[65,105,225],[138,43,226],[75,0,130]]},\n  \"Tropical Paradise\": {bg:[0,64,32],  px:[[255,223,0],[255,105,180],[0,191,255]]},\n  \"Arctic Frost\":      {bg:[60,62,64], px:[[176,224,230],[135,206,250],[173,216,230]]},\n  \"Volcanic Eruption\": {bg:[35,0,0],   px:[[255,69,0],[255,140,0],[255,165,0]]},\n  \"Enchanted Forest\":  {bg:[8,35,8],   px:[[0,128,0],[50,205,50],[154,205,50]]},\n  \"Nebula Burst\":      {bg:[19,0,32],  px:[[218,112,214],[255,0,255],[138,43,226]]},\n  \"Desert Sunset\":     {bg:[64,32,20], px:[[255,99,71],[255,140,0],[255,69,0]]},\n  \"Cotton Candy\":      {bg:[64,45,48], px:[[255,105,180],[255,20,147],[255,192,203]]},\n  \"Emerald City\":      {bg:[0,32,0],   px:[[0,255,127],[60,179,113],[46,139,87]]},\n  \"Midnight Oil\":      {bg:[6,6,28],   px:[[0,0,128],[0,0,205],[65,105,225]]},\n  \"Coral Reef\":        {bg:[0,32,32],  px:[[0,255,255],[127,255,212],[64,224,208]]},\n  \"Lavender Fields\":   {bg:[57,57,62], px:[[147,112,219],[186,85,211],[221,160,221]]},\n  \"Citrus Burst\":      {bg:[64,54,0],  px:[[255,165,0],[255,140,0],[255,69,0]]},\n  \"Rose Garden\":       {bg:[64,60,61], px:[[255,192,203],[255,105,180],[219,112,147]]},\n  \"Twilight Sky\":      {bg:[6,6,28],   px:[[70,130,180],[100,149,237],[135,206,250]]},\n  \"Mango Tango\":       {bg:[64,32,17], px:[[255,165,0],[255,140,0],[255,69,0]]},\n  \"Mystic Moonlight\":  {bg:[6,6,28],   px:[[173,216,230],[176,224,230],[240,248,255]]},\n  \"Peacock Feathers\":  {bg:[0,32,32],  px:[[0,206,209],[32,178,170],[95,158,160]]},\n  \"Strawberry Fields\": {bg:[64,0,0],   px:[[255,69,0],[255,99,71],[255,160,122]]},\n  \"Frosted Mint\":      {bg:[61,64,62], px:[[152,251,152],[0,255,127],[60,179,113]]},\n  \"Amethyst Dream\":    {bg:[34,11,56], px:[[186,85,211],[147,112,219],[216,191,216]]},\n  \"Sunflower Meadow\":  {bg:[64,54,0],  px:[[255,255,0],[255,215,0],[218,165,32]]},\n  \"Ocean Breeze\":      {bg:[34,51,62], px:[[0,191,255],[30,144,255],[100,149,237]]},\n  \"Cool Blue\":         {bg:[64,64,64], px:[[0,128,255],[0,255,255],[128,200,255]]},\n  \"Fiery Red\":         {bg:[0,32,64],  px:[[255,100,0],[255,50,0],[255,200,0]]},\n  \"Lush Green\":        {bg:[64,32,0],  px:[[100,255,100],[50,200,50],[150,255,150]]},\n  \"Cosmic Purple\":     {bg:[0,32,32],  px:[[200,0,255],[150,0,200],[100,0,150]]}\n};\n\nlet bb, ps;\nlet animating = false;\nlet startF = 0;\nlet dur = 512;\nlet effectDone = false;\nlet holdF = 0;\n\nclass Particle {\n  constructor(x, y, pal) {\n    this.pos = p.createVector(x, y);\n    const ang = p.random(p.TWO_PI);\n    const spd = p.random(0.5, 2.5);\n    this.vel = p.createVector(p.cos(ang) * spd, p.sin(ang) * spd);\n    this.r = p.random(1, 3);\n    const c = pal.px[p.floor(p.random(pal.px.length))];\n    this.col = p.color(c[0], c[1], c[2]);\n    this.life = p.random(128, 320);\n  }\n  update() { this.pos.add(this.vel); this.life -= 0.2; }\n  draw() {\n    p.noStroke();\n    p.fill(p.red(this.col), p.green(this.col), p.blue(this.col), this.life);\n    p.ellipse(this.pos.x, this.pos.y, this.r * 2);\n  }\n  dead() { return this.life <= 0; }\n}\n\nclass BangSystem {\n  constructor(origin, pal) {\n    this.particles = [];\n    this.origin = origin;\n    this.pal = pal;\n    this.max = 12;\n  }\n  update() {\n    for (let i = this.particles.length - 1; i >= 0; i--) {\n      this.particles[i].update();\n      if (this.particles[i].dead()) this.particles.splice(i, 1);\n    }\n    this.max -= p.random(0.0075, 0.035);\n  }\n  draw() { for (const pt of this.particles) pt.draw(); }\n  emit() {\n    for (let i = 0; i < this.max; i++)\n      this.particles.push(new Particle(this.origin.pos.x, this.origin.pos.y, this.pal));\n  }\n}\n\nclass BigBang {\n  constructor(pal) {\n    this.pos = p.createVector(p.width / 2, p.height / 2);\n    this.radius = 0;\n    this.col = p.color(pal.bg[0], pal.bg[1], pal.bg[2]);\n  }\n  update() { this.radius += 1; }\n  draw() {\n    p.noStroke();\n    p.fill(this.col);\n    p.ellipse(this.pos.x, this.pos.y, this.radius * 2);\n  }\n}\n\nfunction init() {\n  const palName = p.getSynthVar('color_palette') || 'Northern Lights';\n  const pal = BB_PALETTES[palName] || BB_PALETTES['Northern Lights'];\n  const spd = p.getSynthVar('animation_speed') || 'normal';\n  dur = spd === 'slow' ? 768 : spd === 'fast' ? 320 : 512;\n  bb = new BigBang(pal);\n  ps = new BangSystem(bb, pal);\n  animating = true;\n  effectDone = false;\n  holdF = 0;\n  startF = p.frameCount;\n}\n\nfunction applyFX() {\n  const orig = p.get();\n  const pg = p.createGraphics(p.width, p.height);\n\n  // Base + warm color shift\n  pg.image(orig, 0, 0);\n  pg.tint(255, 240, 220);\n  pg.image(orig, 0, 0);\n  pg.noTint();\n\n  // Film grain\n  const grain = p.createGraphics(p.width, p.height);\n  grain.loadPixels();\n  for (let i = 0; i < grain.pixels.length; i += 4) {\n    const v = p.random(30);\n    grain.pixels[i] = grain.pixels[i + 1] = grain.pixels[i + 2] = v;\n    grain.pixels[i + 3] = 128;\n  }\n  grain.updatePixels();\n  pg.blendMode(p.ADD);\n  pg.image(grain, 0, 0);\n  pg.blendMode(p.BLEND);\n\n  // Vignette\n  pg.push();\n  pg.noFill();\n  pg.strokeWeight(p.width * 0.4);\n  for (let i = 0; i < 50; i++) {\n    pg.stroke(0, p.map(i, 0, 50, 0, 100));\n    pg.ellipse(p.width / 2, p.height / 2, p.map(i, 0, 50, p.width * 1.5, p.width * 0.8));\n  }\n  pg.pop();\n\n  // Chromatic aberration\n  const rCh = pg.get();\n  const gbCh = pg.get();\n  pg.tint(255, 0, 0);   pg.image(rCh, 2, 0);\n  pg.tint(0, 255, 255); pg.image(gbCh, -2, 0);\n  pg.noTint();\n\n  // Bloom\n  pg.filter(p.BLUR, 4);\n  pg.blend(orig, 0, 0, p.width, p.height, 0, 0, p.width, p.height, p.LIGHTEST);\n\n  p.image(pg, 0, 0);\n}\n\np.setup = () => {\n  p.createCanvas(400, 400);\n  init();\n};\n\np.draw = () => {\n  if (animating) {\n    p.background(0);\n    if (p.frameCount - startF < dur) {\n      bb.update();\n      ps.update();\n      ps.emit();\n    } else {\n      animating = false;\n      effectDone = false;\n    }\n    bb.draw();\n    ps.draw();\n  } else if (!effectDone) {\n    applyFX();\n    effectDone = true;\n  } else {\n    holdF++;\n    if (holdF > 180) init();\n  }\n};",
+  "tags": [
+    {
+      "id": "tag_big_bang_01",
+      "type": "source",
+      "label": "Big Bang — Synthograsizer Template",
+      "description": "Particle explosion system with 34 color palettes, expanding central sphere, and post-processing (warm color shift, film grain, vignette, chromatic aberration, bloom). Auto-loops after each explosion cycle."
+    },
+    {
+      "id": "tag_big_bang_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "the-commons",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A shared, code-based generative art canvas steered live by many knob stations at once and synced to live music. No image or video generation anywhere -- pure Canvas2D drawing code, written by a model, run in the browser.",
+  "scripts": {
+    "start": "node --env-file=.env server/index.js",
+    "dev": "node --env-file=.env --watch server/index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.18.0"
+  }
+}

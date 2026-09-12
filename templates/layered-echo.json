@@ -1,0 +1,78 @@
+{
+  "promptTemplate": "{{palette_mood}} layered polygon grid, {{grid_density}} density, {{cell_shape}} cells in {{chaos_order}} arrangement with {{trail_effect}} echo and {{post_process}}",
+  "variables": [
+    {
+      "name": "palette_mood",
+      "feature_name": "Palette Mood",
+      "values": [
+        {"text": "warm classics", "weight": 2},
+        {"text": "cool futurism", "weight": 2},
+        {"text": "vivid pop", "weight": 3},
+        {"text": "muted earth", "weight": 2},
+        {"text": "dark gothic", "weight": 2},
+        {"text": "neon digital", "weight": 2}
+      ]
+    },
+    {
+      "name": "grid_density",
+      "feature_name": "Grid Density",
+      "values": [
+        {"text": "coarse", "weight": 1},
+        {"text": "medium", "weight": 3},
+        {"text": "fine", "weight": 2}
+      ]
+    },
+    {
+      "name": "cell_shape",
+      "feature_name": "Cell Shape",
+      "values": [
+        {"text": "standard", "weight": 2},
+        {"text": "wonky", "weight": 2},
+        {"text": "diagonal", "weight": 2},
+        {"text": "staggered", "weight": 2},
+        {"text": "mixed", "weight": 3}
+      ]
+    },
+    {
+      "name": "chaos_order",
+      "feature_name": "Chaos / Order",
+      "values": [
+        {"text": "orderly", "weight": 1},
+        {"text": "balanced", "weight": 3},
+        {"text": "chaotic", "weight": 2}
+      ]
+    },
+    {
+      "name": "trail_effect",
+      "feature_name": "Trail Effect",
+      "values": [
+        {"text": "clean", "weight": 1},
+        {"text": "ghosted", "weight": 3},
+        {"text": "heavy trail", "weight": 2}
+      ]
+    },
+    {
+      "name": "post_process",
+      "feature_name": "Post-Process",
+      "values": [
+        {"text": "none", "weight": 2},
+        {"text": "glitch", "weight": 2},
+        {"text": "wireframe mix", "weight": 2}
+      ]
+    }
+  ],
+  "p5Code": "// Layered Echo — Dual-Palette Polygon Grid\n// Adapted from GenerativeArtGallery layered-echo sketch\n// 30 art-movement palettes across 6 moods, dual-blend,\n// 4 polygon modes, chaos columns, trailing echo, glitch overlay\n\nlet le = {\n  cells:[], pal:[], bg:[0,0,10], border:[0,0,20],\n  gs:50, gScale:1, swl:7500,\n  prevM:'', prevD:'', prevS:'', prevC:'', prevF:''\n};\n\nlet lePals = {\n  'warm classics': [\n    ['#44344F','#313639','#E3C095','#E9E1C9','#BEBEBE'],\n    ['#936639','#839073','#A67C52','#CFC493','#E5E1D4'],\n    ['#EAB4CB','#B79492','#806854','#47362E','#1F1A12'],\n    ['#AE7181','#655C56','#AB9597','#FFE156','#FFC542'],\n    ['#8D6A53','#B38E89','#EAC8AF','#E2A987','#C77963']\n  ],\n  'cool futurism': [\n    ['#30D5C8','#C0C1C2','#808080','#37383A','#1B1C1E'],\n    ['#D10068','#FF006E','#FF77A9','#FF99C8','#FAEAFE'],\n    ['#FF71CE','#01CDFE','#05FFA1','#B967FF','#FFFB96'],\n    ['#031926','#468189','#77ACA2','#9DBEBB','#F4ECEC']\n  ],\n  'vivid pop': [\n    ['#FF4F58','#FF8966','#FFAA5E','#FFD56B','#FFFF89'],\n    ['#F2F3AE','#ED1567','#0096D6','#000000','#B6E6BD'],\n    ['#FFB5E8','#FF9CEE','#FFCCF9','#F3B8FF','#E6B8F3'],\n    ['#FF6B35','#F7C59F','#EFEEEE','#8338EC','#3A86FF'],\n    ['#F72585','#B5179E','#7209B7','#560BAD','#480CA8']\n  ],\n  'muted earth': [\n    ['#614A3E','#847567','#A09383','#BDB0A0','#D8CDBB'],\n    ['#E07A5F','#3D405B','#81B29A','#F2CC8F','#E07A5F'],\n    ['#DEE3E2','#89CFF0','#FCF4D9','#C1CDC1','#CDC08C'],\n    ['#A7A37E','#ECDB54','#E34131','#6C461F','#A32B1C']\n  ],\n  'dark gothic': [\n    ['#363636','#7A7979','#9E9494','#C4BEBE','#E9E9E9'],\n    ['#1A1B41','#D90368','#820263','#291720','#04A777'],\n    ['#4C3F54','#D13525','#F2C057','#486824','#A8C686'],\n    ['#D3D5D4','#B98EA7','#995D81','#403233','#241623'],\n    ['#102542','#F87060','#CDD7D6','#B3A394','#684551']\n  ],\n  'neon digital': [\n    ['#64E9EE','#37818E','#6C464F','#A24936','#D36135'],\n    ['#8D6A53','#C88D94','#E9C46A','#F4A261','#2A9D8F'],\n    ['#E3AEB1','#C49592','#C49592','#774936','#2A0C0F'],\n    ['#EB6C0E','#F49F0A','#F4BF92','#241623','#D3D5D4'],\n    ['#D41111','#F2F5EA','#1C1A2F','#E6B600','#0076A8']\n  ]\n};\n\nfunction leH2H(p, hex) {\n  let c = p.color(hex);\n  return [p.hue(c), p.saturation(c), p.brightness(c)];\n}\n\nfunction leComp(c) { return [(c[0]+180)%360, c[1], c[2]]; }\n\nfunction leShuf(a) {\n  for (let i = a.length-1; i > 0; i--) {\n    let j = Math.floor(Math.random()*(i+1));\n    [a[i],a[j]] = [a[j],a[i]];\n  }\n}\n\nfunction leGenPts(p, x, y, mode, gs) {\n  let pts;\n  if (mode === 'wonky') {\n    pts = [\n      {x:x-gs/p.random(1.5,2.5), y:y-gs/p.random(1.5,2.5)},\n      {x:x, y:y-gs/2},\n      {x:x+gs/p.random(1.5,2.5), y:y-gs/p.random(1.5,2.5)},\n      {x:x+gs/p.random(1.5,2.5), y:y},\n      {x:x+gs/p.random(1.5,2.5), y:y+gs/p.random(1.5,2.5)},\n      {x:x, y:y+gs/p.random(1.5,2.5)},\n      {x:x-gs/p.random(1.5,2.5), y:y+gs/p.random(1.5,2.5)},\n      {x:x-gs/p.random(1.5,2.5), y:y}\n    ];\n  } else if (mode === 'diagonal') {\n    pts = [\n      {x:x, y:y-gs/2},\n      {x:x+gs/2, y:y-gs/4},\n      {x:x+gs/2, y:y+gs/4},\n      {x:x, y:y+gs/2},\n      {x:x-gs/2, y:y+gs/4},\n      {x:x-gs/2, y:y-gs/4}\n    ];\n  } else if (mode === 'staggered') {\n    pts = [\n      {x:x-gs/4, y:y-gs/2},\n      {x:x+gs/4, y:y-gs/2},\n      {x:x+gs/2, y:y},\n      {x:x+gs/4, y:y+gs/2},\n      {x:x-gs/4, y:y+gs/2},\n      {x:x-gs/2, y:y}\n    ];\n  } else {\n    pts = [\n      {x:x-gs/2, y:y-gs/2}, {x:x, y:y-gs/2}, {x:x+gs/2, y:y-gs/2},\n      {x:x+gs/2, y:y}, {x:x+gs/2, y:y+gs/2}, {x:x, y:y+gs/2},\n      {x:x-gs/2, y:y+gs/2}, {x:x-gs/2, y:y}\n    ];\n  }\n  let a = p.random(-0.2, 0.2);\n  let ca = Math.cos(a), sa = Math.sin(a);\n  for (let pt of pts) {\n    let dx = pt.x-x, dy = pt.y-y;\n    pt.x = x + dx*ca - dy*sa;\n    pt.y = y + dx*sa + dy*ca;\n  }\n  return pts;\n}\n\nfunction leInit(p) {\n  let mood  = p.getSynthVar('palette_mood') || 'warm classics';\n  let dens  = p.getSynthVar('grid_density') || 'medium';\n  let style = p.getSynthVar('cell_shape')   || 'mixed';\n  let chaos = p.getSynthVar('chaos_order')  || 'balanced';\n  let fx    = p.getSynthVar('post_process') || 'none';\n  le.prevM = mood; le.prevD = dens; le.prevS = style;\n  le.prevC = chaos; le.prevF = fx;\n\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  let group = lePals[mood] || lePals['warm classics'];\n  let i1 = Math.floor(p.random(group.length));\n  let i2 = Math.floor(p.random(group.length));\n  while (i2 === i1 && group.length > 1) i2 = Math.floor(p.random(group.length));\n  let combined = [];\n  group[i1].forEach(function(h){ combined.push(leH2H(p,h)); });\n  group[i2].forEach(function(h){ combined.push(leH2H(p,h)); });\n  leShuf(combined);\n  le.pal = combined;\n\n  let dk = combined.reduce(function(a,b){ return a[2]<b[2]?a:b; });\n  let br = combined.reduce(function(a,b){ return a[2]>b[2]?a:b; });\n  let pick = p.random() < 0.5 ? dk : br;\n  if (pick === br) le.bg = [pick[0], pick[1], Math.max(0,pick[2]-10)];\n  else le.bg = [pick[0], pick[1], Math.min(100,pick[2]+10)];\n\n  let bc = combined[Math.floor(p.random(combined.length))];\n  le.border = [bc[0], bc[1], Math.max(0,bc[2]-20)];\n\n  let rats;\n  if (dens === 'coarse') rats = [4,5,6];\n  else if (dens === 'fine') rats = [10,12,14];\n  else rats = [6,7,8,9];\n  le.gs = p.height / rats[Math.floor(p.random(rats.length))];\n\n  let cc;\n  if (chaos === 'orderly') cc = 0.1;\n  else if (chaos === 'chaotic') cc = 0.85;\n  else cc = 0.5;\n\n  let wfCh = fx === 'wireframe mix' ? 0.15 : 0;\n  le.cells = [];\n  let ci = 0;\n  let modes = ['wonky','diagonal','staggered','standard'];\n  for (let x = le.gs; x < p.width; x += le.gs) {\n    let colChaos = p.random() < cc;\n    for (let y = le.gs; y < p.height; y += le.gs) {\n      let col = le.pal[ci % le.pal.length].slice();\n      if (p.random() < 0.33) col = leComp(col);\n      ci++;\n      let mode;\n      if (style === 'mixed') mode = colChaos ? modes[Math.floor(p.random(modes.length))] : 'standard';\n      else mode = colChaos ? modes[Math.floor(p.random(modes.length))] : style;\n      let isW = p.random() < wfCh;\n      le.cells.push({ col:col, isW:isW, pts:leGenPts(p,x,y,mode,le.gs) });\n    }\n  }\n  p.background(le.bg[0], le.bg[1], le.bg[2]);\n}\n\np.setup = function() {\n  p.createCanvas(400, 400);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n  leInit(p);\n};\n\np.draw = function() {\n  let mood  = p.getSynthVar('palette_mood') || 'warm classics';\n  let dens  = p.getSynthVar('grid_density') || 'medium';\n  let style = p.getSynthVar('cell_shape')   || 'mixed';\n  let chaos = p.getSynthVar('chaos_order')  || 'balanced';\n  let trail = p.getSynthVar('trail_effect') || 'ghosted';\n  let fx    = p.getSynthVar('post_process') || 'none';\n\n  if (mood!==le.prevM||dens!==le.prevD||style!==le.prevS||chaos!==le.prevC||fx!==le.prevF) leInit(p);\n\n  p.noStroke();\n  if (trail === 'clean') {\n    p.background(le.bg[0], le.bg[1], le.bg[2]);\n  } else {\n    let ta = trail === 'heavy trail' ? 1.5 : 5;\n    p.fill(le.bg[0], le.bg[1], le.bg[2], ta);\n    p.rect(0, 0, p.width, p.height);\n  }\n\n  let t = p.millis() / 2000;\n  le.gScale = 1.0 + 0.02 * p.sin(t * p.TWO_PI);\n  let wt = p.millis() / le.swl;\n  let cx = p.width/2, cy = p.height/2;\n\n  for (let cell of le.cells) {\n    let pts = cell.pts;\n    for (let i = 0; i < pts.length; i++) {\n      let pt = pts[i];\n      let w1 = p.sin(p.TWO_PI * wt);\n      let w2 = p.sin(p.TWO_PI * wt * 0.7);\n      let cw = w1*0.5 + w2*0.5;\n      let n = p.noise(pt.x*0.003, pt.y*0.003, wt);\n      let no = p.map(n, 0, 1, -1, 1);\n      let ax=0, ay=0;\n      for (let j=0; j<pts.length; j++) {\n        if (i!==j) { ax+=pts[j].x; ay+=pts[j].y; }\n      }\n      let cnt = pts.length-1;\n      if (cnt>0) { ax/=cnt; ay/=cnt; }\n      let dx=ax-pt.x, dy=ay-pt.y;\n      let mg = Math.sqrt(dx*dx+dy*dy);\n      let tm = cw*1.1 + no*0.5;\n      if (mg>0) { pt.x += dx/mg*tm; pt.y += dy/mg*tm; }\n    }\n\n    // Shadow\n    p.fill(0, 0, 0, 12);\n    p.noStroke();\n    p.beginShape();\n    for (let pt of pts) {\n      p.vertex((pt.x-cx)*le.gScale+cx+4, (pt.y-cy)*le.gScale+cy+4);\n    }\n    p.endShape(p.CLOSE);\n\n    // Cell\n    if (cell.isW) {\n      p.noFill();\n      p.stroke(cell.col[0], cell.col[1], cell.col[2], 82);\n      p.strokeWeight(2);\n    } else {\n      p.fill(cell.col[0], cell.col[1], cell.col[2], 88);\n      p.noStroke();\n    }\n    p.beginShape();\n    for (let pt of pts) {\n      p.vertex((pt.x-cx)*le.gScale+cx, (pt.y-cy)*le.gScale+cy);\n    }\n    p.endShape(p.CLOSE);\n  }\n\n  // Border\n  p.stroke(le.border[0], le.border[1], le.border[2], 78);\n  p.strokeWeight(12);\n  p.noFill();\n  p.rect(0, 0, p.width, p.height);\n\n  // Glitch scanlines\n  if (fx === 'glitch') {\n    for (let i = 0; i < 3; i++) {\n      let gy = p.random(p.height);\n      let gh = p.random(2, 8);\n      let gx = p.random(-15, 15);\n      p.noStroke();\n      p.fill(p.random(360), 50, 80, 10);\n      p.rect(gx, gy, p.width+30, gh);\n    }\n  }\n};",
+  "tags": [
+    {
+      "id": "tag_layered_echo_01",
+      "type": "source",
+      "label": "Layered Echo — Synthograsizer Template",
+      "description": "Dual-palette polygon grid with 30 art-movement palettes across 6 mood groups. Each run blends two random palettes from the selected mood. 4 polygon modes (standard, wonky, diagonal, staggered) assigned per-column by chaos/order ratio. Points animate via dual sine-wave + Perlin noise force, pulling toward neighbor averages. Global breathing scale (±2% sin pulse). Trailing alpha background creates layered echo effect. Optional wireframe cells (15% chance) and glitch scanline overlay. Drop shadows, complementary color splits (33% cells), palette-driven border and background."
+    },
+    {
+      "id": "tag_layered_echo_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

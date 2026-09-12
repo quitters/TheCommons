@@ -1,0 +1,118 @@
+{
+  "promptTemplate": "An op-art interference pattern with {{wave_count}} overlapping {{wave_shape}} wave layers at {{wave_frequency}} frequency. Layers are offset by {{layer_offset}} with {{rotation_mode}} rotation. Rendered with {{line_thickness}} lines in a {{color_palette}} palette using {{color_blend}} blending. The pattern animates at {{animation_speed}} speed with {{distortion}} distortion.",
+  "variables": [
+    {
+      "name": "wave_count",
+      "values": [
+        {"text": "pair", "weight": 3},
+        {"text": "trio", "weight": 3},
+        {"text": "quad", "weight": 2},
+        {"text": "quintet", "weight": 2},
+        {"text": "dense", "weight": 1},
+        {"text": "maximal", "weight": 1}
+      ]
+    },
+    {
+      "name": "wave_shape",
+      "values": [
+        {"text": "sine", "weight": 3},
+        {"text": "concentric", "weight": 3},
+        {"text": "linear", "weight": 2},
+        {"text": "radial", "weight": 2},
+        {"text": "spiral", "weight": 1},
+        {"text": "chevron", "weight": 1}
+      ]
+    },
+    {
+      "name": "wave_frequency",
+      "values": [
+        {"text": "low", "weight": 2},
+        {"text": "medium", "weight": 3},
+        {"text": "high", "weight": 3},
+        {"text": "ultra", "weight": 2},
+        {"text": "mixed", "weight": 1},
+        {"text": "harmonic", "weight": 1}
+      ]
+    },
+    {
+      "name": "layer_offset",
+      "values": [
+        {"text": "none", "weight": 2},
+        {"text": "slight", "weight": 3},
+        {"text": "moderate", "weight": 3},
+        {"text": "wide", "weight": 2},
+        {"text": "opposing", "weight": 1},
+        {"text": "chaotic", "weight": 1}
+      ]
+    },
+    {
+      "name": "rotation_mode",
+      "values": [
+        {"text": "static", "weight": 3},
+        {"text": "slow_spin", "weight": 3},
+        {"text": "counter", "weight": 2},
+        {"text": "breathe", "weight": 2},
+        {"text": "pendulum", "weight": 1},
+        {"text": "cascade", "weight": 1}
+      ]
+    },
+    {
+      "name": "line_thickness",
+      "values": [
+        {"text": "hairline", "weight": 3},
+        {"text": "thin", "weight": 3},
+        {"text": "medium", "weight": 2},
+        {"text": "thick", "weight": 2},
+        {"text": "chunky", "weight": 1},
+        {"text": "variable", "weight": 1}
+      ]
+    },
+    {
+      "name": "color_palette",
+      "values": [
+        {"text": "black_white", "weight": 3},
+        {"text": "blueprint", "weight": 3},
+        {"text": "infrared", "weight": 2},
+        {"text": "cyberpunk", "weight": 2},
+        {"text": "gold_black", "weight": 1},
+        {"text": "acid", "weight": 1},
+        {"text": "sunset_gradient", "weight": 1},
+        {"text": "deep_ocean", "weight": 1}
+      ]
+    },
+    {
+      "name": "color_blend",
+      "values": [
+        {"text": "multiply", "weight": 3},
+        {"text": "screen", "weight": 3},
+        {"text": "difference", "weight": 2},
+        {"text": "overlay", "weight": 2},
+        {"text": "xor", "weight": 1},
+        {"text": "additive", "weight": 1}
+      ]
+    },
+    {
+      "name": "animation_speed",
+      "values": [
+        {"text": "frozen", "weight": 1},
+        {"text": "glacial", "weight": 3},
+        {"text": "slow", "weight": 3},
+        {"text": "medium", "weight": 2},
+        {"text": "fast", "weight": 2},
+        {"text": "frantic", "weight": 1}
+      ]
+    },
+    {
+      "name": "distortion",
+      "values": [
+        {"text": "none", "weight": 3},
+        {"text": "ripple", "weight": 3},
+        {"text": "pinch", "weight": 2},
+        {"text": "fisheye", "weight": 2},
+        {"text": "shatter", "weight": 1},
+        {"text": "vortex", "weight": 1}
+      ]
+    }
+  ],
+  "p5Code": "// Moiré Waves - Op-Art Interference Patterns\n\nlet prevParams = '';\nlet pg;\n\nconst PALETTES = {\n  black_white: {bg:[0,0,0], fg:[255,255,255], mid:[128,128,128]},\n  blueprint: {bg:[10,20,60], fg:[100,180,255], mid:[40,80,160]},\n  infrared: {bg:[20,0,0], fg:[255,50,20], mid:[200,100,0]},\n  cyberpunk: {bg:[10,0,20], fg:[255,0,200], mid:[0,200,255]},\n  gold_black: {bg:[0,0,0], fg:[255,200,50], mid:[180,140,30]},\n  acid: {bg:[0,10,0], fg:[0,255,50], mid:[200,255,0]},\n  sunset_gradient: {bg:[20,0,40], fg:[255,120,0], mid:[255,50,80]},\n  deep_ocean: {bg:[0,5,20], fg:[0,180,200], mid:[0,80,140]}\n};\n\nfunction getWaveN(v) {\n  const m = {pair:2, trio:3, quad:4, quintet:5, dense:7, maximal:10};\n  return m[v] || 3;\n}\n\nfunction getFreq(v) {\n  const m = {low:0.008, medium:0.015, high:0.025, ultra:0.04, mixed:-1, harmonic:-2};\n  return m[v] || 0.015;\n}\n\nfunction getOffset(v) {\n  const m = {none:0, slight:15, moderate:40, wide:80, opposing:300, chaotic:-1};\n  return m[v] || 15;\n}\n\nfunction getThick(v) {\n  const m = {hairline:0.35, thin:0.42, medium:0.48, thick:0.55, chunky:0.65, variable:-1};\n  return m[v] || 0.42;\n}\n\nfunction getAnimSpeed(v) {\n  const m = {frozen:0, glacial:0.003, slow:0.008, medium:0.02, fast:0.05, frantic:0.1};\n  return m[v] || 0.008;\n}\n\nfunction applyDistortion(x, y, distType, t, cx, cy) {\n  let dx = x - cx, dy = y - cy;\n  let dist = Math.sqrt(dx*dx + dy*dy);\n  let angle = Math.atan2(dy, dx);\n  if (distType === 'ripple') {\n    let wave = Math.sin(dist * 0.03 + t * 2) * 15;\n    return [x + Math.cos(angle) * wave, y + Math.sin(angle) * wave];\n  } else if (distType === 'pinch') {\n    let factor = 1 + 0.3 * Math.sin(t);\n    let newDist = Math.pow(dist / 300, factor) * 300;\n    return [cx + Math.cos(angle) * newDist, cy + Math.sin(angle) * newDist];\n  } else if (distType === 'fisheye') {\n    let r = dist / 300;\n    let newR = r * r;\n    return [cx + Math.cos(angle) * newR * 300, cy + Math.sin(angle) * newR * 300];\n  } else if (distType === 'shatter') {\n    let cell = 80;\n    let cx2 = Math.floor(x / cell) * cell + cell/2;\n    let cy2 = Math.floor(y / cell) * cell + cell/2;\n    let off = Math.sin(cx2 * 0.1 + t) * 10;\n    return [x + off, y + Math.cos(cy2 * 0.1 + t) * 10];\n  } else if (distType === 'vortex') {\n    let twist = dist * 0.004 * Math.sin(t * 0.5);\n    return [cx + Math.cos(angle + twist) * dist, cy + Math.sin(angle + twist) * dist];\n  }\n  return [x, y];\n}\n\np.setup = function() {\n  p.createCanvas(600, 600);\n  p.frameRate(30);\n  p.pixelDensity(1);\n};\n\np.draw = function() {\n  let waveNV = p.getSynthVar('wave_count') || 'trio';\n  let shapeV = p.getSynthVar('wave_shape') || 'concentric';\n  let freqV = p.getSynthVar('wave_frequency') || 'medium';\n  let offsetV = p.getSynthVar('layer_offset') || 'moderate';\n  let rotV = p.getSynthVar('rotation_mode') || 'slow_spin';\n  let thickV = p.getSynthVar('line_thickness') || 'thin';\n  let palV = p.getSynthVar('color_palette') || 'black_white';\n  let blendV = p.getSynthVar('color_blend') || 'multiply';\n  let speedV = p.getSynthVar('animation_speed') || 'slow';\n  let distV = p.getSynthVar('distortion') || 'none';\n\n  let nWaves = getWaveN(waveNV);\n  let baseFreq = getFreq(freqV);\n  let layerOff = getOffset(offsetV);\n  let threshold = getThick(thickV);\n  let animSpeed = getAnimSpeed(speedV);\n  let pal = PALETTES[palV] || PALETTES.black_white;\n  let t = p.frameCount * animSpeed;\n\n  p.loadPixels();\n  let cx = 300, cy = 300;\n\n  for (let py = 0; py < 600; py += 1) {\n    for (let px = 0; px < 600; px += 1) {\n      let x = px, y = py;\n\n      // Apply distortion\n      if (distV !== 'none') {\n        let d = applyDistortion(x, y, distV, t, cx, cy);\n        x = d[0]; y = d[1];\n      }\n\n      let totalVal = 0;\n\n      for (let w = 0; w < nWaves; w++) {\n        let offX = 0, offY = 0;\n        let rot = 0;\n\n        // Layer offset\n        if (layerOff === -1) {\n          offX = Math.sin(w * 7.3) * 100;\n          offY = Math.cos(w * 5.1) * 100;\n        } else if (offsetV === 'opposing') {\n          let angle = w * Math.PI / nWaves;\n          offX = Math.cos(angle) * layerOff;\n          offY = Math.sin(angle) * layerOff;\n        } else {\n          offX = w * layerOff;\n          offY = w * layerOff * 0.5;\n        }\n\n        // Rotation\n        if (rotV === 'slow_spin') rot = t * 0.5 + w * 0.3;\n        else if (rotV === 'counter') rot = t * 0.5 * (w % 2 === 0 ? 1 : -1);\n        else if (rotV === 'breathe') rot = Math.sin(t + w) * 0.5;\n        else if (rotV === 'pendulum') rot = Math.sin(t * 0.3) * 1.2 + w * 0.2;\n        else if (rotV === 'cascade') rot = w * 0.3 + t * 0.3;\n\n        let lx = x - cx - offX;\n        let ly = y - cy - offY;\n        let rx = lx * Math.cos(rot) - ly * Math.sin(rot);\n        let ry = lx * Math.sin(rot) + ly * Math.cos(rot);\n\n        let freq = baseFreq;\n        if (baseFreq === -1) freq = 0.01 + w * 0.005;\n        else if (baseFreq === -2) freq = baseFreq * (w + 1);\n\n        let val;\n        if (shapeV === 'sine') {\n          val = Math.sin(rx * freq + t);\n        } else if (shapeV === 'concentric') {\n          let d = Math.sqrt(rx*rx + ry*ry);\n          val = Math.sin(d * freq + t);\n        } else if (shapeV === 'linear') {\n          val = Math.sin((rx * Math.cos(w) + ry * Math.sin(w)) * freq + t);\n        } else if (shapeV === 'radial') {\n          let a = Math.atan2(ry, rx);\n          val = Math.sin(a * (3 + w * 2) + t);\n        } else if (shapeV === 'spiral') {\n          let d = Math.sqrt(rx*rx + ry*ry);\n          let a = Math.atan2(ry, rx);\n          val = Math.sin(d * freq + a * 3 + t);\n        } else { // chevron\n          val = Math.sin((Math.abs(rx) + Math.abs(ry)) * freq + t);\n        }\n\n        // Blend\n        let normVal = (val + 1) * 0.5; // 0-1\n        if (blendV === 'multiply') totalVal += normVal;\n        else if (blendV === 'screen') totalVal = 1 - (1 - totalVal) * (1 - normVal);\n        else if (blendV === 'difference') totalVal += Math.abs(normVal - 0.5);\n        else if (blendV === 'overlay') totalVal += normVal > 0.5 ? 1 - 2*(1-normVal)*(1-totalVal/Math.max(1,w)) : 2*normVal*(totalVal/Math.max(1,w));\n        else if (blendV === 'xor') totalVal = (totalVal + normVal) % 1.0 + (totalVal + normVal > 1 ? 0.5 : 0);\n        else totalVal += normVal; // additive\n      }\n\n      // Normalize\n      if (blendV === 'multiply' || blendV === 'additive') totalVal /= nWaves;\n      totalVal = Math.max(0, Math.min(1, totalVal));\n\n      // Variable line thickness\n      if (threshold === -1) {\n        threshold = 0.35 + Math.sin(px * 0.01 + py * 0.01) * 0.15;\n      }\n\n      // Apply threshold for sharp moiré lines\n      let bright = totalVal > threshold ? 1 : 0;\n      // Smooth edge\n      let edge = Math.abs(totalVal - threshold);\n      if (edge < 0.05) bright = totalVal > threshold ? 1 - (0.05 - edge) * 10 : (0.05 - edge) * 10;\n\n      let r, g, b;\n      if (bright > 0.5) {\n        let f = (bright - 0.5) * 2;\n        r = pal.mid[0] + (pal.fg[0] - pal.mid[0]) * f;\n        g = pal.mid[1] + (pal.fg[1] - pal.mid[1]) * f;\n        b = pal.mid[2] + (pal.fg[2] - pal.mid[2]) * f;\n      } else {\n        let f = bright * 2;\n        r = pal.bg[0] + (pal.mid[0] - pal.bg[0]) * f;\n        g = pal.bg[1] + (pal.mid[1] - pal.bg[1]) * f;\n        b = pal.bg[2] + (pal.mid[2] - pal.bg[2]) * f;\n      }\n\n      let idx = (py * 600 + px) * 4;\n      p.pixels[idx] = r;\n      p.pixels[idx+1] = g;\n      p.pixels[idx+2] = b;\n      p.pixels[idx+3] = 255;\n    }\n  }\n  p.updatePixels();\n};"
+}

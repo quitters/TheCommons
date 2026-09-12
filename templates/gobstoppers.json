@@ -1,0 +1,137 @@
+{
+  "promptTemplate": "A 3D spring-node physics artwork with {{node_count}} nodes shaped as {{node_shape}} primitives at {{node_size}} scale. Nodes are connected by {{spring_type}} springs with {{spring_length}} spacing, {{spring_stiffness}} stiffness, and {{spring_weight}} line weight. Nodes rotate at {{rotation_speed}} speed with {{mesh_weight}} mesh outlines. Rendered in {{render_mode}} mode with {{trail_mode}} motion trails. Colored using a {{color_palette}} palette with color transition {{color_transition}}.",
+  "variables": [
+    {
+      "name": "node_count",
+      "values": [
+        { "text": "few" },
+        { "text": "some" },
+        { "text": "moderate" },
+        { "text": "many" },
+        { "text": "cluster" },
+        { "text": "swarm" }
+      ]
+    },
+    {
+      "name": "node_size",
+      "values": [
+        { "text": "tiny" },
+        { "text": "small" },
+        { "text": "medium" },
+        { "text": "large" },
+        { "text": "massive" },
+        { "text": "colossal" }
+      ]
+    },
+    {
+      "name": "node_shape",
+      "values": [
+        { "text": "sphere" },
+        { "text": "box" },
+        { "text": "cone" },
+        { "text": "cylinder" },
+        { "text": "torus" },
+        { "text": "icosahedron" }
+      ]
+    },
+    {
+      "name": "spring_length",
+      "values": [
+        { "text": "tight" },
+        { "text": "close" },
+        { "text": "medium" },
+        { "text": "spread" },
+        { "text": "wide" },
+        { "text": "vast" }
+      ]
+    },
+    {
+      "name": "spring_stiffness",
+      "values": [
+        { "text": "rigid" },
+        { "text": "firm" },
+        { "text": "moderate" },
+        { "text": "elastic" },
+        { "text": "loose" },
+        { "text": "floating" }
+      ]
+    },
+    {
+      "name": "spring_weight",
+      "values": [
+        { "text": "invisible" },
+        { "text": "hairline" },
+        { "text": "thin" },
+        { "text": "medium" },
+        { "text": "thick" },
+        { "text": "heavy" }
+      ]
+    },
+    {
+      "name": "spring_type",
+      "values": [
+        { "text": "linear" },
+        { "text": "hookean" },
+        { "text": "damped" },
+        { "text": "reverse" }
+      ]
+    },
+    {
+      "name": "rotation_speed",
+      "values": [
+        { "text": "still" },
+        { "text": "slow" },
+        { "text": "moderate" },
+        { "text": "fast" },
+        { "text": "rapid" },
+        { "text": "frantic" }
+      ]
+    },
+    {
+      "name": "render_mode",
+      "values": [
+        { "text": "nodes and springs" },
+        { "text": "nodes only" },
+        { "text": "springs only" }
+      ]
+    },
+    {
+      "name": "trail_mode",
+      "values": [
+        { "text": "off" },
+        { "text": "on" }
+      ]
+    },
+    {
+      "name": "color_palette",
+      "values": [
+        { "text": "primary" },
+        { "text": "ocean" },
+        { "text": "sunset" },
+        { "text": "forest" },
+        { "text": "candy" },
+        { "text": "retro" },
+        { "text": "pastel goth" },
+        { "text": "harvest moon" }
+      ]
+    },
+    {
+      "name": "color_transition",
+      "values": [
+        { "text": "off" },
+        { "text": "on" }
+      ]
+    },
+    {
+      "name": "mesh_weight",
+      "values": [
+        { "text": "invisible" },
+        { "text": "light" },
+        { "text": "medium" },
+        { "text": "bold" },
+        { "text": "heavy" }
+      ]
+    }
+  ],
+  "p5Code": "// ═══════════════════════════════════════════════════════════════════\n// GOBSTOPPERS - 3D Spring-Node Physics System\n// Synthograsizer Workflow Template\n// ═══════════════════════════════════════════════════════════════════\n\nconst CW = 500;\n\n// ─── PALETTES (RGB arrays) ────────────────────────────────────────\nconst PALETTES = {\n  'primary':      [[255,0,0],[0,255,0],[0,0,255],[255,255,0],[255,0,255]],\n  'ocean':        [[0,105,148],[0,160,199],[0,191,243],[72,215,255],[143,244,255]],\n  'sunset':       [[255,94,77],[255,153,31],[255,212,59],[245,233,129],[74,144,226]],\n  'forest':       [[0,128,43],[44,176,55],[60,179,113],[121,222,135],[169,240,166]],\n  'candy':        [[255,158,253],[255,102,255],[255,50,233],[255,20,147],[199,0,57]],\n  'retro':        [[255,61,127],[255,112,67],[255,209,0],[0,204,204],[0,51,102]],\n  'pastel goth':  [[95,61,255],[203,49,222],[255,21,182],[255,105,80],[255,245,105]],\n  'harvest moon': [[243,188,63],[239,139,61],[225,97,61],[196,54,70],[119,46,73]]\n};\n\n// ─── PARAMETER MAPS ───────────────────────────────────────────────\nconst countMap = { few:3, some:6, moderate:10, many:16, cluster:25, swarm:40 };\nconst sizeMap = { tiny:12, small:24, medium:48, large:72, massive:96, colossal:128 };\nconst lengthMap = { tight:40, close:100, medium:200, spread:320, wide:420, vast:512 };\nconst stiffMap = { rigid:-0.009, firm:-0.007, moderate:-0.005, elastic:-0.003, loose:-0.001, floating:-0.0005 };\nconst weightMap = { invisible:0, hairline:0.5, thin:2, medium:4, thick:6, heavy:10 };\nconst rotMap = { still:0, slow:0.5, moderate:1.5, fast:3, rapid:6, frantic:10 };\nconst meshMap = { invisible:0, light:1, medium:3, bold:6, heavy:9 };\n\n// ─── STATE ────────────────────────────────────────────────────────\nlet nodes = [];\nlet springs = [];\nlet palette = [];\nlet prevCount = -1;\nlet prevPalName = '';\nlet prevLength = -1;\nlet prevStiff = 0;\n\n// ─── HELPERS ──────────────────────────────────────────────────────\nfunction palColor(pal) {\n  let c = pal[Math.floor(p.random(pal.length))];\n  return p.color(c[0], c[1], c[2]);\n}\n\nfunction initSystem(count, pal, restLen, stiff) {\n  nodes = [];\n  springs = [];\n  palette = pal;\n  for (let i = 0; i < count; i++) {\n    nodes.push({\n      pos: p.createVector(p.random(-200,200), p.random(-200,200), p.random(-200,200)),\n      vel: p.createVector(0,0,0),\n      acc: p.createVector(0,0,0),\n      color1: palColor(pal),\n      color2: palColor(pal),\n      rotX: p.random(0, p.TWO_PI),\n      rotY: p.random(0, p.TWO_PI),\n      rotZ: p.random(0, p.TWO_PI)\n    });\n  }\n  for (let i = 0; i < nodes.length - 1; i++) {\n    springs.push({\n      nodeA: nodes[i],\n      nodeB: nodes[i+1],\n      length: restLen,\n      stiffness: stiff,\n      color1: palColor(pal),\n      color2: palColor(pal)\n    });\n  }\n}\n\nfunction recolorSystem(pal) {\n  palette = pal;\n  for (let n of nodes) {\n    n.color1 = palColor(pal);\n    n.color2 = palColor(pal);\n  }\n  for (let s of springs) {\n    s.color1 = palColor(pal);\n    s.color2 = palColor(pal);\n  }\n}\n\n// ─── SETUP ────────────────────────────────────────────────────────\np.setup = function() {\n  p.createCanvas(CW, CW, p.WEBGL);\n  p.print('Gobstoppers ready');\n};\n\n// ─── DRAW ─────────────────────────────────────────────────────────\np.draw = function() {\n  // Read variables\n  let vCount     = p.getSynthVar('node_count') || 'moderate';\n  let vSize      = p.getSynthVar('node_size') || 'medium';\n  let vShape     = p.getSynthVar('node_shape') || 'sphere';\n  let vLength    = p.getSynthVar('spring_length') || 'medium';\n  let vStiff     = p.getSynthVar('spring_stiffness') || 'moderate';\n  let vWeight    = p.getSynthVar('spring_weight') || 'medium';\n  let vSpType    = p.getSynthVar('spring_type') || 'linear';\n  let vRot       = p.getSynthVar('rotation_speed') || 'moderate';\n  let vRender    = p.getSynthVar('render_mode') || 'nodes and springs';\n  let vTrail     = p.getSynthVar('trail_mode') || 'off';\n  let vPalette   = p.getSynthVar('color_palette') || 'primary';\n  let vTransition= p.getSynthVar('color_transition') || 'off';\n  let vMesh      = p.getSynthVar('mesh_weight') || 'invisible';\n\n  // Map to numeric\n  let numNodes   = countMap[vCount] || 10;\n  let nodeSize   = sizeMap[vSize] || 48;\n  let restLen    = lengthMap[vLength] || 200;\n  let stiff      = stiffMap[vStiff] || -0.005;\n  let springWt   = weightMap[vWeight] || 4;\n  let rotSpeed   = rotMap[vRot] || 1.5;\n  let meshWt     = meshMap[vMesh] || 0;\n  let pal        = PALETTES[vPalette] || PALETTES['primary'];\n  let trailOn    = vTrail === 'on';\n  let transOn    = vTransition === 'on';\n  let showNodes  = vRender === 'nodes and springs' || vRender === 'nodes only';\n  let showSprings= vRender === 'nodes and springs' || vRender === 'springs only';\n\n  // Reinit on changes\n  if (numNodes !== prevCount || vPalette !== prevPalName) {\n    prevCount = numNodes;\n    prevPalName = vPalette;\n    prevLength = restLen;\n    prevStiff = stiff;\n    initSystem(numNodes, pal, restLen, stiff);\n  }\n  // Update spring params if changed\n  if (restLen !== prevLength || stiff !== prevStiff) {\n    prevLength = restLen;\n    prevStiff = stiff;\n    for (let s of springs) {\n      s.length = restLen;\n      s.stiffness = stiff;\n    }\n  }\n\n  // Background\n  if (trailOn) {\n    // Semi-transparent overlay for trail effect\n    p.push();\n    p.noStroke();\n    p.fill(0, 0, 0, 25);\n    p.translate(0, 0, -1);\n    p.plane(CW * 2, CW * 2);\n    p.pop();\n  } else {\n    p.background(0);\n  }\n\n  // Lighting for 3D\n  p.ambientLight(80);\n  p.directionalLight(200, 200, 200, 0.5, 0.5, -1);\n  p.directionalLight(100, 100, 150, -0.5, -0.3, -0.8);\n\n  // Color transition factor\n  let tFactor = transOn ? (Math.sin(p.millis() * 0.001) + 1) * 0.5 : 0;\n\n  // Update springs (physics)\n  for (let s of springs) {\n    let force = p5.Vector.sub(s.nodeA.pos, s.nodeB.pos);\n    let distance = force.mag();\n    force.normalize();\n    force.mult(distance - s.length);\n    if (vSpType === 'reverse') {\n      force.mult(-s.stiffness);\n    } else if (vSpType === 'damped') {\n      force.mult(s.stiffness * 0.85);\n    } else if (vSpType === 'hookean') {\n      force.mult(s.stiffness * 1.2);\n    } else {\n      force.mult(s.stiffness);\n    }\n    s.nodeA.acc.add(force);\n    let neg = force.copy().mult(-1);\n    s.nodeB.acc.add(neg);\n  }\n\n  // Update nodes (physics + rotation)\n  for (let n of nodes) {\n    n.vel.add(n.acc);\n    n.vel.mult(0.98); // damping\n    n.pos.add(n.vel);\n    n.acc.mult(0);\n    n.rotX += p.radians(rotSpeed);\n    n.rotY += p.radians(rotSpeed);\n    n.rotZ += p.radians(rotSpeed * 0.7);\n  }\n\n  // Draw springs\n  if (showSprings && springWt > 0) {\n    for (let s of springs) {\n      p.strokeWeight(springWt);\n      let col;\n      if (transOn) {\n        col = p.lerpColor(s.color1, s.color2, tFactor);\n      } else {\n        col = s.color1;\n      }\n      p.stroke(col);\n      p.line(s.nodeA.pos.x, s.nodeA.pos.y, s.nodeA.pos.z,\n             s.nodeB.pos.x, s.nodeB.pos.y, s.nodeB.pos.z);\n    }\n  }\n\n  // Draw nodes\n  if (showNodes) {\n    for (let n of nodes) {\n      p.push();\n      let col;\n      if (transOn) {\n        col = p.lerpColor(n.color1, n.color2, tFactor);\n      } else {\n        col = n.color1;\n      }\n      p.fill(col);\n      if (meshWt > 0) {\n        p.stroke(0);\n        p.strokeWeight(meshWt);\n      } else {\n        p.noStroke();\n      }\n      p.translate(n.pos.x, n.pos.y, n.pos.z);\n      p.rotateX(n.rotX);\n      p.rotateY(n.rotY);\n      p.rotateZ(n.rotZ);\n\n      switch(vShape) {\n        case 'box':\n          p.box(nodeSize); break;\n        case 'cone':\n          p.cone(nodeSize, nodeSize * 2); break;\n        case 'cylinder':\n          p.cylinder(nodeSize, nodeSize * 2); break;\n        case 'torus':\n          p.torus(nodeSize, nodeSize / 2); break;\n        case 'icosahedron':\n          p.sphere(nodeSize, 4, 3); break;\n        default:\n          p.sphere(nodeSize); break;\n      }\n      p.pop();\n    }\n  }\n};\n"
+}

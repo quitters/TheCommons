@@ -1,0 +1,113 @@
+{
+  "promptTemplate": "{{max_crystals}} {{hue_range}} crystals, {{facet_count}} facets, {{max_size}} size, {{growth_speed}} growth",
+  "variables": [
+    {
+      "name": "max_crystals",
+      "feature_name": "Max Crystals",
+      "values": [
+        {
+          "text": "few",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "many",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "facet_count",
+      "feature_name": "Facet Count",
+      "values": [
+        {
+          "text": "angular",
+          "weight": 2
+        },
+        {
+          "text": "balanced",
+          "weight": 3
+        },
+        {
+          "text": "complex",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "growth_speed",
+      "feature_name": "Growth Speed",
+      "values": [
+        {
+          "text": "slow",
+          "weight": 2
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "fast",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "hue_range",
+      "feature_name": "Hue Range",
+      "values": [
+        {
+          "text": "cool",
+          "weight": 2
+        },
+        {
+          "text": "warm",
+          "weight": 2
+        },
+        {
+          "text": "jewel",
+          "weight": 2
+        },
+        {
+          "text": "all",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "max_size",
+      "feature_name": "Max Size",
+      "values": [
+        {
+          "text": "small",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "large",
+          "weight": 2
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Crystal Growth\n// Adapted from GenerativeArtGallery / artwork2\n\nlet cg = [];\nlet cgPrevHue = '';\n\nfunction cgSpawn(fMin, fMax, hStr, szBase) {\n  let hue = hStr === 'cool' ? 180 + Math.random() * 60 :\n            hStr === 'warm' ? Math.random() * 55 :\n            hStr === 'jewel' ? 260 + Math.random() * 60 : Math.random() * 360;\n  let facets = Math.floor(Math.random() * (fMax - fMin + 1)) + fMin;\n  let angles = [];\n  for (let i = 0; i < facets; i++) angles.push(Math.random() * Math.PI * 2);\n  angles.sort(function(a, b) { return a - b; });\n  return {\n    x: Math.random() * 400, y: Math.random() * 400,\n    size: 15 + Math.random() * 20,\n    growthRate: 0.18 + Math.random() * 0.4,\n    maxSize: szBase * (0.5 + Math.random() * 0.7),\n    hue: hue, angles: angles\n  };\n}\n\np.setup = function() {\n  p.createCanvas(400, 400);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n  p.background(220, 30, 10);\n  for (let i = 0; i < 5; i++) cg.push(cgSpawn(5, 7, 'cool', 120));\n};\n\np.draw = function() {\n  let maxStr  = p.getSynthVar('max_crystals') || 'medium';\n  let facetStr = p.getSynthVar('facet_count') || 'balanced';\n  let speedStr = p.getSynthVar('growth_speed') || 'medium';\n  let hueStr   = p.getSynthVar('hue_range') || 'cool';\n  let sizeStr  = p.getSynthVar('max_size') || 'medium';\n\n  let maxC  = maxStr === 'few' ? 8 : maxStr === 'medium' ? 18 : 36;\n  let fMin  = facetStr === 'angular' ? 4 : facetStr === 'balanced' ? 5 : 6;\n  let fMax  = facetStr === 'angular' ? 5 : facetStr === 'balanced' ? 7 : 10;\n  let gMult = speedStr === 'slow' ? 0.4 : speedStr === 'medium' ? 1 : 2.2;\n  let szBase = sizeStr === 'small' ? 75 : sizeStr === 'medium' ? 135 : 210;\n\n  p.background(220, 30, 10, 8);\n\n  if (cg.length < maxC && p.frameCount % 42 === 0) {\n    cg.push(cgSpawn(fMin, fMax, hueStr, szBase));\n  }\n  if (cg.length > maxC) cg.splice(0, cg.length - maxC);\n\n  cg.forEach(function(c) {\n    if (c.size < c.maxSize) c.size += c.growthRate * gMult;\n\n    for (let layer = 2; layer >= 0; layer--) {\n      let shade = layer / 2;\n      let off = layer * 2.5;\n      p.push();\n      p.translate(c.x + off, c.y + off);\n      p.fill(c.hue, 38 + shade * 42, 48 + shade * 42, 90);\n      p.stroke(c.hue, 28, 30, 35);\n      p.strokeWeight(0.7);\n      p.beginShape();\n      c.angles.forEach(function(a) {\n        let r = c.size * (0.78 + 0.22 * Math.sin(a * 3 + shade));\n        p.vertex(Math.cos(a) * r, Math.sin(a) * r);\n      });\n      p.endShape(p.CLOSE);\n      p.pop();\n    }\n  });\n};",
+  "tags": [
+    {
+      "id": "tag_crystal_growth_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork2 (Crystal Growth)",
+      "description": "Adapted from the crystal growth simulation. Crystals spawn at random positions and grow outward at configurable rates. Each crystal has 4–10 randomly-angled facets sorted into a convex-ish polygon, rendered with 3 depth layers offset slightly for a bas-relief effect. New crystals use hue range and size settings from current synth vars."
+    },
+    {
+      "id": "tag_crystal_growth_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

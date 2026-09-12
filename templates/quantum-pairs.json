@@ -1,0 +1,113 @@
+{
+  "promptTemplate": "{{pair_count}} entangled pairs, {{spin_speed}} spin, {{entangle_range}} range, {{color_mode}} palette, {{trail_length}} trails",
+  "variables": [
+    {
+      "name": "pair_count",
+      "feature_name": "Pair Count",
+      "values": [
+        {
+          "text": "few",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "many",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "spin_speed",
+      "feature_name": "Spin Speed",
+      "values": [
+        {
+          "text": "slow",
+          "weight": 2
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "fast",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "entangle_range",
+      "feature_name": "Entangle Range",
+      "values": [
+        {
+          "text": "close",
+          "weight": 2
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "far",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "color_mode",
+      "feature_name": "Color Mode",
+      "values": [
+        {
+          "text": "complementary",
+          "weight": 3
+        },
+        {
+          "text": "spectrum",
+          "weight": 2
+        },
+        {
+          "text": "cool",
+          "weight": 2
+        },
+        {
+          "text": "warm",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "trail_length",
+      "feature_name": "Trail Length",
+      "values": [
+        {
+          "text": "short",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "long",
+          "weight": 2
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Quantum Entanglement\n// Adapted from GenerativeArtGallery / artwork13\n\nlet qPairs = [];\nlet qPrevN = 0;\n\nfunction qMake(n) {\n  let pairs = [];\n  for (let i = 0; i < n; i++) {\n    let ph = Math.random() * Math.PI * 2;\n    pairs.push([\n      { x: 60 + Math.random() * 280, y: 60 + Math.random() * 280,\n        vx: (Math.random() - 0.5) * 1.5, vy: (Math.random() - 0.5) * 1.5,\n        sp: ph, hist: [] },\n      { x: 60 + Math.random() * 280, y: 60 + Math.random() * 280,\n        vx: (Math.random() - 0.5) * 1.5, vy: (Math.random() - 0.5) * 1.5,\n        sp: ph + Math.PI, hist: [] }\n    ]);\n  }\n  return pairs;\n}\n\np.setup = function() {\n  p.createCanvas(400, 400);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n  qPairs = qMake(6);\n};\n\np.draw = function() {\n  let pairStr  = p.getSynthVar('pair_count') || 'medium';\n  let spinStr  = p.getSynthVar('spin_speed') || 'medium';\n  let rangeStr = p.getSynthVar('entangle_range') || 'medium';\n  let colorStr = p.getSynthVar('color_mode') || 'complementary';\n  let trailStr = p.getSynthVar('trail_length') || 'medium';\n\n  let n       = pairStr === 'few' ? 3 : pairStr === 'medium' ? 6 : 10;\n  let spd     = spinStr === 'slow' ? 0.012 : spinStr === 'medium' ? 0.03 : 0.07;\n  let dist    = rangeStr === 'close' ? 160 : rangeStr === 'medium' ? 270 : 380;\n  let maxHist = trailStr === 'short' ? 18 : trailStr === 'medium' ? 45 : 90;\n\n  if (n !== qPrevN) { qPairs = qMake(n); qPrevN = n; }\n\n  p.background(0, 0, 4, 15);\n\n  qPairs.forEach(function(pair, pi) {\n    let h1 = colorStr === 'spectrum' ? (pi / qPairs.length) * 360 :\n             colorStr === 'cool' ? 180 + pi * 22 :\n             colorStr === 'warm' ? pi * 18 :\n             (pi / qPairs.length) * 360;\n    let h2 = (h1 + 180) % 360;\n\n    pair[0].sp += spd;\n    pair[1].sp = pair[0].sp + Math.PI;\n\n    pair.forEach(function(pt, idx) {\n      let partner = pair[1 - idx];\n      let dx = partner.x - pt.x, dy = partner.y - pt.y;\n      let d = Math.sqrt(dx * dx + dy * dy);\n      if (d > dist) { pt.vx += dx / d * 0.09; pt.vy += dy / d * 0.09; }\n      if (pt.x < 15) pt.vx += 0.3;\n      if (pt.x > 385) pt.vx -= 0.3;\n      if (pt.y < 15) pt.vy += 0.3;\n      if (pt.y > 385) pt.vy -= 0.3;\n      pt.vx *= 0.97; pt.vy *= 0.97;\n      pt.x += pt.vx; pt.y += pt.vy;\n\n      pt.hist.push({ x: pt.x, y: pt.y });\n      if (pt.hist.length > maxHist) pt.hist.shift();\n\n      let hue = idx === 0 ? h1 : h2;\n\n      for (let k = 1; k < pt.hist.length; k++) {\n        let alpha = p.map(k, 0, pt.hist.length, 4, 65);\n        p.stroke(hue, 75, 88, alpha);\n        p.strokeWeight(1.5);\n        p.line(pt.hist[k-1].x, pt.hist[k-1].y, pt.hist[k].x, pt.hist[k].y);\n      }\n\n      let ring = 8 + 4 * Math.sin(pt.sp);\n      p.noFill();\n      p.stroke(hue, 55, 78, 50);\n      p.strokeWeight(1);\n      p.ellipse(pt.x, pt.y, ring * 2, ring * 2);\n      p.noStroke();\n      p.fill(hue, 80, 96, 95);\n      p.ellipse(pt.x, pt.y, 6, 6);\n    });\n\n    // Dashed entanglement link (manual)\n    p.stroke(h1, 30, 65, 18);\n    p.strokeWeight(0.8);\n    let steps = 14;\n    for (let k = 0; k < steps; k++) {\n      if (k % 2 === 0) {\n        let t1 = k / steps, t2 = (k + 0.5) / steps;\n        p.line(\n          pair[0].x + (pair[1].x - pair[0].x) * t1,\n          pair[0].y + (pair[1].y - pair[0].y) * t1,\n          pair[0].x + (pair[1].x - pair[0].x) * t2,\n          pair[0].y + (pair[1].y - pair[0].y) * t2\n        );\n      }\n    }\n\n    // Interference dot at midpoint\n    let mx = (pair[0].x + pair[1].x) / 2;\n    let my = (pair[0].y + pair[1].y) / 2;\n    let ia = Math.abs(Math.sin(pair[0].sp * 2)) * 45;\n    p.noStroke();\n    p.fill(h1, 45, 92, ia);\n    p.ellipse(mx, my, 14, 14);\n  });\n};",
+  "tags": [
+    {
+      "id": "tag_quantum_pairs_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork13 (Quantum Entanglement)",
+      "description": "Adapted from the quantum particle pairs sketch. Each pair shares a spin phase (partner is always +π out of phase). Particles attract when beyond entangle_range and bounce off canvas edges. A pulsing spin ring visualises the phase. Dashed link drawn as manual short-line segments. Interference node appears at pair midpoint with alpha mapped to |sin(phase*2)|."
+    },
+    {
+      "id": "tag_quantum_pairs_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

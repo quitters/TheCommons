@@ -1,0 +1,117 @@
+{
+  "promptTemplate": "{{glyph_set}} glyph cascade, {{density}} columns, {{drop_speed}} fall, {{trail_length}} trails, {{color_mode}} tint",
+  "variables": [
+    {
+      "name": "glyph_set",
+      "feature_name": "Glyph Set",
+      "values": [
+        {
+          "text": "katakana",
+          "weight": 3
+        },
+        {
+          "text": "latin",
+          "weight": 2
+        },
+        {
+          "text": "symbols",
+          "weight": 2
+        },
+        {
+          "text": "mixed",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "color_mode",
+      "feature_name": "Color Mode",
+      "values": [
+        {
+          "text": "matrix",
+          "weight": 3
+        },
+        {
+          "text": "neon",
+          "weight": 2
+        },
+        {
+          "text": "amber",
+          "weight": 2
+        },
+        {
+          "text": "ice",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "drop_speed",
+      "feature_name": "Drop Speed",
+      "values": [
+        {
+          "text": "slow",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "fast",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "trail_length",
+      "feature_name": "Trail Length",
+      "values": [
+        {
+          "text": "short",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "long",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "density",
+      "feature_name": "Density",
+      "values": [
+        {
+          "text": "sparse",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "dense",
+          "weight": 2
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Matrix Rain\n// Adapted from GenerativeArtGallery / artwork5\n\nlet mrDrops = [];\nlet mrPrevSpacing = 0;\n\nlet mrGlyphs = {\n  katakana: 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワン',\n  latin:    'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',\n  symbols:  '∑∆∇∞∂∫≈≠≤≥×÷±√⊕⊗⊂⊃∈∃∀⌘★◊❄☯⚡',\n  mixed:    'アカ∑∆AB01⊕≈★◊⌘∞01アイ∇≠'\n};\n\nfunction mrInit(spacing) {\n  mrDrops = [];\n  let cols = Math.floor(400 / spacing);\n  for (let i = 0; i < cols; i++) {\n    mrDrops.push({\n      x: i * spacing + spacing / 2,\n      y: -Math.random() * 400,\n      speed: 3 + Math.random() * 6,\n      chars: [],\n      tick: 0\n    });\n  }\n}\n\np.setup = function() {\n  p.createCanvas(400, 400);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.textFont('monospace');\n  p.frameRate(30);\n  mrInit(20);\n};\n\np.draw = function() {\n  let glyphStr = p.getSynthVar('glyph_set') || 'katakana';\n  let speedStr = p.getSynthVar('drop_speed') || 'medium';\n  let trailStr = p.getSynthVar('trail_length') || 'medium';\n  let colorStr = p.getSynthVar('color_mode') || 'matrix';\n  let densStr  = p.getSynthVar('density') || 'medium';\n\n  let pool     = mrGlyphs[glyphStr] || mrGlyphs.katakana;\n  let spacing  = densStr === 'sparse' ? 28 : densStr === 'medium' ? 20 : 14;\n  let spdMult  = speedStr === 'slow' ? 0.5 : speedStr === 'medium' ? 1 : 2;\n  let trailLen = trailStr === 'short' ? 5 : trailStr === 'medium' ? 12 : 24;\n  let hue      = colorStr === 'matrix' ? 120 : colorStr === 'neon' ? 300 : colorStr === 'amber' ? 35 : 195;\n\n  if (spacing !== mrPrevSpacing) { mrInit(spacing); mrPrevSpacing = spacing; }\n\n  p.background(0, 0, 4, 35);\n  p.textSize(13);\n  p.textAlign(p.CENTER, p.CENTER);\n\n  mrDrops.forEach(function(d) {\n    d.y += d.speed * spdMult;\n    d.tick++;\n    if (d.tick % 3 === 0) {\n      d.chars.unshift(pool[Math.floor(Math.random() * pool.length)]);\n      if (d.chars.length > trailLen) d.chars.pop();\n    }\n\n    for (let i = 0; i < d.chars.length; i++) {\n      let gy = d.y - i * 14;\n      if (gy < -10 || gy > 410) continue;\n      let alpha  = i === 0 ? 100 : p.map(i, 0, d.chars.length, 88, 5);\n      let bright = i === 0 ? 100 : p.map(i, 0, d.chars.length, 80, 14);\n      let sat    = i === 0 ? 5 : 82;\n      p.fill(hue, sat, bright, alpha);\n      p.text(d.chars[i], d.x, gy);\n    }\n\n    if (d.y - d.chars.length * 14 > 410) {\n      d.y = -Math.random() * 350;\n      d.speed = (3 + Math.random() * 6) * spdMult;\n      d.chars = [];\n    }\n  });\n};",
+  "tags": [
+    {
+      "id": "tag_matrix_rain_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork5 (Matrix Rain)",
+      "description": "Adapted from the falling glyph cascade sketch. Columns of characters fall at randomised speeds with brightness fade along the trail — head glyph is near-white, tail fades to darkness. Supports katakana, Latin, math/unicode symbols, or a mixed pool. Columns reinitialise when density changes. Head character refreshes every 3 frames for flicker."
+    },
+    {
+      "id": "tag_matrix_rain_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

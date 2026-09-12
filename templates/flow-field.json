@@ -1,0 +1,129 @@
+{
+  "promptTemplate": "{{particle_density}} particles in {{flow_mode}} flow, {{color_palette}} palette, {{trail_mode}} trails, {{flow_speed}} current",
+  "variables": [
+    {
+      "name": "flow_mode",
+      "feature_name": "Flow Mode",
+      "values": [
+        {
+          "text": "perlin",
+          "weight": 3
+        },
+        {
+          "text": "circular",
+          "weight": 3
+        },
+        {
+          "text": "gravity",
+          "weight": 2
+        },
+        {
+          "text": "wave",
+          "weight": 2
+        },
+        {
+          "text": "chaos",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "color_palette",
+      "feature_name": "Color Palette",
+      "values": [
+        {
+          "text": "angle",
+          "weight": 2
+        },
+        {
+          "text": "fire",
+          "weight": 2
+        },
+        {
+          "text": "ocean",
+          "weight": 2
+        },
+        {
+          "text": "forest",
+          "weight": 2
+        },
+        {
+          "text": "neon",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "trail_mode",
+      "feature_name": "Trail Mode",
+      "values": [
+        {
+          "text": "sharp",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "ghostly",
+          "weight": 2
+        },
+        {
+          "text": "infinite",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "particle_density",
+      "feature_name": "Particle Density",
+      "values": [
+        {
+          "text": "sparse",
+          "weight": 1
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "dense",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "flow_speed",
+      "feature_name": "Flow Speed",
+      "values": [
+        {
+          "text": "slow",
+          "weight": 2
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "fast",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Particle Flow Field\n// Adapted from GenerativeArtGallery / artwork1\n\nlet flowPts = [];\nlet flowPrevMode = null;\n\np.setup = function() {\n  p.createCanvas(400, 400);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n  for (let i = 0; i < 400; i++) {\n    flowPts.push({\n      x: p.random(p.width), y: p.random(p.height),\n      px: 0, py: 0, vx: 0, vy: 0,\n      hue: p.random(360), spd: p.random(1.5, 3)\n    });\n  }\n  flowPts.forEach(function(pt) { pt.px = pt.x; pt.py = pt.y; });\n};\n\np.draw = function() {\n  let modeStr = p.getSynthVar('flow_mode') || 'perlin';\n  let palStr = p.getSynthVar('color_palette') || 'angle';\n  let trailStr = p.getSynthVar('trail_mode') || 'medium';\n  let densityStr = p.getSynthVar('particle_density') || 'medium';\n  let speedStr = p.getSynthVar('flow_speed') || 'medium';\n\n  if (modeStr !== flowPrevMode) {\n    flowPts.forEach(function(pt) {\n      pt.x = p.random(p.width); pt.y = p.random(p.height);\n      pt.px = pt.x; pt.py = pt.y; pt.vx = 0; pt.vy = 0;\n    });\n    flowPrevMode = modeStr;\n  }\n\n  let bgAlpha = trailStr === 'sharp' ? 100 : trailStr === 'medium' ? 18 : trailStr === 'ghostly' ? 6 : 2;\n  let spdMult = speedStr === 'slow' ? 0.6 : speedStr === 'medium' ? 1 : 2;\n  let numPts = densityStr === 'sparse' ? 80 : densityStr === 'medium' ? 220 : 400;\n\n  p.background(240, 15, 8, bgAlpha);\n\n  let t = p.frameCount * 0.005;\n  let cx = p.width / 2, cy = p.height / 2;\n\n  for (let i = 0; i < numPts; i++) {\n    let pt = flowPts[i];\n    pt.px = pt.x; pt.py = pt.y;\n    let dx = pt.x - cx, dy = pt.y - cy;\n    let angle;\n\n    if (modeStr === 'perlin') {\n      angle = p.noise(pt.x * 0.005, pt.y * 0.005, t) * p.TWO_PI * 4;\n    } else if (modeStr === 'circular') {\n      angle = p.atan2(dy, dx) + p.HALF_PI;\n    } else if (modeStr === 'gravity') {\n      angle = p.atan2(-dy, -dx);\n    } else if (modeStr === 'wave') {\n      angle = p.sin(pt.x * 0.02 + t * 2) * p.PI;\n    } else if (modeStr === 'chaos') {\n      angle = p.noise(pt.x * 0.012, pt.y * 0.012, t * 1.5) * p.TWO_PI * 8;\n    } else {\n      angle = p.noise(pt.x * 0.005, pt.y * 0.005, t) * p.TWO_PI * 4;\n    }\n\n    let force = 0.35 * spdMult;\n    pt.vx = pt.vx * 0.88 + p.cos(angle) * force;\n    pt.vy = pt.vy * 0.88 + p.sin(angle) * force;\n\n    let spd = p.sqrt(pt.vx * pt.vx + pt.vy * pt.vy);\n    if (spd > pt.spd * spdMult) {\n      pt.vx = pt.vx / spd * pt.spd * spdMult;\n      pt.vy = pt.vy / spd * pt.spd * spdMult;\n    }\n\n    pt.x += pt.vx; pt.y += pt.vy;\n\n    if (pt.x < 0) { pt.x = p.width; pt.px = p.width; }\n    if (pt.x > p.width) { pt.x = 0; pt.px = 0; }\n    if (pt.y < 0) { pt.y = p.height; pt.py = p.height; }\n    if (pt.y > p.height) { pt.y = 0; pt.py = 0; }\n\n    let hue;\n    if (palStr === 'fire') hue = p.map(p.noise(pt.x * 0.01, pt.y * 0.01, t), 0, 1, 0, 55);\n    else if (palStr === 'ocean') hue = p.map(p.noise(pt.x * 0.01, pt.y * 0.01, t), 0, 1, 180, 240);\n    else if (palStr === 'forest') hue = p.map(p.noise(pt.x * 0.01, pt.y * 0.01, t), 0, 1, 85, 145);\n    else if (palStr === 'neon') { pt.hue = (pt.hue + 0.3) % 360; hue = pt.hue; }\n    else hue = ((angle / p.TWO_PI + 1) * 360) % 360;\n\n    p.stroke(hue, 85, 90, 75);\n    p.strokeWeight(1.2);\n    p.line(pt.px, pt.py, pt.x, pt.y);\n  }\n};",
+  "tags": [
+    {
+      "id": "tag_flow_field_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork1 (Flow Field Particles)",
+      "description": "Adapted from the 6-mode flow field particle system in GenerativeArtGallery. Particles follow a vector field derived from Perlin noise, vortex, gravity, wave, or chaos functions. Color mapped to flow angle or noise-sampled palette. Trail alpha creates ghost/painting effects. Resets particle positions on mode change."
+    },
+    {
+      "id": "tag_flow_field_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

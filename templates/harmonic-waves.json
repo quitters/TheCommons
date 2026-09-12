@@ -1,0 +1,135 @@
+{
+  "promptTemplate": "{{wave_count}} {{color_mode}} waves, {{amplitude}} amplitude, {{wave_speed}} tempo, {{line_weight}} lines, {{trail_mode}} trails",
+  "variables": [
+    {
+      "name": "wave_count",
+      "feature_name": "Wave Count",
+      "values": [
+        {
+          "text": "few",
+          "weight": 1
+        },
+        {
+          "text": "several",
+          "weight": 3
+        },
+        {
+          "text": "many",
+          "weight": 2
+        },
+        {
+          "text": "swarm",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "color_mode",
+      "feature_name": "Color Mode",
+      "values": [
+        {
+          "text": "rainbow",
+          "weight": 2
+        },
+        {
+          "text": "cool",
+          "weight": 2
+        },
+        {
+          "text": "warm",
+          "weight": 2
+        },
+        {
+          "text": "ember",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "amplitude",
+      "feature_name": "Amplitude",
+      "values": [
+        {
+          "text": "subtle",
+          "weight": 1
+        },
+        {
+          "text": "moderate",
+          "weight": 3
+        },
+        {
+          "text": "dramatic",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "wave_speed",
+      "feature_name": "Wave Speed",
+      "values": [
+        {
+          "text": "slow",
+          "weight": 2
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "fast",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "line_weight",
+      "feature_name": "Line Weight",
+      "values": [
+        {
+          "text": "hair",
+          "weight": 1
+        },
+        {
+          "text": "thin",
+          "weight": 3
+        },
+        {
+          "text": "thick",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "trail_mode",
+      "feature_name": "Trail Mode",
+      "values": [
+        {
+          "text": "crisp",
+          "weight": 1
+        },
+        {
+          "text": "ghostly",
+          "weight": 3
+        },
+        {
+          "text": "infinite",
+          "weight": 2
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Harmonic Waves\n// Adapted from GenerativeArtGallery / artwork3\n\np.setup = function() {\n  p.createCanvas(400, 400);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n};\n\np.draw = function() {\n  let wcStr = p.getSynthVar('wave_count') || 'several';\n  let ampStr = p.getSynthVar('amplitude') || 'moderate';\n  let speedStr = p.getSynthVar('wave_speed') || 'medium';\n  let weightStr = p.getSynthVar('line_weight') || 'thin';\n  let trailStr = p.getSynthVar('trail_mode') || 'ghostly';\n  let colorStr = p.getSynthVar('color_mode') || 'rainbow';\n\n  let waveCount = wcStr === 'few' ? 3 : wcStr === 'several' ? 6 : wcStr === 'many' ? 12 : 20;\n  let amp = ampStr === 'subtle' ? 28 : ampStr === 'moderate' ? 60 : 105;\n  let speed = speedStr === 'slow' ? 0.012 : speedStr === 'medium' ? 0.03 : 0.07;\n  let lw = weightStr === 'hair' ? 0.8 : weightStr === 'thin' ? 2 : 5;\n  let bgAlpha = trailStr === 'crisp' ? 100 : trailStr === 'ghostly' ? 14 : 3;\n\n  p.background(0, 0, 5, bgAlpha);\n\n  let t = p.frameCount;\n\n  for (let w = 0; w < waveCount; w++) {\n    let frac = w / waveCount;\n    let hue;\n    if (colorStr === 'rainbow') hue = (frac * 360 + t * 0.4) % 360;\n    else if (colorStr === 'cool') hue = 190 + frac * 70;\n    else if (colorStr === 'warm') hue = frac * 55;\n    else if (colorStr === 'ember') hue = 10 + frac * 35;\n    else hue = (frac * 360 + t * 0.4) % 360;\n\n    p.stroke(hue, 80, 92, 85);\n    p.strokeWeight(lw);\n    p.noFill();\n\n    let freq = 1 + w * 0.6;\n    let phase = w * p.TWO_PI / waveCount;\n    let baseY = p.height / 2;\n\n    p.beginShape();\n    for (let x = 0; x <= p.width; x += 3) {\n      let angle = (x / p.width) * p.TWO_PI * freq + t * speed + phase;\n      let y = baseY + p.sin(angle) * amp;\n      p.vertex(x, y);\n    }\n    p.endShape();\n  }\n};",
+  "tags": [
+    {
+      "id": "tag_harmonic_waves_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork3 (Oscillating Waves)",
+      "description": "Adapted from the harmonic oscillator sketch in GenerativeArtGallery. Overlapping sine waves with per-wave frequency, phase offset, and hue. Trail mode controls background alpha for ghost/infinite effects."
+    },
+    {
+      "id": "tag_harmonic_waves_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

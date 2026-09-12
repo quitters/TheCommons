@@ -1,0 +1,118 @@
+{
+  "promptTemplate": "An oscilloscope-style artwork drawing {{figure_type}} Lissajous figures with {{freq_ratio}} frequency ratio and {{phase_shift}} phase offset. {{trail_count}} overlapping figures leave {{trail_mode}} trails at {{line_weight}} weight. Colored with a {{color_palette}} palette using {{color_mode}} mapping. The figures rotate at {{rotation_speed}} speed with {{modulation}} modulation effects.",
+  "variables": [
+    {
+      "name": "figure_type",
+      "values": [
+        {"text": "classic", "weight": 3},
+        {"text": "rose", "weight": 3},
+        {"text": "spirograph", "weight": 2},
+        {"text": "harmonograph", "weight": 2},
+        {"text": "butterfly", "weight": 1},
+        {"text": "lemniscate", "weight": 1}
+      ]
+    },
+    {
+      "name": "freq_ratio",
+      "values": [
+        {"text": "unison", "weight": 3},
+        {"text": "octave", "weight": 3},
+        {"text": "fifth", "weight": 2},
+        {"text": "third", "weight": 2},
+        {"text": "seventh", "weight": 1},
+        {"text": "detuned", "weight": 1}
+      ]
+    },
+    {
+      "name": "phase_shift",
+      "values": [
+        {"text": "zero", "weight": 3},
+        {"text": "quarter", "weight": 3},
+        {"text": "third", "weight": 2},
+        {"text": "half", "weight": 2},
+        {"text": "sweep", "weight": 1},
+        {"text": "random", "weight": 1}
+      ]
+    },
+    {
+      "name": "trail_count",
+      "values": [
+        {"text": "single", "weight": 2},
+        {"text": "few", "weight": 3},
+        {"text": "several", "weight": 3},
+        {"text": "many", "weight": 2},
+        {"text": "cascade", "weight": 1},
+        {"text": "dense", "weight": 1}
+      ]
+    },
+    {
+      "name": "trail_mode",
+      "values": [
+        {"text": "solid", "weight": 3},
+        {"text": "fade", "weight": 3},
+        {"text": "phosphor", "weight": 2},
+        {"text": "strobe", "weight": 2},
+        {"text": "echo", "weight": 1},
+        {"text": "infinite", "weight": 1}
+      ]
+    },
+    {
+      "name": "line_weight",
+      "values": [
+        {"text": "hairline", "weight": 3},
+        {"text": "fine", "weight": 3},
+        {"text": "medium", "weight": 2},
+        {"text": "bold", "weight": 2},
+        {"text": "heavy", "weight": 1},
+        {"text": "variable", "weight": 1}
+      ]
+    },
+    {
+      "name": "color_palette",
+      "values": [
+        {"text": "phosphor_green", "weight": 3},
+        {"text": "oscilloscope", "weight": 3},
+        {"text": "neon", "weight": 2},
+        {"text": "laser", "weight": 2},
+        {"text": "synthwave", "weight": 1},
+        {"text": "rainbow", "weight": 1},
+        {"text": "plasma", "weight": 1},
+        {"text": "monochrome", "weight": 1}
+      ]
+    },
+    {
+      "name": "color_mode",
+      "values": [
+        {"text": "angle", "weight": 3},
+        {"text": "speed", "weight": 3},
+        {"text": "layer", "weight": 2},
+        {"text": "time", "weight": 2},
+        {"text": "distance", "weight": 1},
+        {"text": "frequency", "weight": 1}
+      ]
+    },
+    {
+      "name": "rotation_speed",
+      "values": [
+        {"text": "frozen", "weight": 2},
+        {"text": "slow", "weight": 3},
+        {"text": "medium", "weight": 3},
+        {"text": "fast", "weight": 2},
+        {"text": "oscillating", "weight": 1},
+        {"text": "chaotic", "weight": 1}
+      ]
+    },
+    {
+      "name": "modulation",
+      "values": [
+        {"text": "none", "weight": 3},
+        {"text": "vibrato", "weight": 3},
+        {"text": "tremolo", "weight": 2},
+        {"text": "wobble", "weight": 2},
+        {"text": "glitch", "weight": 1},
+        {"text": "breathe", "weight": 1}
+      ]
+    }
+  ],
+  "p5Code": "// Lissajous Lab - Oscilloscope VJ Visuals\n\nlet prevType = '';\nlet globalAngle = 0;\n\nconst PALETTES = {\n  phosphor_green: [[0,255,65],[0,200,50],[0,150,40],[50,255,100],[0,180,55]],\n  oscilloscope: [[0,255,100],[0,200,255],[100,255,200],[50,255,150],[0,230,180]],\n  neon: [[255,0,150],[0,255,200],[255,100,0],[200,0,255],[0,200,255]],\n  laser: [[255,0,0],[0,255,0],[0,100,255],[255,0,0],[0,255,0]],\n  synthwave: [[255,0,100],[0,200,255],[255,100,200],[100,0,255],[255,50,150]],\n  rainbow: [[255,0,0],[255,200,0],[0,255,0],[0,200,255],[180,0,255]],\n  plasma: [[255,50,0],[200,0,200],[0,100,255],[255,200,0],[200,50,255]],\n  monochrome: [[255,255,255],[200,200,200],[150,150,150],[230,230,230],[180,180,180]]\n};\n\nfunction getFreqPair(ratio) {\n  const m = {\n    unison: [1, 1],\n    octave: [1, 2],\n    fifth: [2, 3],\n    third: [3, 4],\n    seventh: [4, 7],\n    detuned: [1, 1.01]\n  };\n  return m[ratio] || [1, 2];\n}\n\nfunction getPhase(v, t) {\n  if (v === 'zero') return 0;\n  if (v === 'quarter') return Math.PI / 2;\n  if (v === 'third') return Math.PI / 3;\n  if (v === 'half') return Math.PI;\n  if (v === 'sweep') return t * 0.01;\n  if (v === 'random') return Math.sin(t * 0.03) * Math.PI;\n  return 0;\n}\n\nfunction getTrailN(v) {\n  const m = {single:1, few:3, several:6, many:10, cascade:16, dense:24};\n  return m[v] || 3;\n}\n\nfunction getLineW(v) {\n  const m = {hairline:1, fine:1.5, medium:2.5, bold:4, heavy:6, variable:-1};\n  return m[v] || 1.5;\n}\n\nfunction getRotSpeed(v) {\n  const m = {frozen:0, slow:0.005, medium:0.015, fast:0.035, oscillating:-1, chaotic:-2};\n  return m[v] || 0.005;\n}\n\nfunction samplePalette(pal, t) {\n  t = ((t % 1) + 1) % 1;\n  let idx = t * (pal.length - 1);\n  let i = Math.floor(idx);\n  let f = idx - i;\n  let c1 = pal[Math.min(i, pal.length - 1)];\n  let c2 = pal[Math.min(i + 1, pal.length - 1)];\n  return [c1[0]+(c2[0]-c1[0])*f, c1[1]+(c2[1]-c1[1])*f, c1[2]+(c2[2]-c1[2])*f];\n}\n\np.setup = function() {\n  p.createCanvas(600, 600);\n  p.frameRate(30);\n  p.background(0);\n};\n\np.draw = function() {\n  let figV = p.getSynthVar('figure_type') || 'classic';\n  let ratioV = p.getSynthVar('freq_ratio') || 'octave';\n  let phaseV = p.getSynthVar('phase_shift') || 'quarter';\n  let trailNV = p.getSynthVar('trail_count') || 'few';\n  let trailMV = p.getSynthVar('trail_mode') || 'fade';\n  let lwV = p.getSynthVar('line_weight') || 'fine';\n  let palV = p.getSynthVar('color_palette') || 'phosphor_green';\n  let cmodeV = p.getSynthVar('color_mode') || 'angle';\n  let rotV = p.getSynthVar('rotation_speed') || 'slow';\n  let modV = p.getSynthVar('modulation') || 'none';\n\n  let configKey = figV + ratioV + phaseV + trailNV + palV + cmodeV;\n  if (configKey !== prevType) {\n    prevType = configKey;\n    p.background(0);\n    globalAngle = 0;\n  }\n\n  let palette = PALETTES[palV] || PALETTES.phosphor_green;\n  let nTrails = getTrailN(trailNV);\n  let lw = getLineW(lwV);\n  let rotSpeed = getRotSpeed(rotV);\n  let freqs = getFreqPair(ratioV);\n  let phase = getPhase(phaseV, p.frameCount);\n\n  // Background handling\n  if (trailMV === 'solid') {\n    p.background(0);\n  } else if (trailMV === 'fade') {\n    p.fill(0, 0, 0, 12);\n    p.noStroke();\n    p.rect(0, 0, 600, 600);\n  } else if (trailMV === 'phosphor') {\n    p.fill(0, 0, 0, 6);\n    p.noStroke();\n    p.rect(0, 0, 600, 600);\n  } else if (trailMV === 'strobe') {\n    if (p.frameCount % 8 < 2) p.background(0);\n  } else if (trailMV === 'echo') {\n    p.fill(0, 0, 0, 20);\n    p.noStroke();\n    p.rect(0, 0, 600, 600);\n  }\n  // infinite = no clearing\n\n  // Rotation\n  if (rotSpeed === -1) {\n    globalAngle = Math.sin(p.frameCount * 0.01) * 1.5;\n  } else if (rotSpeed === -2) {\n    globalAngle += Math.sin(p.frameCount * 0.02) * 0.02;\n  } else {\n    globalAngle += rotSpeed;\n  }\n\n  // Modulation\n  let modAmp = 0;\n  let modFreq = 0;\n  if (modV === 'vibrato') { modAmp = 0.02; modFreq = 5; }\n  else if (modV === 'tremolo') { modAmp = 0.3; modFreq = 3; }\n  else if (modV === 'wobble') { modAmp = 0.1; modFreq = 0.7; }\n  else if (modV === 'glitch') { modAmp = Math.random() > 0.95 ? 0.5 : 0; modFreq = 20; }\n  else if (modV === 'breathe') { modAmp = 0.15; modFreq = 0.3; }\n\n  let modVal = modAmp * Math.sin(p.frameCount * modFreq * 0.05);\n\n  let cx = 300, cy = 300;\n  let baseRadius = 220;\n\n  for (let layer = 0; layer < nTrails; layer++) {\n    let layerOffset = layer * Math.PI * 2 / nTrails;\n    let layerPhase = phase + layerOffset * 0.3;\n    let radius = baseRadius * (1 - layer * 0.02);\n\n    let fA = freqs[0] + modVal;\n    let fB = freqs[1];\n\n    let points = 600;\n    let prevX, prevY;\n\n    for (let i = 0; i <= points; i++) {\n      let t = i / points * Math.PI * 2;\n      let x, y;\n\n      if (figV === 'classic') {\n        x = Math.sin(fA * t + layerPhase + p.frameCount * 0.02);\n        y = Math.sin(fB * t + p.frameCount * 0.02);\n      } else if (figV === 'rose') {\n        let k = fA / fB;\n        let r = Math.cos(k * t + p.frameCount * 0.02);\n        x = r * Math.cos(t + layerPhase);\n        y = r * Math.sin(t + layerPhase);\n      } else if (figV === 'spirograph') {\n        let R = 1, rr = fA / (fA + fB), d = 0.8;\n        let inner = t * fB / fA + p.frameCount * 0.02;\n        x = (R - rr) * Math.cos(t + layerPhase) + d * Math.cos(inner);\n        y = (R - rr) * Math.sin(t + layerPhase) - d * Math.sin(inner);\n        x *= 0.6; y *= 0.6;\n      } else if (figV === 'harmonograph') {\n        let decay = Math.exp(-t * 0.05);\n        x = Math.sin(fA * t + layerPhase + p.frameCount * 0.02) * decay;\n        y = Math.sin(fB * t + Math.PI/4 + p.frameCount * 0.015) * decay;\n      } else if (figV === 'butterfly') {\n        let bt = t + p.frameCount * 0.01;\n        let r = Math.exp(Math.cos(bt)) - 2 * Math.cos(4 * bt) + Math.pow(Math.sin(bt / 12), 5);\n        x = Math.sin(bt + layerPhase) * r * 0.25;\n        y = Math.cos(bt + layerPhase) * r * 0.25;\n      } else { // lemniscate\n        let lt = t + p.frameCount * 0.02;\n        let denom = 1 + Math.sin(lt) * Math.sin(lt);\n        x = Math.cos(lt + layerPhase) / denom;\n        y = Math.sin(lt + layerPhase) * Math.cos(lt) / denom;\n      }\n\n      // Apply rotation\n      let rx = x * Math.cos(globalAngle) - y * Math.sin(globalAngle);\n      let ry = x * Math.sin(globalAngle) + y * Math.cos(globalAngle);\n\n      let px = cx + rx * radius;\n      let py = cy + ry * radius;\n\n      if (i > 0) {\n        // Color\n        let colorT = 0;\n        if (cmodeV === 'angle') colorT = t / (Math.PI * 2);\n        else if (cmodeV === 'speed') {\n          let dx = px - prevX, dy = py - prevY;\n          colorT = Math.sqrt(dx*dx + dy*dy) * 0.02;\n        }\n        else if (cmodeV === 'layer') colorT = layer / nTrails;\n        else if (cmodeV === 'time') colorT = (p.frameCount * 0.005 + layer * 0.1) % 1;\n        else if (cmodeV === 'distance') colorT = Math.sqrt(rx*rx + ry*ry);\n        else colorT = (fA * t) % 1;\n\n        let col = samplePalette(palette, colorT);\n        let alpha = 180 - layer * (120 / nTrails);\n        if (trailMV === 'phosphor') alpha = Math.min(255, alpha + 40);\n\n        let w = lw === -1 ? (1 + Math.abs(Math.sin(t * 3)) * 4) : lw;\n\n        p.stroke(col[0], col[1], col[2], alpha);\n        p.strokeWeight(w * (1 - layer * 0.03));\n        p.line(prevX, prevY, px, py);\n\n        // Glow for phosphor_green and oscilloscope palettes\n        if (palV === 'phosphor_green' || palV === 'oscilloscope') {\n          p.stroke(col[0], col[1], col[2], alpha * 0.15);\n          p.strokeWeight(w * 3);\n          p.line(prevX, prevY, px, py);\n        }\n      }\n\n      prevX = px;\n      prevY = py;\n    }\n  }\n};"
+}

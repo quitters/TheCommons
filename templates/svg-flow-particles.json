@@ -1,0 +1,290 @@
+{
+  "promptTemplate": "A generative flow field artwork with {{particle_density}} particle density flowing with {{flow_energy}} energy. Particles leave {{trail_length}} {{trail_style}} trails at {{trail_opacity}} opacity, guided by {{noise_texture}} noise patterns. Rendered in a {{color_palette}} color palette with {{color_shift}} color shifting. {{wave_pattern}} wave patterns are layered beneath the particles. The composition features {{grain_texture}} film grain, {{symmetry_mode}} symmetry, and {{distortion}} distortion effects, presented in a {{frame_style}} frame.",
+  "variables": [
+    {
+      "name": "particle_density",
+      "values": [
+        {
+          "text": "sparse"
+        },
+        {
+          "text": "light"
+        },
+        {
+          "text": "moderate"
+        },
+        {
+          "text": "dense"
+        },
+        {
+          "text": "swarm"
+        },
+        {
+          "text": "overwhelming"
+        }
+      ]
+    },
+    {
+      "name": "flow_energy",
+      "values": [
+        {
+          "text": "still"
+        },
+        {
+          "text": "gentle"
+        },
+        {
+          "text": "moderate"
+        },
+        {
+          "text": "energetic"
+        },
+        {
+          "text": "turbulent"
+        },
+        {
+          "text": "chaotic"
+        }
+      ]
+    },
+    {
+      "name": "trail_length",
+      "values": [
+        {
+          "text": "dots"
+        },
+        {
+          "text": "short"
+        },
+        {
+          "text": "medium"
+        },
+        {
+          "text": "flowing"
+        },
+        {
+          "text": "ribbons"
+        },
+        {
+          "text": "streams"
+        }
+      ]
+    },
+    {
+      "name": "trail_style",
+      "values": [
+        {
+          "text": "linear"
+        },
+        {
+          "text": "smooth"
+        },
+        {
+          "text": "mixed"
+        }
+      ]
+    },
+    {
+      "name": "trail_opacity",
+      "values": [
+        {
+          "text": "faint"
+        },
+        {
+          "text": "subtle"
+        },
+        {
+          "text": "medium"
+        },
+        {
+          "text": "visible"
+        },
+        {
+          "text": "bright"
+        },
+        {
+          "text": "vivid"
+        }
+      ]
+    },
+    {
+      "name": "noise_texture",
+      "values": [
+        {
+          "text": "smooth"
+        },
+        {
+          "text": "rolling"
+        },
+        {
+          "text": "organic"
+        },
+        {
+          "text": "complex"
+        },
+        {
+          "text": "turbulent"
+        },
+        {
+          "text": "fractured"
+        }
+      ]
+    },
+    {
+      "name": "color_palette",
+      "values": [
+        {
+          "text": "warm sunset"
+        },
+        {
+          "text": "cool ocean"
+        },
+        {
+          "text": "earth tones"
+        },
+        {
+          "text": "neon vivid"
+        },
+        {
+          "text": "pastels"
+        },
+        {
+          "text": "monochrome"
+        }
+      ]
+    },
+    {
+      "name": "color_shift",
+      "values": [
+        {
+          "text": "none"
+        },
+        {
+          "text": "subtle"
+        },
+        {
+          "text": "moderate"
+        },
+        {
+          "text": "dramatic"
+        }
+      ]
+    },
+    {
+      "name": "wave_pattern",
+      "values": [
+        {
+          "text": "none"
+        },
+        {
+          "text": "subtle"
+        },
+        {
+          "text": "gentle"
+        },
+        {
+          "text": "rhythmic"
+        },
+        {
+          "text": "bold"
+        },
+        {
+          "text": "intense"
+        }
+      ]
+    },
+    {
+      "name": "grain_texture",
+      "values": [
+        {
+          "text": "none"
+        },
+        {
+          "text": "whisper"
+        },
+        {
+          "text": "light"
+        },
+        {
+          "text": "medium"
+        },
+        {
+          "text": "heavy"
+        },
+        {
+          "text": "gritty"
+        }
+      ]
+    },
+    {
+      "name": "symmetry_mode",
+      "values": [
+        {
+          "text": "none"
+        },
+        {
+          "text": "bilateral"
+        },
+        {
+          "text": "quadrilateral"
+        },
+        {
+          "text": "radial"
+        },
+        {
+          "text": "kaleidoscope"
+        },
+        {
+          "text": "snowflake"
+        }
+      ]
+    },
+    {
+      "name": "frame_style",
+      "values": [
+        {
+          "text": "none"
+        },
+        {
+          "text": "thin"
+        },
+        {
+          "text": "classic"
+        },
+        {
+          "text": "matted"
+        },
+        {
+          "text": "ornate"
+        },
+        {
+          "text": "gallery"
+        }
+      ]
+    },
+    {
+      "name": "distortion",
+      "values": [
+        {
+          "text": "none"
+        },
+        {
+          "text": "subtle"
+        },
+        {
+          "text": "gentle"
+        },
+        {
+          "text": "warped"
+        },
+        {
+          "text": "melting"
+        },
+        {
+          "text": "liquid"
+        }
+      ]
+    }
+  ],
+  "p5Code": "// ═══════════════════════════════════════════════════════════════════\n// SVG FLOW PARTICLES - Synthograsizer Workflow Template\n// Full p5.js port of SVG flow field particle system\n// ═══════════════════════════════════════════════════════════════════\n\nconst CW = 500;\nconst PI = Math.PI;\nconst TWO_PI = PI * 2;\n\n// ─── PALETTES ─────────────────────────────────────────────────────\nconst PALETTES = {\n  'warm sunset':  ['#ff8a9b','#6b5b95','#88d8c0','#ffd23f','#f7f3e9'],\n  'cool ocean':   ['#3498db','#5dade2','#1abc9c','#2c3e50','#ecf0f1'],\n  'earth tones':  ['#8b4513','#228b22','#cd853f','#b22222','#2e8b57'],\n  'neon vivid':   ['#ff6b6b','#4ecdc4','#45b7d1','#96ceb4','#dda0dd'],\n  'pastels':      ['#f7cac9','#f7786b','#92a8d1','#034f84','#dda0dd'],\n  'monochrome':   ['#2c3e50','#34495e','#7f8c8d','#95a5a6','#ecf0f1']\n};\n\n// ─── PARAMETER MAPS ───────────────────────────────────────────────\nconst densityMap = { sparse:20, light:40, moderate:80, dense:150, swarm:250, overwhelming:400 };\nconst energyMap = {\n  still:    { chaos:0.3, speed:0.02 },\n  gentle:   { chaos:0.8, speed:0.05 },\n  moderate: { chaos:2.0, speed:0.10 },\n  energetic:{ chaos:3.0, speed:0.15 },\n  turbulent:{ chaos:4.0, speed:0.18 },\n  chaotic:  { chaos:5.0, speed:0.22 }\n};\nconst trailLenMap = { dots:3, short:10, medium:20, flowing:40, ribbons:60, streams:100 };\nconst trailOpMap = { faint:0.15, subtle:0.25, medium:0.4, visible:0.55, bright:0.75, vivid:0.9 };\nconst noiseMap = { smooth:0.001, rolling:0.004, organic:0.012, complex:0.035, turbulent:0.08, fractured:0.18 };\nconst colorShiftMap = { none:0, subtle:8, moderate:18, dramatic:35 };\nconst waveMap = {\n  none:    { count:0, height:0 },\n  subtle:  { count:4, height:0.04 },\n  gentle:  { count:6, height:0.08 },\n  rhythmic:{ count:10, height:0.12 },\n  bold:    { count:14, height:0.2 },\n  intense: { count:20, height:0.3 }\n};\nconst grainMap = { none:0, whisper:0.03, light:0.06, medium:0.1, heavy:0.18, gritty:0.3 };\nconst symMap = { none:0, bilateral:2, quadrilateral:4, radial:6, kaleidoscope:8, snowflake:12 };\nconst frameMap = {\n  none:    { width:0, matting:false },\n  thin:    { width:0.01, matting:false },\n  classic: { width:0.02, matting:false },\n  matted:  { width:0.015, matting:true },\n  ornate:  { width:0.025, matting:true },\n  gallery: { width:0.03, matting:true }\n};\nconst distMap = { none:0, subtle:8, gentle:25, warped:50, melting:80, liquid:120 };\n\n// ─── STATE ────────────────────────────────────────────────────────\nlet particles = [];\nlet waves = [];\nlet bgParticles = [];\nlet breathCircles = [];\nlet time = 0;\nlet palette = [];\nlet prevDensity = -1;\nlet prevPaletteName = '';\nlet prevWaveCount = -1;\nlet noiseOff = 0;\n\n// ─── SETUP ────────────────────────────────────────────────────────\np.setup = function() {\n  p.createCanvas(CW, CW);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  noiseOff = p.random(10000);\n  p.print('Flow Particles ready');\n};\n\n// ─── HELPERS ──────────────────────────────────────────────────────\nfunction hexToHSB(hex) {\n  let r = parseInt(hex.slice(1,3),16)/255;\n  let g = parseInt(hex.slice(3,5),16)/255;\n  let b = parseInt(hex.slice(5,7),16)/255;\n  let mx = Math.max(r,g,b), mn = Math.min(r,g,b);\n  let d = mx - mn, h = 0, s = mx ? d/mx*100 : 0, br = mx*100;\n  if (d) {\n    if (mx===r) h = ((g-b)/d + (g<b?6:0)) * 60;\n    else if (mx===g) h = ((b-r)/d + 2) * 60;\n    else h = ((r-g)/d + 4) * 60;\n  }\n  return [h, s, br];\n}\n\nfunction getColor(idx, pal, shift) {\n  let hex = pal[idx % pal.length];\n  let [h, s, br] = hexToHSB(hex);\n  if (shift > 0) {\n    let seed = idx * 73.7;\n    h = (h + (p.noise(seed) - 0.5) * 2 * shift + 360) % 360;\n    s = p.constrain(s + (p.noise(seed + 100) - 0.5) * 2 * shift * 0.5, 10, 100);\n    br = p.constrain(br + (p.noise(seed + 200) - 0.5) * 2 * shift * 0.3, 15, 95);\n  }\n  return p.color(h, s, br);\n}\n\nfunction initParticles(count, bounds) {\n  particles = [];\n  for (let i = 0; i < count; i++) {\n    particles.push({\n      x: p.random(bounds, CW - bounds),\n      y: p.random(bounds, CW - bounds),\n      vx: 0, vy: 0,\n      colorIdx: i,\n      weight: p.random(0.5, 3.0),\n      trail: [],\n      age: 0,\n      maxAge: p.floor(p.random(200, 500))\n    });\n  }\n}\n\nfunction initWaves(count, pal) {\n  waves = [];\n  for (let i = 0; i < count; i++) {\n    let isVert = p.random() < 0.5;\n    waves.push({\n      pos: (i / count) * CW,\n      size: p.random(0.75, 1.25) * CW,\n      thickness: p.random(0.05, 0.25) * CW,\n      color: getColor(i, pal, 0),\n      opacity: p.random(20, 50),\n      speed: p.random(0.003, 0.015),\n      amplitude: p.random(20, 60),\n      isVertical: isVert,\n      offset: p.random(TWO_PI)\n    });\n  }\n}\n\nfunction initBgParticles(pal) {\n  bgParticles = [];\n  for (let i = 0; i < 8; i++) {\n    bgParticles.push({\n      x: p.random(CW), y: p.random(CW),\n      radius: p.random(15, 60),\n      color: getColor(i, pal, 0),\n      driftSpeed: p.random(0.002, 0.008),\n      driftAmp: p.random(10, 30),\n      offset: p.random(TWO_PI)\n    });\n  }\n}\n\nfunction initBreathing(pal) {\n  breathCircles = [];\n  for (let i = 0; i < 4; i++) {\n    breathCircles.push({\n      cx: p.random(CW * 0.2, CW * 0.8),\n      cy: p.random(CW * 0.2, CW * 0.8),\n      baseR: p.random(20, 60),\n      color: getColor(i, pal, 0),\n      speed: p.random(0.015, 0.04),\n      offset: p.random(TWO_PI)\n    });\n  }\n}\n\n// ─── NOISE-BASED FLOW FIELD ───────────────────────────────────────\nfunction flowAngle(x, y, ns, chaos) {\n  let n1 = p.noise(x * ns + noiseOff, y * ns + noiseOff, time);\n  let n2 = p.noise(x * ns * 1.3 + noiseOff + 100, y * ns * 0.8 + noiseOff + 100, time * 1.1);\n  return (n1 + n2 * 0.5) * TWO_PI * chaos;\n}\n\n// ─── MIRROR POINT ─────────────────────────────────────────────────\nfunction mirrorPoint(x, y, axisIdx, totalAxes) {\n  let cx = CW / 2, cy = CW / 2;\n  let angle = axisIdx * (TWO_PI / totalAxes);\n  let cos = Math.cos(angle), sin = Math.sin(angle);\n  let tx = x - cx, ty = y - cy;\n  let rx = tx * cos + ty * sin;\n  let ry = -tx * sin + ty * cos;\n  return { x: cx + rx * cos - (-ry) * sin, y: cy + rx * sin + (-ry) * cos };\n}\n\n// ─── DRAW WAVES ───────────────────────────────────────────────────\nfunction drawWaves(waveParams) {\n  if (waveParams.count === 0) return;\n  p.noStroke();\n  for (let w of waves) {\n    let drift = Math.sin(p.frameCount * w.speed + w.offset) * w.amplitude;\n    p.push();\n    let c = w.color;\n    p.fill(p.hue(c), p.saturation(c), p.brightness(c), w.opacity);\n    if (w.isVertical) {\n      p.rect(w.pos + drift, 0, w.thickness, w.size);\n    } else {\n      p.rect(0, w.pos + drift, w.size, w.thickness);\n    }\n    p.pop();\n  }\n}\n\n// ─── DRAW BG PARTICLES ────────────────────────────────────────────\nfunction drawBgParticles() {\n  p.noStroke();\n  for (let bg of bgParticles) {\n    let dx = Math.sin(p.frameCount * bg.driftSpeed + bg.offset) * bg.driftAmp;\n    let dy = Math.cos(p.frameCount * bg.driftSpeed * 0.7 + bg.offset) * bg.driftAmp * 0.5;\n    let c = bg.color;\n    p.fill(p.hue(c), p.saturation(c), p.brightness(c), 25);\n    p.circle(bg.x + dx, bg.y + dy, bg.radius * 2);\n  }\n}\n\n// ─── DRAW BREATHING ───────────────────────────────────────────────\nfunction drawBreathing() {\n  p.noFill();\n  for (let bc of breathCircles) {\n    let pulse = Math.sin(p.frameCount * bc.speed + bc.offset);\n    let r = bc.baseR * (1 + pulse * 0.3);\n    let opac = 15 + pulse * 10;\n    let c = bc.color;\n    p.stroke(p.hue(c), p.saturation(c), p.brightness(c), opac);\n    p.strokeWeight(1.5);\n    p.circle(bc.cx, bc.cy, r * 2);\n  }\n  p.noStroke();\n}\n\n// ─── DRAW GRAIN ───────────────────────────────────────────────────\nfunction drawGrain(opacity) {\n  if (opacity <= 0) return;\n  p.loadPixels();\n  let d = p.pixelDensity();\n  let total = 4 * (CW * d) * (CW * d);\n  let strength = opacity * 80;\n  for (let i = 0; i < total; i += 4) {\n    let noise = (p.random() - 0.5) * strength;\n    p.pixels[i]   += noise;\n    p.pixels[i+1] += noise;\n    p.pixels[i+2] += noise;\n  }\n  p.updatePixels();\n}\n\n// ─── DRAW FRAME ───────────────────────────────────────────────────\nfunction drawFrame(style, pal) {\n  if (style.width <= 0) return;\n  let fw = style.width * CW;\n  let mw = style.matting ? fw * 2.5 : 0;\n  let totalBorder = fw + mw;\n  p.push();\n  p.colorMode(p.RGB, 255);\n\n  // Matting\n  if (style.matting) {\n    p.noStroke();\n    p.fill(255, 253, 245);\n    // Top matting\n    p.rect(fw, fw, CW - fw*2, mw);\n    // Bottom matting\n    p.rect(fw, CW - fw - mw, CW - fw*2, mw);\n    // Left matting\n    p.rect(fw, fw, mw, CW - fw*2);\n    // Right matting\n    p.rect(CW - fw - mw, fw, mw, CW - fw*2);\n\n    // Paper texture dots on matting\n    p.fill(210, 205, 195, 30);\n    for (let i = 0; i < 30; i++) {\n      let gx = p.random(fw, CW - fw);\n      let gy = p.random(fw, CW - fw);\n      if (gx < totalBorder || gx > CW - totalBorder || gy < totalBorder || gy > CW - totalBorder) {\n        p.circle(gx, gy, p.random(1, 3));\n      }\n    }\n\n    // Inner shadow line\n    p.stroke(0, 0, 0, 20);\n    p.strokeWeight(1.5);\n    p.noFill();\n    p.rect(totalBorder, totalBorder, CW - totalBorder*2, CW - totalBorder*2);\n  }\n\n  // Frame border\n  let frameColor = pal.length > 0 ? pal[0] : '#2a2a2a';\n  let fc = hexToRGB(frameColor);\n  p.stroke(fc[0], fc[1], fc[2]);\n  p.strokeWeight(fw);\n  p.noFill();\n  p.rect(fw/2, fw/2, CW - fw, CW - fw);\n\n  p.pop();\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n}\n\nfunction hexToRGB(hex) {\n  return [\n    parseInt(hex.slice(1,3),16),\n    parseInt(hex.slice(3,5),16),\n    parseInt(hex.slice(5,7),16)\n  ];\n}\n\n// ─── DRAW TRAIL ───────────────────────────────────────────────────\nfunction drawTrail(pt, style, opac, pal, shift, distStr) {\n  if (pt.trail.length < 2) return;\n  let col = getColor(pt.colorIdx, pal, shift);\n  let ageOpac = (1 - (pt.age / pt.maxAge) * 0.5) * opac * 100;\n  p.stroke(p.hue(col), p.saturation(col), p.brightness(col), ageOpac);\n  p.strokeWeight(pt.weight);\n  p.noFill();\n\n  let useCurve = style === 'smooth' || (style === 'mixed' && pt.colorIdx % 2 === 0);\n\n  // Apply distortion offset\n  let applyDist = distStr > 0;\n\n  if (useCurve && pt.trail.length > 3) {\n    p.beginShape();\n    for (let i = 0; i < pt.trail.length; i++) {\n      let tx = pt.trail[i].x;\n      let ty = pt.trail[i].y;\n      if (applyDist) {\n        let ox = tx, oy = ty;\n        tx += (p.noise(ox * 0.01, oy * 0.01, time * 0.3) - 0.5) * distStr;\n        ty += (p.noise(ox * 0.01 + 500, oy * 0.01 + 500, time * 0.3) - 0.5) * distStr;\n      }\n      // Gradient along trail\n      if (i > 0 && i % 5 === 0) {\n        p.endShape();\n        let t = i / pt.trail.length;\n        let col2 = getColor(pt.colorIdx + 1, pal, shift);\n        let lc = p.lerpColor(col, col2, t);\n        p.stroke(p.hue(lc), p.saturation(lc), p.brightness(lc), ageOpac * (1 - t * 0.3));\n        p.beginShape();\n        p.curveVertex(tx, ty);\n      }\n      p.curveVertex(tx, ty);\n    }\n    p.endShape();\n  } else {\n    p.beginShape();\n    for (let i = 0; i < pt.trail.length; i++) {\n      let tx = pt.trail[i].x;\n      let ty = pt.trail[i].y;\n      if (applyDist) {\n        let ox = tx, oy = ty;\n        tx += (p.noise(ox * 0.01, oy * 0.01, time * 0.3) - 0.5) * distStr;\n        ty += (p.noise(ox * 0.01 + 500, oy * 0.01 + 500, time * 0.3) - 0.5) * distStr;\n      }\n      p.vertex(tx, ty);\n    }\n    p.endShape();\n  }\n}\n\n// ─── MAIN DRAW LOOP ───────────────────────────────────────────────\np.draw = function() {\n  // Read all variables\n  let vDensity    = p.getSynthVar('particle_density') || 'moderate';\n  let vEnergy     = p.getSynthVar('flow_energy') || 'moderate';\n  let vTrailLen   = p.getSynthVar('trail_length') || 'medium';\n  let vTrailStyle = p.getSynthVar('trail_style') || 'smooth';\n  let vTrailOpac  = p.getSynthVar('trail_opacity') || 'medium';\n  let vNoise      = p.getSynthVar('noise_texture') || 'organic';\n  let vPalette    = p.getSynthVar('color_palette') || 'warm sunset';\n  let vShift      = p.getSynthVar('color_shift') || 'none';\n  let vWave       = p.getSynthVar('wave_pattern') || 'subtle';\n  let vGrain      = p.getSynthVar('grain_texture') || 'none';\n  let vSymmetry   = p.getSynthVar('symmetry_mode') || 'none';\n  let vFrame      = p.getSynthVar('frame_style') || 'none';\n  let vDist       = p.getSynthVar('distortion') || 'none';\n\n  // Map to numeric params\n  let numParticles = densityMap[vDensity] || 80;\n  let energy = energyMap[vEnergy] || energyMap.moderate;\n  let maxTrail = trailLenMap[vTrailLen] || 20;\n  let trailOpac = trailOpMap[vTrailOpac] || 0.4;\n  let ns = noiseMap[vNoise] || 0.012;\n  palette = PALETTES[vPalette] || PALETTES['warm sunset'];\n  let shift = colorShiftMap[vShift] || 0;\n  let waveParams = waveMap[vWave] || waveMap.subtle;\n  let grainOpac = grainMap[vGrain] || 0;\n  let symAxes = symMap[vSymmetry] || 0;\n  let frameStyle = frameMap[vFrame] || frameMap.none;\n  let distStr = distMap[vDist] || 0;\n\n  let frameBounds = (frameStyle.width + (frameStyle.matting ? frameStyle.width * 2.5 : 0)) * CW;\n\n  // Reinit on density change\n  if (numParticles !== prevDensity) {\n    prevDensity = numParticles;\n    initParticles(numParticles, frameBounds + 5);\n  }\n\n  // Reinit palette-dependent elements\n  if (vPalette !== prevPaletteName) {\n    prevPaletteName = vPalette;\n    initBgParticles(palette);\n    initBreathing(palette);\n    if (waveParams.count > 0) {\n      initWaves(waveParams.count, palette);\n      prevWaveCount = waveParams.count;\n    }\n    // Recolor particles\n    for (let pt of particles) {\n      pt.colorIdx = particles.indexOf(pt);\n    }\n  }\n\n  // Reinit waves on count change\n  if (waveParams.count !== prevWaveCount) {\n    prevWaveCount = waveParams.count;\n    initWaves(waveParams.count, palette);\n  }\n\n  // Background\n  let bgCol = getColor(0, palette, 0);\n  p.background(p.hue(bgCol), p.saturation(bgCol) * 0.15, 8, 100);\n\n  // Fade trails with semi-transparent overlay\n  p.noStroke();\n  p.fill(p.hue(bgCol), p.saturation(bgCol) * 0.15, 8, 8);\n  p.rect(0, 0, CW, CW);\n\n  time += 0.008;\n\n  // Layer 1: Waves\n  drawWaves(waveParams);\n\n  // Layer 2: Background particles\n  drawBgParticles();\n\n  // Layer 3: Breathing circles\n  drawBreathing();\n\n  // Layer 4: Update and draw flow field particles\n  let bounds = frameBounds + 2;\n  for (let pt of particles) {\n    let angle = flowAngle(pt.x, pt.y, ns, energy.chaos);\n    let force = energy.speed * 1.5;\n    pt.vx += Math.cos(angle) * force;\n    pt.vy += Math.sin(angle) * force;\n    pt.vx *= 0.97;\n    pt.vy *= 0.97;\n    pt.trail.push({ x: pt.x, y: pt.y });\n    if (pt.trail.length > maxTrail) pt.trail.shift();\n    pt.x += pt.vx;\n    pt.y += pt.vy;\n    pt.age++;\n\n    // Respawn\n    if (pt.age > pt.maxAge || pt.x < bounds || pt.x > CW - bounds || pt.y < bounds || pt.y > CW - bounds) {\n      pt.x = p.random(bounds, CW - bounds);\n      pt.y = p.random(bounds, CW - bounds);\n      pt.vx = 0; pt.vy = 0;\n      pt.trail = [];\n      pt.age = 0;\n    }\n\n    // Draw primary trail\n    drawTrail(pt, vTrailStyle, trailOpac, palette, shift, distStr);\n\n    // Draw symmetry mirrors\n    if (symAxes > 0) {\n      for (let ax = 1; ax < symAxes; ax++) {\n        let mirroredTrail = pt.trail.map(tp => mirrorPoint(tp.x, tp.y, ax, symAxes));\n        let mirrorPt = { trail: mirroredTrail, colorIdx: pt.colorIdx, weight: pt.weight, age: pt.age, maxAge: pt.maxAge };\n        drawTrail(mirrorPt, vTrailStyle, trailOpac * 0.65, palette, shift, distStr);\n      }\n    }\n  }\n\n  // Layer 5: Grain overlay\n  if (grainOpac > 0 && p.frameCount % 3 === 0) {\n    drawGrain(grainOpac);\n  }\n\n  // Layer 6: Frame and matting (on top)\n  drawFrame(frameStyle, palette);\n};\n"
+}

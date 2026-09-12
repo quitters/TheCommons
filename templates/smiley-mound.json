@@ -1,0 +1,469 @@
+{
+  "promptTemplate": "A {{quirk}} creature mound rendered in {{medium}} with {{texture}} texture. Colors drawn from a(n) {{color_mood}} palette with a {{mound_hue}} degree foreground hue and {{bg_hue}} degree background hue, {{bg_density}} background mark density, {{mound_density}} mound particle density, {{bg_style}} background style, projected with {{chaos_energy}} energy, in {{art_register}} style.",
+  "variables": [
+    {
+      "name": "quirk",
+      "feature_name": "Quirk",
+      "values": [
+        {
+          "text": "[3D render of the cutest, fluffiest smiley-face mound thing, with beady eyes, pixar hairworks | Something reminiscent of fluffy needle-felted pastel cotton-candy explosions seems almost palpable, soft, and gently pulsating, making the sight soothing. It epitomizes the most peaceful and comforting aspects of the human psyche, creating the absolute most beautiful and serene visual imaginable in high definition. Hyper-realistic imagery of a peak paragon of serenity and delight, a dazzling tapestry of calming, soothing, organic elements. The inspiring artwork transcends our understanding, possessing a comforting, unique structure that harmoniously marries all norms and conventions of beauty or aesthetics.]",
+          "weight": 3
+        },
+        {
+          "text": "[a smiley-face mound represented as Hyper-realistic imagery of an extreme paragon of horror and revulsion, a grotesque fleshy collage crafted from quivering, fleshy, organic matter. The abominable artwork is beyond our comprehension, possessing a disturbing, unique anatomy that shatters all norms and conventions of beauty or aesthetics. The piles of ooze appear almost palpable, wet, and throbbing, making the sight unbearable. It epitomizes the worst fears and taboos of human psyche, making for the absolute most repulsive and terrifying visual imaginable in high definition.]",
+          "weight": 3
+        },
+        {
+          "text": "[rare gilded ornate statue faberge egg|gentle smiley-face shape centered profile photo :8]",
+          "weight": 1
+        },
+        {
+          "text": "[16-bit pixel art polaroid | 1990s aesthetic, bold ascii glitch-art :8]",
+          "weight": 1
+        },
+        {
+          "text": "[Generate a hyperrealistic fuzzy needlefelted creature, blending aesthetics from the Golden Age and new American documentary sheet film photography. The subject should be a biblically accurate celestial monster, adorned with gigantic googly-eyes and a prominent smiling mouth. The figure should be a cheerful creature, resembling one that could have jumped out from a children's book. Render an unpleasantly fleshy, misshapen entity that contradicts its grotesque physical form with attractive beady eyes and an innocent, playful smile.]",
+          "weight": 2
+        },
+        {
+          "text": "[Create a hallucinogenic and hyperrealistic portrait, characterizing whimsical atmospherics transcending into an enigmatic dimension. The focal point should be a person embodying elemental traits inspired by 'creepypasta' mythology, harmonizing sentiments of delight and optimism while preserving an unsettling exterior. The design should integrate elements of candycore aesthetics with muted pastel shades and effervescent formations, adding a touch of appalling kawaii cuteness. The portrait should be characterized by disproportionately magnified eyes turned uncanny, energized with an essence of video glitch art.]",
+          "weight": 2
+        },
+        {
+          "text": "[Render a nauseatingly repulsive portrait that amplifies the fear of phobias in a disgustingly jinxed and unsavory manifestation. Produce a vivid image capturing the essence of phobias on an intricately needle-felted background. The portrait should display a radiant and distinctive smiley face, oozing expressiveness and mirth.]",
+          "weight": 2
+        },
+        {
+          "text": "[Imagine a muppet-like figure painted in a modern abstract style and sculpted out of gelatin. The style should evoke candid photography from a costume party in the mid-1990s, filled with vibrant color and playful design.]",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "medium",
+      "feature_name": "Medium",
+      "values": [
+        {
+          "text": "[Envision a bright, cheerful, exploding pastel color scene. The style should be oil on canvas, featuring exquisitely intricate details, blending surrealism, neoclassicism, and renaissance elements, in a hyper-realistic, ultra-detailed, and cell-shaded 8K resolution.]",
+          "weight": 3
+        },
+        {
+          "text": "[Produce an image that represents putrid beauty, a color glorious bizarre surrealist photographic masterpiece. The scene should include biomorphic still life objects draped in white cloaks, capturing a sunrise in an extreme close-up.]",
+          "weight": 3
+        },
+        {
+          "text": "[Render a nauseatingly repulsive portrait that amplifies the fear of phobias in a disgustingly jinxed and unsavory manifestation. Produce a vivid image capturing the essence of phobias on an intricately needle-felted background.]",
+          "weight": 3
+        },
+        {
+          "text": "[Imagine a candid photograph of a 1997 art party sculpture, resembling an exploding-playdoh Mandelbrot Set. The image should be cinematic, detailed, and feature professional lighting. It should give the impression of a photograph taken with high-quality equipment, showcasing incredible detail and sharpness.]",
+          "weight": 2
+        },
+        {
+          "text": "[Create a painting showcasing a variety of flowers, styled in baroque chiaroscuro drama, featuring symmetrical arrangements and a play of light and shade. Alternatively, visualize a painting of flowers and fabric on a wall, styled in sci-fi baroque, with distinct framing and impressionist colorism.]",
+          "weight": 2
+        },
+        {
+          "text": "[Create a wonderfully strange, unforgettable artistic multimedia arts & crafts neo-expressionism photorealistic streetwear fashion portrait. The style should encompass Outsider art, retro CGI, and feature high fashion elements that are abstract and fun.]",
+          "weight": 2
+        },
+        {
+          "text": "[Imagine a resin figure in pop style, with 4K resolution, intricate detail, FRP cartoon figures, and a solid color background. Envision a photorealistic surreal life with vivid colors in ultra-high definition.]",
+          "weight": 1
+        },
+        {
+          "text": "[Generate an exquisite fine art image that evokes a sense of opulence. The scene should represent a vibrant floral painting, abundant with a mix of blooming flowers in colors like deep reds, soft pinks, and light purples. Surround the painting with an ornately created, golden gilded frame. Alternatively, create a hyperrealistic portrait that depicts a spectral entity, combining abstract and organic forms with influences from modern aesthetics. The entity should feature humanoid traits blended with digital elements, all amplified through video glitch art.]",
+          "weight": 1
+        },
+        {
+          "text": "[Visualize an image that emanates a surrealistic hybrid of abstract and organic forms weaving in and out of rhythm. With a repugnant glossy sheen, it signifies the dichotomy of revolting beauty. This creature encapsulates both sickening and fascinating aesthetics. Its large, innocent, smiling eyes and mouth contrast starkly with its grotesque form.]",
+          "weight": 1
+        },
+        {
+          "text": "[Imagine a muppet-like figure painted in a modern abstract style and sculpted out of gelatin. The style should evoke candid photography from a costume party in the mid-1990s, filled with vibrant color and playful design.]",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "texture",
+      "feature_name": "Texture",
+      "values": [
+        {
+          "text": "[Visualize an exploding rainbow playdoh Mandelbrot set, captured in a cinematic shot with incredibly detailed, professional lighting. The imagery should be akin to a needlefelted rainbow explosion, characterized by bright, cheerful, and pastel colors.]",
+          "weight": 3
+        },
+        {
+          "text": "[Envision a color glorious, bizarre surrealist photographic masterpiece featuring many biomorphic still life objects draped in white cloaks, capturing the essence of sunrise in an extreme close-up.]",
+          "weight": 3
+        },
+        {
+          "text": "[Generate a hyperrealistic fuzzy needlefelted creature, blending aesthetics from the Golden Age and new American documentary sheet film photography.]",
+          "weight": 3
+        },
+        {
+          "text": "[Generate an image filled with chaos and brutal action, capturing the sense of hopelessness and impending horror in a style reminiscent of baroque romanticism and post-internet medieval influences. The painting should feature rough-hewn surfaces and depict the most grotesque and distorted fears.]",
+          "weight": 2
+        },
+        {
+          "text": "[Create a hallucinogenic and hyperrealistic portrait, characterizing whimsical atmospherics transcending into an enigmatic dimension. The design should integrate elements of candycore aesthetics with muted pastel shades and effervescent formations, adding a touch of appalling kawaii cuteness.]",
+          "weight": 2
+        },
+        {
+          "text": "[Create a pattern of unique playful truchet tiles, reminiscent of a grid of interconnected exploding balloons. The design should combine elements of extreme emotion, abstract fun, and contemporary street fashion aesthetics.]",
+          "weight": 2
+        },
+        {
+          "text": "[Design a geometric scarf or blanket, inspired by animated shapes, color-blocked patterns, and a conceptual collage style. Alternatively, create an art quilt pattern for a baby blanket, featuring pop art aesthetics, simplified compositions, and cheerful colors.]",
+          "weight": 1
+        },
+        {
+          "text": "[Produce a large, colorful geometric abstract art piece, featuring a person and styled in the manner of minimalist textiles and playful collages. The design should incorporate flat color blocks and bold quilt patterns.]",
+          "weight": 1
+        },
+        {
+          "text": "[Create a collage blanket design using color-blocked shapes, simplistic characters, and colorful animations. The style should be neoplastic, with bold color choices.]",
+          "weight": 1
+        },
+        {
+          "text": "[Visualize a colorful tapestry with a geometric pattern, styled in a playful collage manner, incorporating elements of digital and abstract minimalism.]",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "color_mood",
+      "feature_name": "Color Mood",
+      "values": [
+        {
+          "text": "[Envision a bright, cheerful, exploding pastel color scene. The style should be oil on canvas, featuring exquisitely intricate details, blending surrealism, neoclassicism, and renaissance elements, in a hyper-realistic, ultra-detailed, and cell-shaded 8K resolution.]",
+          "weight": 3
+        },
+        {
+          "text": "[Visualize a palette check, a dope playdoh streetwear fashion-week runway portrait-photograph of a colorful outsider-art party. The style should resemble a textural runway fashion show, sculpted out of gelatin, incorporating pastel tones.]",
+          "weight": 3
+        },
+        {
+          "text": "[Create a painting showcasing a variety of flowers, styled in baroque chiaroscuro drama, featuring symmetrical arrangements and a play of light and shade.]",
+          "weight": 2
+        },
+        {
+          "text": "[Envision a cinematic, futuristic scene characterized by childlike wonder, incorporating elements of arts and crafts, yarn textures, and a playful character design style.]",
+          "weight": 2
+        },
+        {
+          "text": "[Produce a large, colorful geometric abstract art piece, featuring a person and styled in the manner of minimalist textiles and playful collages. The design should incorporate flat color blocks and bold quilt patterns.]",
+          "weight": 2
+        },
+        {
+          "text": "[Visualize a colorful tapestry with a geometric pattern, styled in a playful collage manner, incorporating elements of digital and abstract minimalism. Alternatively, design a colorful pattern on a white blanket, featuring bold collages and vibrant stage backdrops.]",
+          "weight": 2
+        },
+        {
+          "text": "[Generate an image filled with chaos and brutal action, capturing the sense of hopelessness and impending horror in a style reminiscent of baroque romanticism and post-internet medieval influences.]",
+          "weight": 1
+        },
+        {
+          "text": "[Produce an image that represents putrid beauty, a color glorious bizarre surrealist photographic masterpiece.]",
+          "weight": 1
+        },
+        {
+          "text": "[Visualize an exploding rainbow playdoh Mandelbrot set, captured in a cinematic shot with incredibly detailed, professional lighting. The imagery should be akin to a needlefelted rainbow explosion, characterized by bright, cheerful, and pastel colors.]",
+          "weight": 1
+        },
+        {
+          "text": "[Create a collage blanket design using color-blocked shapes, simplistic characters, and colorful animations. The style should be neoplastic, with bold color choices.]",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "chaos_energy",
+      "feature_name": "Chaos Energy",
+      "values": [
+        {
+          "text": "[Something reminiscent of fluffy needle-felted pastel cotton-candy explosions seems almost palpable, soft, and gently pulsating, making the sight soothing. It epitomizes the most peaceful and comforting aspects of the human psyche, creating the absolute most beautiful and serene visual imaginable in high definition.]",
+          "weight": 3
+        },
+        {
+          "text": "[Create a hallucinogenic and hyperrealistic portrait, characterizing whimsical atmospherics transcending into an enigmatic dimension. The focal point should be a person embodying elemental traits inspired by 'creepypasta' mythology, harmonizing sentiments of delight and optimism while preserving an unsettling exterior.]",
+          "weight": 3
+        },
+        {
+          "text": "[Develop a portrait that is wonky, silly, outlandish, unique, creative, unapologetic, naive, extravagant, otherworldly, never-before-seen, carefree, and perfectly sexy. The style should be photorealistic, incorporating elements of streetwear fashion photography.]",
+          "weight": 3
+        },
+        {
+          "text": "[Envision a color glorious, bizarre surrealist photographic masterpiece featuring many biomorphic still life objects draped in white cloaks, capturing the essence of sunrise in an extreme close-up.]",
+          "weight": 2
+        },
+        {
+          "text": "[Envision a cinematic, futuristic scene characterized by childlike wonder, incorporating elements of arts and crafts, yarn textures, and a playful character design style.]",
+          "weight": 2
+        },
+        {
+          "text": "[Generate an exquisite fine art image that evokes a sense of opulence. The scene should represent a vibrant floral painting, abundant with a mix of blooming flowers in colors like deep reds, soft pinks, and light purples. Surround the painting with an ornately created, golden gilded frame.]",
+          "weight": 2
+        },
+        {
+          "text": "[Generate an image filled with chaos and brutal action, capturing the sense of hopelessness and impending horror in a style reminiscent of baroque romanticism and post-internet medieval influences. The painting should feature rough-hewn surfaces and depict the most grotesque and distorted fears.]",
+          "weight": 1
+        },
+        {
+          "text": "[Visualize an exploding rainbow playdoh Mandelbrot set, captured in a cinematic shot with incredibly detailed, professional lighting.]",
+          "weight": 1
+        },
+        {
+          "text": "[Create a Peripheral Drift Illusion, an optical illusion with a seamless pattern that is symmetrical and high-definition. The result should be an unforgettable outsider art illustration collage of a large mound-shaped figure.]",
+          "weight": 1
+        },
+        {
+          "text": "[Imagine a candid photograph of a 1997 art party sculpture, resembling an exploding-playdoh Mandelbrot Set. The image should be cinematic, detailed, and feature professional lighting.]",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "art_register",
+      "feature_name": "Art Register",
+      "values": [
+        {
+          "text": "[Envision a bright, cheerful, exploding pastel color scene. The style should be oil on canvas, featuring exquisitely intricate details, blending surrealism, neoclassicism, and renaissance elements, in a hyper-realistic, ultra-detailed, and cell-shaded 8K resolution.]",
+          "weight": 3
+        },
+        {
+          "text": "[Visualize a palette check, a dope playdoh streetwear fashion-week runway portrait-photograph of a colorful outsider-art party. The style should resemble a textural runway fashion show, sculpted out of gelatin, incorporating pastel tones.]",
+          "weight": 3
+        },
+        {
+          "text": "[Create a wonderfully strange, unforgettable artistic multimedia arts & crafts neo-expressionism photorealistic streetwear fashion portrait. The style should encompass Outsider art, retro CGI, and feature high fashion elements that are abstract and fun.]",
+          "weight": 3
+        },
+        {
+          "text": "[Imagine a candid photograph of a 1997 art party sculpture, resembling an exploding-playdoh Mandelbrot Set. The image should be cinematic, detailed, and feature professional lighting. It should give the impression of a photograph taken with high-quality equipment, showcasing incredible detail and sharpness.]",
+          "weight": 2
+        },
+        {
+          "text": "[Create a painting showcasing a variety of flowers, styled in baroque chiaroscuro drama, featuring symmetrical arrangements and a play of light and shade. Alternatively, visualize a painting of flowers and fabric on a wall, styled in sci-fi baroque, with distinct framing and impressionist colorism.]",
+          "weight": 2
+        },
+        {
+          "text": "[Produce a large, colorful geometric abstract art piece, featuring a person and styled in the manner of minimalist textiles and playful collages. The design should incorporate flat color blocks and bold quilt patterns.]",
+          "weight": 2
+        },
+        {
+          "text": "[Generate a hyperrealistic fuzzy needlefelted creature, blending aesthetics from the Golden Age and new American documentary sheet film photography.]",
+          "weight": 1
+        },
+        {
+          "text": "[Imagine a resin figure in pop style, with 4K resolution, intricate detail, FRP cartoon figures, and a solid color background.]",
+          "weight": 1
+        },
+        {
+          "text": "[Create a pattern of unique playful truchet tiles, reminiscent of a grid of interconnected exploding balloons. The design should combine elements of extreme emotion, abstract fun, and contemporary street fashion aesthetics.]",
+          "weight": 1
+        },
+        {
+          "text": "[Envision a color glorious, bizarre surrealist photographic masterpiece featuring many biomorphic still life objects draped in white cloaks, capturing the essence of sunrise in an extreme close-up.]",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "mound_hue",
+      "feature_name": "Mound Hue",
+      "values": [
+        {
+          "text": "0",
+          "weight": 1
+        },
+        {
+          "text": "20",
+          "weight": 1
+        },
+        {
+          "text": "40",
+          "weight": 2
+        },
+        {
+          "text": "60",
+          "weight": 2
+        },
+        {
+          "text": "90",
+          "weight": 2
+        },
+        {
+          "text": "120",
+          "weight": 2
+        },
+        {
+          "text": "160",
+          "weight": 1
+        },
+        {
+          "text": "200",
+          "weight": 2
+        },
+        {
+          "text": "240",
+          "weight": 1
+        },
+        {
+          "text": "270",
+          "weight": 1
+        },
+        {
+          "text": "300",
+          "weight": 1
+        },
+        {
+          "text": "330",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "bg_hue",
+      "feature_name": "Background Hue",
+      "values": [
+        {
+          "text": "0",
+          "weight": 1
+        },
+        {
+          "text": "20",
+          "weight": 1
+        },
+        {
+          "text": "40",
+          "weight": 2
+        },
+        {
+          "text": "60",
+          "weight": 2
+        },
+        {
+          "text": "90",
+          "weight": 2
+        },
+        {
+          "text": "120",
+          "weight": 2
+        },
+        {
+          "text": "160",
+          "weight": 1
+        },
+        {
+          "text": "200",
+          "weight": 2
+        },
+        {
+          "text": "240",
+          "weight": 1
+        },
+        {
+          "text": "270",
+          "weight": 1
+        },
+        {
+          "text": "300",
+          "weight": 1
+        },
+        {
+          "text": "330",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "bg_density",
+      "feature_name": "BG Density",
+      "values": [
+        {
+          "text": "500",
+          "weight": 2
+        },
+        {
+          "text": "1500",
+          "weight": 3
+        },
+        {
+          "text": "3000",
+          "weight": 3
+        },
+        {
+          "text": "6000",
+          "weight": 2
+        },
+        {
+          "text": "10000",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "mound_density",
+      "feature_name": "Mound Density",
+      "values": [
+        {
+          "text": "500",
+          "weight": 2
+        },
+        {
+          "text": "1500",
+          "weight": 3
+        },
+        {
+          "text": "3000",
+          "weight": 3
+        },
+        {
+          "text": "5000",
+          "weight": 2
+        },
+        {
+          "text": "8000",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "bg_style",
+      "feature_name": "BG Style",
+      "values": [
+        {
+          "text": "strokes",
+          "weight": 3
+        },
+        {
+          "text": "dots",
+          "weight": 3
+        },
+        {
+          "text": "cross-hatch",
+          "weight": 2
+        },
+        {
+          "text": "flat",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "// ═══════════════════════════════════════════════════════════════════\n// SMILEY MOUND - Fully animated generative p5.js sketch\n// Synthograsizer Workflow Template\n// ═══════════════════════════════════════════════════════════════════\n\nconst CW = 768;\n\n// Particles: a pool of moving particles that live on the mound\nlet particles = [];\nlet bgParticles = [];\nlet floaters = [];\nlet blinkTimer = 200;\nlet isBlinking = false;\nlet blinkFrame = 0;\nlet faceDir = 1;\nlet faceOff = 100;\nlet eyeWX = 28;\nlet eyeWY = 80;\nlet smileW = 120;\nlet smileH = 110;\nlet smileSW = 18;\nlet smileAng = 0.02;\nlet smileBaseY = 160;\nlet _prevMoundHue = -1;\nlet _prevBgHue = -1;\nlet _prevBgStyle = '';\n\np.setup = function() {\n  p.createCanvas(CW, CW);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  // Seed the face once\n  faceDir = p.random() > 0.5 ? 1 : -1;\n  faceOff = p.random(50, 150) * faceDir;\n  eyeWX = p.random(15, 42);\n  eyeWY = p.random(36, 128);\n  smileW = Math.abs(faceOff) * p.random(0.95, 1.75);\n  smileH = p.random(CW / 7.5, CW / 6.9);\n  smileSW = p.random(12, 26);\n  smileAng = p.random(-0.05, 0.05);\n  smileBaseY = p.random(140, 180);\n  // Spawn mound surface particles\n  for (let i = 0; i < 200; i++) {\n    particles.push(spawnMoundParticle());\n  }\n  // Spawn floating particles\n  for (let i = 0; i < 30; i++) {\n    floaters.push({\n      x: p.random(CW * 0.15, CW * 0.85),\n      y: p.random(CW * 0.2, CW * 0.7),\n      vx: p.random(-0.3, 0.3),\n      vy: p.random(-0.8, -0.2),\n      size: p.random(3, 14),\n      alpha: p.random(20, 70),\n      hueOff: p.random(-20, 20)\n    });\n  }\n};\n\nfunction spawnMoundParticle() {\n  // Spawn inside mound ellipse\n  let angle = p.random(p.TWO_PI);\n  let r = p.random(0.1, 1);\n  let mx = CW / 2 + Math.cos(angle) * r * CW * 0.45;\n  let my = CW * 0.6 + Math.sin(angle) * r * CW * 0.35;\n  if (my < CW * 0.35) my = CW * 0.35 + p.random(0, CW * 0.3);\n  return {\n    x: mx, y: my,\n    vx: p.random(-0.5, 0.5), vy: p.random(-0.4, 0.1),\n    size: p.random(4, 30),\n    hueOff: p.random(-15, 15),\n    sat: p.random(40, 80),\n    bri: p.random(50, 90),\n    alpha: p.random(30, 80),\n    life: p.random(60, 300)\n  };\n}\n\np.draw = function() {\n  let moundHue    = parseFloat(p.getSynthVar('mound_hue'))    || 90;\n  let bgHue       = parseFloat(p.getSynthVar('bg_hue'))       || 270;\n  let bgDensity   = parseInt(p.getSynthVar('bg_density'))     || 3000;\n  let moundDensity= parseInt(p.getSynthVar('mound_density'))  || 3000;\n  let bgStyle     = p.getSynthVar('bg_style')                 || 'strokes';\n  let t = p.frameCount;\n\n  // Force full clear when hue or style changes so old colors don't linger\n  let hueChanged = (moundHue !== _prevMoundHue || bgHue !== _prevBgHue || bgStyle !== _prevBgStyle);\n  _prevMoundHue = moundHue;\n  _prevBgHue = bgHue;\n  _prevBgStyle = bgStyle;\n\n  if (hueChanged) {\n    p.background(bgHue, 20, 96);\n  }\n\n  // ─── Animated background with semi-transparent overlay for trails ───\n  p.noStroke();\n  p.fill(bgHue, 20, 96, 12);\n  p.rect(0, 0, CW, CW);\n\n  // Periodic full clear to prevent muddiness\n  if (t % 120 === 1) {\n    p.background(bgHue, 20, 96);\n  }\n\n  // ─── Background marks: draw a batch each frame ───\n  let marksPerFrame = Math.max(20, Math.floor(bgDensity / 60));\n  if (bgStyle === 'strokes') {\n    for (let i = 0; i < marksPerFrame; i++) {\n      let x = p.random(CW), y = p.random(CW);\n      p.stroke(bgHue, p.random(8, 99), p.random(48, 100), p.random(5, 30));\n      p.strokeWeight(p.random(1, 6));\n      let len = p.random(20, 200);\n      let ang = p.noise(x * 0.005, y * 0.005, t * 0.008) * p.TWO_PI * 2;\n      p.line(x, y, x + Math.cos(ang) * len, y + Math.sin(ang) * len);\n    }\n  } else if (bgStyle === 'dots') {\n    p.noStroke();\n    for (let i = 0; i < marksPerFrame; i++) {\n      let x = p.random(CW), y = p.random(CW);\n      let sz = p.random(2, 16) * (1 + Math.sin(t * 0.05 + x * 0.01) * 0.3);\n      p.fill(bgHue, p.random(10, 80), p.random(60, 100), p.random(8, 40));\n      p.ellipse(x, y, sz);\n    }\n  } else if (bgStyle === 'cross-hatch') {\n    for (let i = 0; i < marksPerFrame; i++) {\n      let x = p.random(CW), y = p.random(CW);\n      let len = p.random(10, 50);\n      p.stroke(bgHue, p.random(20, 70), p.random(50, 90), p.random(8, 35));\n      p.strokeWeight(1);\n      let ang = p.noise(x * 0.01, y * 0.01, t * 0.005) * p.PI;\n      p.line(x, y, x + Math.cos(ang) * len, y + Math.sin(ang) * len);\n    }\n  }\n\n  // ─── Mound body with breathing ───\n  let breathe = 1 + Math.sin(t * 0.025) * 0.02;\n  p.push();\n  p.translate(CW / 2, CW);\n  p.scale(breathe, breathe);\n  p.translate(-CW / 2, -CW);\n\n  // Mound base\n  p.noStroke();\n  p.fill(moundHue, 60, 60, 70);\n  p.ellipse(CW / 2, CW + CW / 3.5, CW, CW + CW / 1.05);\n\n  // ─── Mound surface particles (move & respawn) ───\n  let targetCount = Math.max(50, Math.floor(moundDensity / 15));\n  while (particles.length < targetCount) particles.push(spawnMoundParticle());\n  while (particles.length > targetCount) particles.pop();\n\n  p.noStroke();\n  for (let i = particles.length - 1; i >= 0; i--) {\n    let pt = particles[i];\n    let nx = p.noise(pt.x * 0.01, pt.y * 0.01, t * 0.01) - 0.5;\n    let ny = p.noise(pt.x * 0.01 + 100, pt.y * 0.01, t * 0.01) - 0.5;\n    pt.vx += nx * 0.3;\n    pt.vy += ny * 0.3 - 0.02;\n    pt.vx *= 0.95;\n    pt.vy *= 0.95;\n    pt.x += pt.vx;\n    pt.y += pt.vy;\n    pt.life--;\n    pt.alpha *= 0.998;\n    let hue = (moundHue + pt.hueOff + Math.sin(t * 0.02 + pt.x * 0.01) * 8) % 360;\n    if (hue < 0) hue += 360;\n    p.fill(hue, pt.sat, pt.bri, pt.alpha);\n    p.ellipse(pt.x, pt.y, pt.size * (0.8 + Math.sin(t * 0.04 + pt.y * 0.02) * 0.2));\n    if (pt.life <= 0 || pt.alpha < 3 || pt.y < CW * 0.15 || pt.x < 0 || pt.x > CW) {\n      particles[i] = spawnMoundParticle();\n    }\n  }\n\n  // ─── Floating luminous particles rising upward ───\n  p.noStroke();\n  for (let f of floaters) {\n    f.x += f.vx + Math.sin(t * 0.03 + f.y * 0.01) * 0.5;\n    f.y += f.vy;\n    let a = f.alpha * (0.6 + Math.sin(t * 0.06 + f.x * 0.02) * 0.4);\n    let hue = (moundHue + f.hueOff) % 360;\n    if (hue < 0) hue += 360;\n    p.fill(hue, 40, 95, a * 0.3);\n    p.ellipse(f.x, f.y, f.size * 3);\n    p.fill(hue, 30, 100, a);\n    p.ellipse(f.x, f.y, f.size);\n    if (f.y < CW * 0.05 || f.x < 0 || f.x > CW) {\n      f.x = p.random(CW * 0.2, CW * 0.8);\n      f.y = CW * 0.55 + p.random(0, CW * 0.15);\n      f.vy = p.random(-0.8, -0.2);\n      f.vx = p.random(-0.3, 0.3);\n    }\n  }\n\n  // ─── Eyes with blink + look-around ───\n  blinkTimer--;\n  if (!isBlinking && blinkTimer <= 0) {\n    isBlinking = true;\n    blinkFrame = 0;\n    blinkTimer = 150 + Math.floor(p.random(200));\n  }\n  if (isBlinking) {\n    blinkFrame++;\n    if (blinkFrame > 8) isBlinking = false;\n  }\n  let eyeOpenness = isBlinking ? Math.max(0.04, Math.abs(Math.sin(blinkFrame / 8 * p.PI))) : 1;\n\n  let gazeX = Math.sin(t * 0.013) * 8;\n  let gazeY = Math.cos(t * 0.01) * 5;\n\n  let eLX = CW / 2.1 - faceOff + gazeX;\n  let eRX = CW / 2.05 + faceOff + gazeX;\n  let eLY = CW - CW / 2.5 + gazeY;\n  let eRY = CW - CW / 2.5 + gazeY;\n\n  p.fill(0, 0, 3);\n  p.noStroke();\n  p.ellipse(eLX, eLY, eyeWX, eyeWY * eyeOpenness);\n  p.ellipse(eRX, eRY, eyeWX, eyeWY * eyeOpenness);\n\n  if (eyeOpenness > 0.3) {\n    p.fill(0, 0, 100, 60);\n    p.ellipse(eLX + 3, eLY - eyeWY * 0.15 * eyeOpenness, eyeWX * 0.25, eyeWX * 0.25);\n    p.ellipse(eRX + 3, eRY - eyeWY * 0.15 * eyeOpenness, eyeWX * 0.25, eyeWX * 0.25);\n  }\n\n  // ─── Smile: gentle sway like the eyes ───\n  let smileCX = CW / 2 + faceOff / 2;\n  let smileCY = CW - smileBaseY + Math.sin(t * 0.018) * 4;\n  let wobble = Math.sin(t * 0.015) * 0.02;\n  p.stroke(0, 0, 3);\n  p.strokeWeight(smileSW);\n  p.noFill();\n  p.arc(smileCX, smileCY, smileW, smileH, smileAng + wobble, p.PI);\n\n  p.pop();\n};",
+  "tags": [
+    {
+      "id": "tag_smileymound01",
+      "type": "source",
+      "label": "Smiley Mound — Synthograsizer Template",
+      "description": "Converted from Synthograsizer p5+img2img+upscaler pipeline. Original: 24 weighted prompt modifier variables (p1–p24) plus a top-level 'quirk' feature variable. Consolidated into 6 Synthograsizer variables (quirk, medium, texture, color_mood, chaos_energy, art_register) preserving original prompt text verbatim."
+    },
+    {
+      "id": "tag_smileymound02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

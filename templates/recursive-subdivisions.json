@@ -1,0 +1,119 @@
+{
+  "promptTemplate": "A geometric abstract composition using {{subdivision_depth}} recursive subdivision with {{split_bias}} proportions. Cells are filled with {{fill_strategy}} fills at {{fill_density}} density using a {{color_palette}} color palette. The layout favors {{orientation}} splits with {{gap_width}} gaps between cells. Corners are {{corner_style}} with {{border_style}} borders. The composition is {{animation}} animated.",
+  "variables": [
+    {
+      "name": "subdivision_depth",
+
+      "values": [
+        {"text": "shallow", "weight": 3},
+        {"text": "moderate", "weight": 3},
+        {"text": "deep", "weight": 2},
+        {"text": "extreme", "weight": 2},
+        {"text": "fractal", "weight": 1},
+        {"text": "infinite", "weight": 1}
+      ]
+    },
+    {
+      "name": "split_bias",
+      "values": [
+        {"text": "equal", "weight": 3},
+        {"text": "golden", "weight": 3},
+        {"text": "random", "weight": 2},
+        {"text": "thirds", "weight": 2},
+        {"text": "asymmetric", "weight": 1},
+        {"text": "chaotic", "weight": 1}
+      ]
+    },
+    {
+      "name": "gap_width",
+      "values": [
+        {"text": "none", "weight": 2},
+        {"text": "hairline", "weight": 3},
+        {"text": "thin", "weight": 3},
+        {"text": "medium", "weight": 2},
+        {"text": "wide", "weight": 1},
+        {"text": "chunky", "weight": 1}
+      ]
+    },
+    {
+      "name": "fill_strategy",
+      "values": [
+        {"text": "solid", "weight": 3},
+        {"text": "gradient", "weight": 3},
+        {"text": "striped", "weight": 2},
+        {"text": "dotted", "weight": 2},
+        {"text": "textured", "weight": 1},
+        {"text": "empty", "weight": 1}
+      ]
+    },
+    {
+      "name": "color_palette",
+      "values": [
+        {"text": "mondrian", "weight": 3},
+        {"text": "bauhaus", "weight": 3},
+        {"text": "pastel", "weight": 2},
+        {"text": "neon", "weight": 2},
+        {"text": "earth", "weight": 2},
+        {"text": "monochrome", "weight": 1},
+        {"text": "jewel", "weight": 1},
+        {"text": "frost", "weight": 1}
+      ]
+    },
+    {
+      "name": "fill_density",
+      "values": [
+        {"text": "sparse", "weight": 2},
+        {"text": "balanced", "weight": 3},
+        {"text": "dense", "weight": 3},
+        {"text": "packed", "weight": 2},
+        {"text": "overflow", "weight": 1},
+        {"text": "minimal", "weight": 1}
+      ]
+    },
+    {
+      "name": "corner_style",
+      "values": [
+        {"text": "sharp", "weight": 3},
+        {"text": "rounded", "weight": 3},
+        {"text": "chamfered", "weight": 2},
+        {"text": "organic", "weight": 2},
+        {"text": "notched", "weight": 1},
+        {"text": "mixed", "weight": 1}
+      ]
+    },
+    {
+      "name": "orientation",
+      "values": [
+        {"text": "horizontal", "weight": 3},
+        {"text": "vertical", "weight": 3},
+        {"text": "alternating", "weight": 2},
+        {"text": "diagonal", "weight": 2},
+        {"text": "radial", "weight": 1},
+        {"text": "spiral", "weight": 1}
+      ]
+    },
+    {
+      "name": "border_style",
+      "values": [
+        {"text": "none", "weight": 3},
+        {"text": "thin", "weight": 3},
+        {"text": "bold", "weight": 2},
+        {"text": "double", "weight": 2},
+        {"text": "shadow", "weight": 1},
+        {"text": "glow", "weight": 1}
+      ]
+    },
+    {
+      "name": "animation",
+      "values": [
+        {"text": "static", "weight": 3},
+        {"text": "pulse", "weight": 3},
+        {"text": "grow", "weight": 2},
+        {"text": "shuffle", "weight": 2},
+        {"text": "breathe", "weight": 1},
+        {"text": "glitch", "weight": 1}
+      ]
+    }
+  ],
+  "p5Code": "// Recursive Subdivisions - Geometric Composition Engine\n\nlet cells = [];\nlet prevParams = '';\nlet seed = 42;\n\nconst PALETTES = {\n  mondrian: [[255,0,0],[0,0,255],[255,255,0],[255,255,255],[0,0,0]],\n  bauhaus: [[229,53,44],[0,113,188],[249,193,22],[255,255,255],[30,30,30]],\n  pastel: [[255,179,186],[255,223,186],[255,255,186],[186,255,201],[186,225,255]],\n  neon: [[255,0,110],[0,255,163],[191,0,255],[0,200,255],[255,240,0]],\n  earth: [[139,90,43],[85,107,47],[160,82,45],[210,180,140],[60,60,40]],\n  monochrome: [[30,30,30],[80,80,80],[140,140,140],[200,200,200],[245,245,245]],\n  jewel: [[0,100,0],[75,0,130],[139,0,0],[0,0,139],[184,134,11]],\n  frost: [[200,220,240],[170,200,230],[220,235,245],[140,180,220],[240,248,255]]\n};\n\nfunction seededRandom() {\n  seed = (seed * 16807 + 0) % 2147483647;\n  return (seed - 1) / 2147483646;\n}\n\nfunction getDepthCount(v) {\n  const m = {shallow:2, moderate:3, deep:4, extreme:5, fractal:6, infinite:7};\n  return m[v] || 3;\n}\n\nfunction getGap(v) {\n  const m = {none:0, hairline:1, thin:2, medium:4, wide:8, chunky:14};\n  return m[v] || 2;\n}\n\nfunction getSplitRatio(v) {\n  if (v === 'equal') return 0.5;\n  if (v === 'golden') return 0.618;\n  if (v === 'thirds') return 0.333;\n  if (v === 'asymmetric') return 0.8;\n  if (v === 'chaotic') return 0.15 + seededRandom() * 0.7;\n  return 0.3 + seededRandom() * 0.4;\n}\n\nfunction getCornerRadius(v, size) {\n  const s = Math.min(size, 40);\n  const m = {sharp:0, rounded:s*0.3, chamfered:s*0.15, organic:s*0.5, notched:s*0.1, mixed:s*0.2};\n  return m[v] || 0;\n}\n\nfunction getFillProb(v) {\n  const m = {sparse:0.3, balanced:0.55, dense:0.75, packed:0.9, overflow:1.0, minimal:0.15};\n  return m[v] || 0.55;\n}\n\nfunction subdivide(x, y, w, h, depth, maxDepth, bias, orient) {\n  if (depth >= maxDepth || w < 12 || h < 12) {\n    cells.push({x:x, y:y, w:w, h:h, depth:depth});\n    return;\n  }\n  let horizontal;\n  if (orient === 'horizontal') horizontal = true;\n  else if (orient === 'vertical') horizontal = false;\n  else if (orient === 'alternating') horizontal = depth % 2 === 0;\n  else if (orient === 'diagonal') horizontal = (x + y) % 2 === 0 ? depth % 2 === 0 : depth % 2 === 1;\n  else if (orient === 'radial') horizontal = seededRandom() > 0.5;\n  else if (orient === 'spiral') horizontal = (depth + Math.floor(x / 100)) % 2 === 0;\n  else horizontal = seededRandom() > 0.5;\n\n  let ratio = getSplitRatio(bias);\n  if (bias === 'random' || bias === 'chaotic') ratio = 0.25 + seededRandom() * 0.5;\n\n  if (horizontal) {\n    let split = y + h * ratio;\n    subdivide(x, y, w, split - y, depth + 1, maxDepth, bias, orient);\n    subdivide(x, split, w, y + h - split, depth + 1, maxDepth, bias, orient);\n  } else {\n    let split = x + w * ratio;\n    subdivide(x, y, split - x, h, depth + 1, maxDepth, bias, orient);\n    subdivide(split, y, x + w - split, h, depth + 1, maxDepth, bias, orient);\n  }\n}\n\np.setup = function() {\n  p.createCanvas(600, 600);\n  p.frameRate(30);\n};\n\np.draw = function() {\n  let depthV = p.getSynthVar('subdivision_depth') || 'moderate';\n  let biasV = p.getSynthVar('split_bias') || 'golden';\n  let gapV = p.getSynthVar('gap_width') || 'thin';\n  let fillV = p.getSynthVar('fill_strategy') || 'solid';\n  let palV = p.getSynthVar('color_palette') || 'mondrian';\n  let densV = p.getSynthVar('fill_density') || 'balanced';\n  let cornV = p.getSynthVar('corner_style') || 'sharp';\n  let orientV = p.getSynthVar('orientation') || 'alternating';\n  let bordV = p.getSynthVar('border_style') || 'thin';\n  let animV = p.getSynthVar('animation') || 'static';\n\n  let params = depthV + biasV + gapV + orientV + densV + fillV + palV + cornV + bordV + animV;\n  if (params !== prevParams || animV === 'shuffle') {\n    prevParams = params;\n    seed = 42;\n    cells = [];\n    let gap = getGap(gapV);\n    subdivide(gap, gap, 600 - gap * 2, 600 - gap * 2, 0, getDepthCount(depthV), biasV, orientV);\n  }\n\n  if (animV !== 'static') p.frameRate(30); else p.frameRate(10);\n\n  let palette = PALETTES[palV] || PALETTES.mondrian;\n  let gap = getGap(gapV);\n  let fillProb = getFillProb(densV);\n\n  p.background(gap > 0 ? 20 : 240);\n\n  for (let i = 0; i < cells.length; i++) {\n    let c = cells[i];\n    let cx = c.x + gap / 2;\n    let cy = c.y + gap / 2;\n    let cw = c.w - gap;\n    let ch = c.h - gap;\n    if (cw < 2 || ch < 2) continue;\n\n    let cr = getCornerRadius(cornV, Math.min(cw, ch));\n    seed = i * 7 + 13;\n    let fillIt = seededRandom() < fillProb;\n    let colIdx = Math.floor(seededRandom() * palette.length);\n    let col = palette[colIdx];\n    let col2Idx = (colIdx + 1 + Math.floor(seededRandom() * (palette.length - 1))) % palette.length;\n    let col2 = palette[col2Idx];\n\n    // Animation effects\n    let animAlpha = 255;\n    let animScale = 1;\n    if (animV === 'pulse') {\n      animAlpha = 150 + 105 * Math.sin(p.frameCount * 0.03 + i * 0.5);\n    } else if (animV === 'breathe') {\n      animScale = 0.92 + 0.08 * Math.sin(p.frameCount * 0.02 + i * 0.3);\n    } else if (animV === 'grow') {\n      let t = Math.min(1, p.frameCount * 0.005);\n      let cellT = Math.max(0, t * cells.length - i) / 1;\n      cellT = Math.min(1, cellT);\n      animScale = cellT;\n    } else if (animV === 'glitch') {\n      if (Math.sin(p.frameCount * 0.1 + i * 17) > 0.92) {\n        cx += (seededRandom() - 0.5) * 10;\n        cy += (seededRandom() - 0.5) * 10;\n      }\n    } else if (animV === 'shuffle' && p.frameCount % 60 === 0) {\n      seed = Math.floor(Math.random() * 10000);\n      cells = [];\n      subdivide(gap, gap, 600 - gap * 2, 600 - gap * 2, 0, getDepthCount(depthV), biasV, orientV);\n      prevParams = '';\n    }\n\n    p.push();\n    p.translate(cx + cw / 2, cy + ch / 2);\n    p.scale(animScale);\n    p.translate(-cw / 2, -ch / 2);\n\n    // Border\n    if (bordV === 'none') {\n      p.noStroke();\n    } else if (bordV === 'thin') {\n      p.stroke(0, 0, 0, animAlpha); p.strokeWeight(1);\n    } else if (bordV === 'bold') {\n      p.stroke(0, 0, 0, animAlpha); p.strokeWeight(3);\n    } else if (bordV === 'double') {\n      p.stroke(0, 0, 0, animAlpha); p.strokeWeight(1);\n      p.noFill(); p.rect(- 2, -2, cw + 4, ch + 4, cr);\n    } else if (bordV === 'shadow') {\n      p.noStroke();\n      p.fill(0, 0, 0, 40);\n      p.rect(3, 3, cw, ch, cr);\n    } else if (bordV === 'glow') {\n      p.noStroke();\n      p.fill(col[0], col[1], col[2], 30);\n      p.rect(-4, -4, cw + 8, ch + 8, cr + 4);\n    }\n\n    if (bordV !== 'none' && bordV !== 'shadow' && bordV !== 'glow') {\n      p.stroke(0, 0, 0, animAlpha * 0.8);\n    } else if (bordV === 'none') {\n      p.noStroke();\n    }\n\n    if (!fillIt && fillV !== 'empty') {\n      p.fill(240, 240, 240, animAlpha);\n      p.rect(0, 0, cw, ch, cr);\n    } else if (fillV === 'solid') {\n      p.fill(col[0], col[1], col[2], animAlpha);\n      p.rect(0, 0, cw, ch, cr);\n    } else if (fillV === 'gradient') {\n      p.noStroke();\n      let steps = Math.max(2, Math.floor(ch / 4));\n      for (let s = 0; s < steps; s++) {\n        let t = s / steps;\n        let r = col[0] + (col2[0] - col[0]) * t;\n        let g = col[1] + (col2[1] - col[1]) * t;\n        let b = col[2] + (col2[2] - col[2]) * t;\n        p.fill(r, g, b, animAlpha);\n        let sy = s * ch / steps;\n        let sh = ch / steps + 1;\n        p.rect(0, sy, cw, sh, s === 0 ? cr : 0, s === 0 ? cr : 0, s === steps - 1 ? cr : 0, s === steps - 1 ? cr : 0);\n      }\n    } else if (fillV === 'striped') {\n      p.fill(col[0], col[1], col[2], animAlpha);\n      p.rect(0, 0, cw, ch, cr);\n      p.fill(col2[0], col2[1], col2[2], animAlpha * 0.6);\n      let stripeW = Math.max(3, cw / 8);\n      for (let sx = stripeW; sx < cw; sx += stripeW * 2) {\n        p.rect(sx, 0, stripeW, ch);\n      }\n    } else if (fillV === 'dotted') {\n      p.fill(col[0], col[1], col[2], animAlpha);\n      p.rect(0, 0, cw, ch, cr);\n      p.fill(col2[0], col2[1], col2[2], animAlpha * 0.5);\n      p.noStroke();\n      let dotR = Math.max(2, Math.min(cw, ch) / 8);\n      for (let dx = dotR; dx < cw - dotR; dx += dotR * 2.5) {\n        for (let dy = dotR; dy < ch - dotR; dy += dotR * 2.5) {\n          p.circle(dx, dy, dotR);\n        }\n      }\n    } else if (fillV === 'textured') {\n      p.fill(col[0], col[1], col[2], animAlpha);\n      p.rect(0, 0, cw, ch, cr);\n      for (let tx = 0; tx < cw; tx += 3) {\n        for (let ty = 0; ty < ch; ty += 3) {\n          let n = p.noise(tx * 0.1 + i, ty * 0.1);\n          if (n > 0.5) {\n            p.fill(col2[0], col2[1], col2[2], animAlpha * n * 0.4);\n            p.rect(tx, ty, 2, 2);\n          }\n        }\n      }\n    } else {\n      p.noFill();\n      p.stroke(col[0], col[1], col[2], animAlpha * 0.5);\n      p.strokeWeight(1);\n      p.rect(0, 0, cw, ch, cr);\n    }\n\n    p.pop();\n  }\n};"
+}

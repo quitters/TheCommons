@@ -1,0 +1,103 @@
+{
+  "promptTemplate": "{{point_count}} golden-ratio nodes, {{symmetry}}-fold symmetry, {{color_palette}} palette, {{motion_speed}} oscillation",
+  "variables": [
+    {
+      "name": "point_count",
+      "feature_name": "Point Count",
+      "values": [
+        {
+          "text": "sparse",
+          "weight": 1
+        },
+        {
+          "text": "balanced",
+          "weight": 3
+        },
+        {
+          "text": "dense",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "symmetry",
+      "feature_name": "Symmetry",
+      "values": [
+        {
+          "text": "binary",
+          "weight": 1
+        },
+        {
+          "text": "quad",
+          "weight": 2
+        },
+        {
+          "text": "hexagon",
+          "weight": 3
+        },
+        {
+          "text": "octave",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "color_palette",
+      "feature_name": "Color Palette",
+      "values": [
+        {
+          "text": "gold",
+          "weight": 3
+        },
+        {
+          "text": "celestial",
+          "weight": 2
+        },
+        {
+          "text": "emerald",
+          "weight": 2
+        },
+        {
+          "text": "amethyst",
+          "weight": 2
+        },
+        {
+          "text": "sunset",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "motion_speed",
+      "feature_name": "Motion Speed",
+      "values": [
+        {
+          "text": "meditative",
+          "weight": 2
+        },
+        {
+          "text": "flowing",
+          "weight": 3
+        },
+        {
+          "text": "energetic",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Sacred Geometry — Fibonacci Spiral with Rotational Symmetry\n// Adapted from GenerativeArtGallery / artwork9\n\nlet sgPhi = (1 + Math.sqrt(5)) / 2;\nlet sgBasePts = [];\nlet sgT = 0;\nlet sgPrevCount = '';\n\nfunction sgBuild(count) {\n  let pts = [];\n  let baseR = 160;\n  for (let i = 0; i < count; i++) {\n    let angle = i * Math.PI * 2 * sgPhi;\n    let r = baseR * Math.sqrt(i + 1) / Math.sqrt(count);\n    pts.push({ angle: angle, baseR: r });\n  }\n  return pts;\n}\n\np.setup = function() {\n  p.createCanvas(400, 400);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n  sgBasePts = sgBuild(50);\n};\n\np.draw = function() {\n  let countStr = p.getSynthVar('point_count') || 'balanced';\n  let symStr = p.getSynthVar('symmetry') || 'hexagon';\n  let palStr = p.getSynthVar('color_palette') || 'gold';\n  let speedStr = p.getSynthVar('motion_speed') || 'flowing';\n\n  if (countStr !== sgPrevCount) {\n    let n = countStr === 'sparse' ? 28 : countStr === 'balanced' ? 50 : 75;\n    sgBasePts = sgBuild(n);\n    sgPrevCount = countStr;\n  }\n\n  let sym = symStr === 'binary' ? 2 : symStr === 'quad' ? 4 : symStr === 'hexagon' ? 6 : 8;\n  let spd = speedStr === 'meditative' ? 0.007 : speedStr === 'flowing' ? 0.016 : 0.038;\n\n  let pals = {\n    gold:      [45,  82, 95],\n    celestial: [210, 68, 90],\n    emerald:   [140, 80, 78],\n    amethyst:  [278, 72, 86],\n    sunset:    [18,  88, 95]\n  };\n  let pal = pals[palStr] || pals.gold;\n\n  sgT += spd;\n  p.background(240, 20, 6, 18);\n\n  p.push();\n  p.translate(p.width / 2, p.height / 2);\n\n  let anim = sgBasePts.map(function(pt, i) {\n    let osc = Math.sin(sgT + i * 0.22) * 9;\n    let r = pt.baseR + osc;\n    return { x: Math.cos(pt.angle) * r, y: Math.sin(pt.angle) * r, r: r };\n  });\n\n  for (let s = 0; s < sym; s++) {\n    p.push();\n    p.rotate(s * p.TWO_PI / sym + sgT * 0.08);\n\n    for (let i = 0; i < anim.length; i++) {\n      let lim = Math.min(anim.length, i + 10);\n      for (let j = i + 1; j < lim; j++) {\n        let dx = anim[i].x - anim[j].x;\n        let dy = anim[i].y - anim[j].y;\n        let d = Math.sqrt(dx * dx + dy * dy);\n        if (d < 48) {\n          let alpha = p.map(d, 0, 48, 55, 5);\n          p.stroke(pal[0], pal[1] - 10, pal[2], alpha);\n          p.strokeWeight(0.8);\n          p.line(anim[i].x, anim[i].y, anim[j].x, anim[j].y);\n        }\n      }\n    }\n\n    p.noStroke();\n    for (let i = 0; i < anim.length; i++) {\n      let sz = p.map(anim[i].r, 0, 160, 2.5, 7);\n      p.fill(pal[0], pal[1], pal[2], 88);\n      p.ellipse(anim[i].x, anim[i].y, sz, sz);\n    }\n\n    p.pop();\n  }\n\n  p.pop();\n};",
+  "tags": [
+    {
+      "id": "tag_sacred_geometry_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork9 (Sacred Geometry / Fibonacci Spiral)",
+      "description": "Adapted from the Fibonacci spiral + kaleidoscope sketch. Points placed at golden-ratio angle intervals, distances proportional to sqrt(i). Rotational symmetry applied via push/rotate/pop. Points oscillate radially with sin(t + i*0.22). Connections drawn only to nearby spiral neighbors for performance. Ghost trail via low-alpha background."
+    },
+    {
+      "id": "tag_sacred_geometry_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

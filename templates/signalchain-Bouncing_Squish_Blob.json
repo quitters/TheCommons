@@ -1,0 +1,125 @@
+{
+  "promptTemplate": "A {{blob_size}} image blob moves at a {{blob_speed}} pace with {{squishiness}} impacts and {{wiggle_amount}} edge distortion on a {{background_style}} background.",
+  "variables": [
+    {
+      "name": "blob_size",
+      "feature_name": "Size",
+      "values": [
+        {
+          "text": "tiny",
+          "weight": 2
+        },
+        {
+          "text": "small",
+          "weight": 3
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "large",
+          "weight": 2
+        },
+        {
+          "text": "massive",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "blob_speed",
+      "feature_name": "Speed",
+      "values": [
+        {
+          "text": "lethargic",
+          "weight": 2
+        },
+        {
+          "text": "casual",
+          "weight": 3
+        },
+        {
+          "text": "brisk",
+          "weight": 3
+        },
+        {
+          "text": "hyper",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "squishiness",
+      "feature_name": "Squish",
+      "values": [
+        {
+          "text": "rigid",
+          "weight": 1
+        },
+        {
+          "text": "bouncy",
+          "weight": 3
+        },
+        {
+          "text": "jello",
+          "weight": 3
+        },
+        {
+          "text": "pancake",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "wiggle_amount",
+      "feature_name": "Wiggle",
+      "values": [
+        {
+          "text": "none",
+          "weight": 1
+        },
+        {
+          "text": "slight",
+          "weight": 3
+        },
+        {
+          "text": "wobbly",
+          "weight": 3
+        },
+        {
+          "text": "turbulent",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "background_style",
+      "feature_name": "Background",
+      "values": [
+        {
+          "text": "black",
+          "weight": 3
+        },
+        {
+          "text": "white",
+          "weight": 1
+        },
+        {
+          "text": "trails",
+          "weight": 3
+        },
+        {
+          "text": "smear",
+          "weight": 2
+        }
+      ]
+    }
+  ],
+  "tags": [
+    "signalchain",
+    "p5"
+  ],
+  "p5Code": "let bx = 80, by = 60;\nlet vx = 1.5, vy = 1.2;\nlet sx = 1.0, sy = 1.0;\nlet vsx = 0, vsy = 0;\nlet br = 35;\nconst stiffness = 0.15;\nconst damping = 0.75;\n\np.setup = function() {\n  p.createCanvas(160, 120);\n  p.noStroke();\n  p.background(0);\n};\n\np.draw = function() {\n  let ref = p.getRefImage();\n  if (!ref) {\n    p.background(0);\n    p.fill(150);\n    p.textAlign(p.CENTER, p.CENTER);\n    p.textSize(9);\n    p.text('connect an image \\u2192', 80, 60);\n    return;\n  }\n  ref.loadPixels();\n\n  let speedStr = p.getSynthVar('blob_speed') || 'casual';\n  let sizeStr = p.getSynthVar('blob_size') || 'medium';\n  let squishStr = p.getSynthVar('squishiness') || 'jello';\n  let wiggleStr = p.getSynthVar('wiggle_amount') || 'wobbly';\n  let bgStr = p.getSynthVar('background_style') || 'black';\n\n  let speedMap = { 'lethargic': 0.8, 'casual': 1.8, 'brisk': 3.5, 'hyper': 6.0 };\n  let sizeMap = { 'tiny': 15, 'small': 25, 'medium': 35, 'large': 50, 'massive': 70 };\n  let squishMap = { 'rigid': 0.0, 'bouncy': 0.25, 'jello': 0.5, 'pancake': 0.85 };\n  let wiggleMap = { 'none': 0, 'slight': 3, 'wobbly': 8, 'turbulent': 15 };\n  let bgMap = {\n    'black': {c: 0, a: 255},\n    'white': {c: 255, a: 255},\n    'trails': {c: 0, a: 40},\n    'smear': {c: 0, a: 12}\n  };\n\n  let targetSpeed = speedMap[speedStr];\n  let targetBr = sizeMap[sizeStr];\n  let squishAmt = squishMap[squishStr];\n  let wiggleIntensity = wiggleMap[wiggleStr];\n  let bg = bgMap[bgStr];\n\n  p.fill(bg.c, bg.a);\n  p.rect(0, 0, 160, 120);\n\n  br += (targetBr - br) * 0.1;\n\n  let mag = p.sqrt(vx * vx + vy * vy);\n  if (mag > 0.0001) {\n    vx = (vx / mag) * targetSpeed;\n    vy = (vy / mag) * targetSpeed;\n  } else {\n    vx = targetSpeed; vy = 0;\n  }\n\n  bx += vx;\n  by += vy;\n\n  let hitX = false, hitY = false;\n  if (bx - br < 0) { bx = br; vx = p.abs(vx); hitX = true; }\n  else if (bx + br > 160) { bx = 160 - br; vx = -p.abs(vx); hitX = true; }\n\n  if (by - br < 0) { by = br; vy = p.abs(vy); hitY = true; }\n  else if (by + br > 120) { by = 120 - br; vy = -p.abs(vy); hitY = true; }\n\n  if (hitX || hitY) {\n    let angle = p.atan2(vy, vx) + p.random(-0.15, 0.15);\n    vx = p.cos(angle) * mag;\n    vy = p.sin(angle) * mag;\n  }\n\n  if (hitX) { sx = 1.0 - squishAmt; sy = 1.0 + squishAmt; }\n  if (hitY) { sx = 1.0 + squishAmt; sy = 1.0 - squishAmt; }\n\n  let fx = (1.0 - sx) * stiffness;\n  vsx = (vsx + fx) * damping;\n  sx += vsx;\n\n  let fy = (1.0 - sy) * stiffness;\n  vsy = (vsy + fy) * damping;\n  sy += vsy;\n\n  p.push();\n  p.translate(bx, by);\n  p.scale(sx, sy);\n\n  p.drawingContext.save();\n  p.drawingContext.beginPath();\n  let pts = 40;\n  let wBase = p.millis() * 0.002;\n  for (let i = 0; i < pts; i++) {\n    let angle = p.map(i, 0, pts, 0, p.TWO_PI);\n    let n = p.noise(p.cos(angle) + 1, p.sin(angle) + 1, wBase);\n    let r = br + p.map(n, 0, 1, -wiggleIntensity, wiggleIntensity);\n    let x = r * p.cos(angle);\n    let y = r * p.sin(angle);\n    if (i === 0) p.drawingContext.moveTo(x, y);\n    else p.drawingContext.lineTo(x, y);\n  }\n  p.drawingContext.closePath();\n  p.drawingContext.clip();\n\n  p.imageMode(p.CENTER);\n  let pad = wiggleIntensity;\n  p.image(ref, 0, 0, (br + pad) * 2.66, (br + pad) * 2);\n\n  p.drawingContext.restore();\n  p.pop();\n};",
+  "usesInput": true
+}

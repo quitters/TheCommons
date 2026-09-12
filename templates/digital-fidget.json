@@ -1,0 +1,443 @@
+{
+  "promptTemplate": "{{color_palette}} digital fireworks with {{particle_shape}} particles, {{velocity}} velocity, {{gravity}} gravity, {{trail_length}} trails on {{background}}",
+  "variables": [
+    {
+      "name": "color_palette",
+      "feature_name": "Color Palette",
+      "values": [
+        {
+          "text": "default",
+          "weight": 1
+        },
+        {
+          "text": "flat",
+          "weight": 1
+        },
+        {
+          "text": "neon",
+          "weight": 1
+        },
+        {
+          "text": "pastel",
+          "weight": 1
+        },
+        {
+          "text": "greyscale",
+          "weight": 1
+        },
+        {
+          "text": "b+w",
+          "weight": 1
+        },
+        {
+          "text": "earth",
+          "weight": 1
+        },
+        {
+          "text": "water",
+          "weight": 1
+        },
+        {
+          "text": "fire",
+          "weight": 1
+        },
+        {
+          "text": "lightning",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "background",
+      "feature_name": "Background",
+      "values": [
+        {
+          "text": "Black",
+          "weight": 3
+        },
+        {
+          "text": "White",
+          "weight": 1
+        },
+        {
+          "text": "Red",
+          "weight": 1
+        },
+        {
+          "text": "Green",
+          "weight": 1
+        },
+        {
+          "text": "Blue",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "particle_size",
+      "feature_name": "Particle Size",
+      "values": [
+        {
+          "text": "Fireworks Regular",
+          "weight": 3
+        },
+        {
+          "text": "Fireworks Tiny",
+          "weight": 1
+        },
+        {
+          "text": "Fireworks Small",
+          "weight": 2
+        },
+        {
+          "text": "Fireworks Medium",
+          "weight": 2
+        },
+        {
+          "text": "Fireworks Large",
+          "weight": 1
+        },
+        {
+          "text": "Ball Pit",
+          "weight": 1
+        },
+        {
+          "text": "Lava Lamp",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "particle_shape",
+      "feature_name": "Particle Shape",
+      "values": [
+        {
+          "text": "circle",
+          "weight": 2
+        },
+        {
+          "text": "square",
+          "weight": 1
+        },
+        {
+          "text": "triangle",
+          "weight": 1
+        },
+        {
+          "text": "star",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "pulsating_star",
+      "feature_name": "Pulsating Star",
+      "values": [
+        {
+          "text": "Off",
+          "weight": 3
+        },
+        {
+          "text": "Normal",
+          "weight": 1
+        },
+        {
+          "text": "Large",
+          "weight": 1
+        },
+        {
+          "text": "Obnoxious",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "trail_length",
+      "feature_name": "Trail Length",
+      "values": [
+        {
+          "text": "Normal",
+          "weight": 3
+        },
+        {
+          "text": "Absolute",
+          "weight": 1
+        },
+        {
+          "text": "Very Strong",
+          "weight": 1
+        },
+        {
+          "text": "Powerful",
+          "weight": 1
+        },
+        {
+          "text": "Subtle",
+          "weight": 1
+        },
+        {
+          "text": "None",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "velocity",
+      "feature_name": "Velocity",
+      "values": [
+        {
+          "text": "Normal",
+          "weight": 3
+        },
+        {
+          "text": "Glacial Pace",
+          "weight": 1
+        },
+        {
+          "text": "Slow",
+          "weight": 2
+        },
+        {
+          "text": "Quick",
+          "weight": 2
+        },
+        {
+          "text": "Fast",
+          "weight": 1
+        },
+        {
+          "text": "Hyperspeed",
+          "weight": 1
+        },
+        {
+          "text": "Starry Night",
+          "weight": 1
+        },
+        {
+          "text": "Reverse",
+          "weight": 1
+        },
+        {
+          "text": "Super Reverse",
+          "weight": 1
+        },
+        {
+          "text": "None",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "gravity",
+      "feature_name": "Gravity",
+      "values": [
+        {
+          "text": "Normal",
+          "weight": 3
+        },
+        {
+          "text": "Moon",
+          "weight": 1
+        },
+        {
+          "text": "Zero G",
+          "weight": 1
+        },
+        {
+          "text": "Heavy",
+          "weight": 1
+        },
+        {
+          "text": "Very Heavy",
+          "weight": 1
+        },
+        {
+          "text": "Upwards",
+          "weight": 1
+        },
+        {
+          "text": "Slow Rise",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "mouse_gravity",
+      "feature_name": "Mouse Gravity",
+      "values": [
+        {
+          "text": "Normal",
+          "weight": 3
+        },
+        {
+          "text": "Low",
+          "weight": 1
+        },
+        {
+          "text": "High",
+          "weight": 1
+        },
+        {
+          "text": "Extreme",
+          "weight": 1
+        },
+        {
+          "text": "Gravitron",
+          "weight": 1
+        },
+        {
+          "text": "Black Hole",
+          "weight": 1
+        },
+        {
+          "text": "Supermassive Black Hole",
+          "weight": 1
+        },
+        {
+          "text": "Singularity",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "density",
+      "feature_name": "Particle Density",
+      "values": [
+        {
+          "text": "Normal",
+          "weight": 3
+        },
+        {
+          "text": "A Couple",
+          "weight": 1
+        },
+        {
+          "text": "Plenty",
+          "weight": 2
+        },
+        {
+          "text": "Lots",
+          "weight": 1
+        },
+        {
+          "text": "Maximum",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "complexity",
+      "feature_name": "Fireworks Per Cycle",
+      "values": [
+        {
+          "text": "Normal",
+          "weight": 3
+        },
+        {
+          "text": "Few",
+          "weight": 1
+        },
+        {
+          "text": "Plenty",
+          "weight": 2
+        },
+        {
+          "text": "Lots",
+          "weight": 1
+        },
+        {
+          "text": "Maximum",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "firework_width",
+      "feature_name": "Firework Width",
+      "values": [
+        {
+          "text": "Normal",
+          "weight": 3
+        },
+        {
+          "text": "Short",
+          "weight": 1
+        },
+        {
+          "text": "Squash",
+          "weight": 1
+        },
+        {
+          "text": "Wide",
+          "weight": 1
+        },
+        {
+          "text": "Landscape",
+          "weight": 1
+        },
+        {
+          "text": "All",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "firework_height",
+      "feature_name": "Firework Height",
+      "values": [
+        {
+          "text": "Normal",
+          "weight": 3
+        },
+        {
+          "text": "Short",
+          "weight": 1
+        },
+        {
+          "text": "Squash",
+          "weight": 1
+        },
+        {
+          "text": "Tall",
+          "weight": 1
+        },
+        {
+          "text": "Trees",
+          "weight": 1
+        },
+        {
+          "text": "All",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "wavy_mode",
+      "feature_name": "Wavy Mode",
+      "values": [
+        {
+          "text": "Off",
+          "weight": 3
+        },
+        {
+          "text": "On",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "// ── Variable lookup tables ─────────────────────────────────────────\nconst PARTICLE_SIZES  = {\"Fireworks Regular\":1,\"Fireworks Tiny\":0.1,\"Fireworks Small\":0.5,\"Fireworks Medium\":2,\"Fireworks Large\":4,\"Ball Pit\":10,\"Lava Lamp\":64};\nconst PULSATING_SIZES = {\"Off\":0,\"Normal\":0.5,\"Large\":1.5,\"Obnoxious\":3};\nconst TRAIL_LENGTHS   = {\"Normal\":20,\"Absolute\":0,\"Very Strong\":1,\"Powerful\":12,\"Subtle\":50,\"None\":250};\nconst VELOCITIES      = {\"Normal\":1,\"Glacial Pace\":0.15,\"Slow\":0.5,\"Quick\":2,\"Fast\":5,\"Hyperspeed\":16,\"Starry Night\":512,\"Reverse\":-0.5,\"Super Reverse\":-3,\"None\":0};\nconst GRAVITIES       = {\"Normal\":1,\"Moon\":0.1,\"Zero G\":0,\"Heavy\":2.5,\"Very Heavy\":5,\"Upwards\":-1,\"Slow Rise\":-0.15};\nconst MOUSE_GRAVITIES = {\"Normal\":1,\"Low\":0.5,\"High\":2,\"Extreme\":5,\"Gravitron\":32,\"Black Hole\":256,\"Supermassive Black Hole\":512,\"Singularity\":2048};\nconst DENSITIES       = {\"Normal\":8,\"A Couple\":2,\"Plenty\":16,\"Lots\":32,\"Maximum\":64};\nconst COMPLEXITIES    = {\"Normal\":8,\"Few\":2,\"Plenty\":16,\"Lots\":32,\"Maximum\":64};\nconst FW_WIDTHS       = {\"Normal\":1.5,\"Short\":0.5,\"Squash\":0.05,\"Wide\":5,\"Landscape\":25,\"All\":999};\nconst FW_HEIGHTS      = {\"Normal\":1.5,\"Short\":0.5,\"Squash\":0.05,\"Tall\":5,\"Trees\":25,\"All\":999};\nconst BG_PRESETS      = {\"Black\":[0,0,0],\"White\":[255,255,255],\"Red\":[155,20,20],\"Green\":[20,155,20],\"Blue\":[20,20,155]};\n\n// ── State ──────────────────────────────────────────────────────────\nlet particles = [];\nlet colors = [];\nlet backgroundColor = {r:0, g:0, b:0};\nlet particleShape = 'circle';\nlet particleSize = 1;\nlet originalFireworkSize = 0;\nlet trailLength = 20;\nlet velocity = 1;\nlet gravity = 1;\nlet mouseGravityLevel = 1;\nlet density = 8;\nlet complexity = 8;\nlet fireworkWidth = 1.5;\nlet fireworkHeight = 1.5;\nlet upAndDownMode = false;\nlet maxFireworks = 50;\nlet mousePressTime = 0;\nlet velocityBoostEndTime = 0;\n\nfunction setColors(pal) {\n  const palettes = {\n    default:   ['#F22222','#F28705','#FACECE','#3F5FFF','#F2CB05','#FFFFFF'],\n    flat:      ['#F15A5A','#F0C419','#4EBA6F','#2D95BF','#955BA5','#FFFFFF'],\n    neon:      ['#9500FF','#00E804','#001CFF','#FFFA0C','#FF00B2','#00ffff'],\n    greyscale: ['#FFFFFF','#BFBFBF','#808080','#6E6E6E','#E6E6E6','#F7F7F7'],\n    'b+w':     ['#FFFFFF','#000000'],\n    lightning: ['#FFC54C','#FFF099','#FFAC00','#ffff00','#7F6326','#CC8A00'],\n    water:     ['#3587F2','#2A6BBF','#6DB4F2','#0000ff','#C2F2ED','#00ffff'],\n    fire:      ['#ff0000','#FF0600','#F25116','#F2D95C','#F2B544','#F28A2E'],\n    earth:     ['#F6C977','#C09268','#FFF46F','#BDA488','#72341C','#7F7100'],\n    pastel:    ['#FFC4C0','#FEE1BF','#F9FFBD','#DDFFBE','#BEFFFC','#D0D9F2','#FFFFFF'],\n  };\n  const hexes = palettes[pal] || palettes.default;\n  colors = hexes.map(h => p.color(h));\n}\n\nfunction readVars() {\n  setColors(p.getSynthVar('color_palette') || 'default');\n  const bg = BG_PRESETS[p.getSynthVar('background')] || BG_PRESETS.Black;\n  backgroundColor = {r: bg[0], g: bg[1], b: bg[2]};\n  particleSize         = PARTICLE_SIZES[p.getSynthVar('particle_size')]   ?? 1;\n  particleShape        = p.getSynthVar('particle_shape')                   || 'circle';\n  originalFireworkSize = PULSATING_SIZES[p.getSynthVar('pulsating_star')] ?? 0;\n  trailLength          = TRAIL_LENGTHS[p.getSynthVar('trail_length')]      ?? 20;\n  velocity             = VELOCITIES[p.getSynthVar('velocity')]             ?? 1;\n  gravity              = GRAVITIES[p.getSynthVar('gravity')]               ?? 1;\n  mouseGravityLevel    = MOUSE_GRAVITIES[p.getSynthVar('mouse_gravity')]   ?? 1;\n  density              = DENSITIES[p.getSynthVar('density')]               ?? 8;\n  complexity           = COMPLEXITIES[p.getSynthVar('complexity')]         ?? 8;\n  fireworkWidth        = FW_WIDTHS[p.getSynthVar('firework_width')]        ?? 1.5;\n  fireworkHeight       = FW_HEIGHTS[p.getSynthVar('firework_height')]      ?? 1.5;\n  upAndDownMode        = (p.getSynthVar('wavy_mode') || 'Off') === 'On';\n}\n\n// ── Classes ────────────────────────────────────────────────────────\nclass Spark {\n  constructor(x, y, size, col) {\n    this.x = x; this.y = y;\n    this.size = size; this.col = col;\n    this.angle = p.random(p.TWO_PI);\n    this.speed = p.random(0.5, 2);\n  }\n  display() {\n    p.noStroke();\n    p.fill(this.col);\n    switch (particleShape) {\n      case 'square':\n        p.rectMode(p.CENTER);\n        p.rect(this.x, this.y, this.size, this.size);\n        break;\n      case 'triangle':\n        p.push(); p.translate(this.x, this.y); p.rotate(this.angle);\n        p.triangle(-this.size/2, this.size/2, 0, -this.size/2, this.size/2, this.size/2);\n        p.pop();\n        break;\n      case 'star':\n        p.push(); p.translate(this.x, this.y); p.rotate(this.angle);\n        p.beginShape();\n        for (let i = 0; i < 10; i++) {\n          const r = i % 2 === 0 ? this.size/2 : this.size/4;\n          p.vertex(r * p.cos((p.TWO_PI * i)/10), r * p.sin((p.TWO_PI * i)/10));\n        }\n        p.endShape(p.CLOSE);\n        p.pop();\n        break;\n      default:\n        p.ellipse(this.x, this.y, this.size);\n    }\n  }\n  update() {\n    const grav = upAndDownMode\n      ? p.map(p.sin(p.frameCount * (p.TWO_PI / 120)), -1, 1, -1, 1)\n      : gravity;\n    const vel = (p.millis() < velocityBoostEndTime) ? velocity * mouseGravityLevel : velocity;\n    this.x += p.cos(this.angle) * this.speed * vel;\n    this.y += p.sin(this.angle) * this.speed * vel + grav;\n    if (p.mouseIsPressed) {\n      const d = p.createVector(p.mouseX - this.x, p.mouseY - this.y);\n      d.normalize(); d.mult(mouseGravityLevel);\n      this.x += d.x; this.y += d.y;\n    }\n  }\n}\n\nclass Particle {\n  constructor(x, y, size, col) {\n    this.x = x; this.y = y; this.size = size; this.col = col;\n    this.sparks = [];\n    const count = p.random(5, 20) * density;\n    for (let i = 0; i < count; i++) {\n      const angle = p.random(p.TWO_PI);\n      const dX = x + p.cos(angle) * p.random(size * 0.5, size * fireworkWidth);\n      const dY = y + p.sin(angle) * p.random(size * 0.5, size * fireworkHeight);\n      this.sparks.push(new Spark(dX, dY, p.random(1, size * 0.5), col));\n    }\n  }\n  display() {\n    for (const s of this.sparks) s.display();\n    if (originalFireworkSize > 0) {\n      p.noStroke();\n      p.fill(this.col);\n      const pulse = p.map(p.sin(p.frameCount * (p.TWO_PI / 120)), -1, 1, -1, 1);\n      p.ellipse(this.x, this.y, this.size * originalFireworkSize * pulse);\n    }\n  }\n  update() { for (const s of this.sparks) s.update(); }\n}\n\nfunction generateFirework() {\n  const radius = p.random(2, 16) * particleSize;\n  particles.push(new Particle(\n    p.random(p.width), p.random(p.height),\n    radius, colors[p.floor(p.random(colors.length))]\n  ));\n}\n\n// ── Lifecycle ──────────────────────────────────────────────────────\np.setup = () => {\n  p.createCanvas(400, 400);\n  p.frameRate(30);\n  readVars();\n  for (let i = 0; i < complexity; i++) generateFirework();\n};\n\np.draw = () => {\n  p.background(backgroundColor.r, backgroundColor.g, backgroundColor.b, trailLength);\n  for (const pt of particles) { pt.display(); pt.update(); }\n\n  if (p.mouseIsPressed) {\n    if (mousePressTime === 0) mousePressTime = p.millis();\n  } else {\n    if (mousePressTime !== 0 && p.millis() - mousePressTime > 3000)\n      velocityBoostEndTime = p.millis() + 1000;\n    mousePressTime = 0;\n  }\n\n  while (particles.length > maxFireworks) particles.shift();\n};\n\np.mousePressed = () => {\n  readVars();\n  for (let i = 0; i < complexity; i++) generateFirework();\n};",
+  "tags": [
+    {
+      "id": "tag_digital_fidget_01",
+      "type": "source",
+      "label": "Digital Fidget — Synthograsizer Template",
+      "description": "Interactive particle fireworks system with 14 configurable variables: 10 color palettes, particle shape (circle/square/triangle/star), velocity, gravity, mouse gravity, trail length, density, and more. Click canvas to regenerate with current settings."
+    },
+    {
+      "id": "tag_digital_fidget_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

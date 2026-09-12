@@ -1,0 +1,103 @@
+{
+  "promptTemplate": "{{fold_type}} origami, {{tile_size}} tiles, {{color_scheme}} palette, {{animation_speed}} fold",
+  "variables": [
+    {
+      "name": "fold_type",
+      "feature_name": "Fold Type",
+      "values": [
+        {
+          "text": "valley",
+          "weight": 2
+        },
+        {
+          "text": "mountain",
+          "weight": 2
+        },
+        {
+          "text": "waterbomb",
+          "weight": 2
+        },
+        {
+          "text": "twist",
+          "weight": 2
+        },
+        {
+          "text": "mixed",
+          "weight": 3
+        }
+      ]
+    },
+    {
+      "name": "tile_size",
+      "feature_name": "Tile Size",
+      "values": [
+        {
+          "text": "small",
+          "weight": 2
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "large",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "color_scheme",
+      "feature_name": "Color Scheme",
+      "values": [
+        {
+          "text": "pastel",
+          "weight": 3
+        },
+        {
+          "text": "jewel",
+          "weight": 2
+        },
+        {
+          "text": "warm",
+          "weight": 2
+        },
+        {
+          "text": "mono",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "animation_speed",
+      "feature_name": "Animation Speed",
+      "values": [
+        {
+          "text": "slow",
+          "weight": 2
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "fast",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "// Origami Tessellation\n// Adapted from GenerativeArtGallery / artwork14\n\nlet ogTiles = [];\nlet ogScrollY = 0;\nlet ogPrevSize = '';\n\nfunction ogMake(ts) {\n  let tiles = [];\n  let cols = Math.ceil(400 / ts) + 1;\n  let rows = Math.ceil(400 / ts) + 2;\n  for (let r = -1; r < rows; r++) {\n    for (let c = 0; c < cols; c++) {\n      tiles.push({\n        c: c, r: r,\n        x: c * ts, y: r * ts,\n        fa: Math.random(),\n        target: Math.random(),\n        spd: 0.008 + Math.random() * 0.018,\n        ftype: Math.floor(Math.random() * 4),\n        hOff: (Math.random() - 0.5) * 40\n      });\n    }\n  }\n  return tiles;\n}\n\np.setup = function() {\n  p.createCanvas(400, 400);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n  p.frameRate(30);\n  ogTiles = ogMake(80);\n};\n\np.draw = function() {\n  let foldStr  = p.getSynthVar('fold_type') || 'mixed';\n  let sizeStr  = p.getSynthVar('tile_size') || 'medium';\n  let speedStr = p.getSynthVar('animation_speed') || 'medium';\n  let colorStr = p.getSynthVar('color_scheme') || 'pastel';\n\n  let ts       = sizeStr === 'small' ? 50 : sizeStr === 'medium' ? 80 : 120;\n  let spdMult  = speedStr === 'slow' ? 0.35 : speedStr === 'medium' ? 1 : 2.5;\n\n  if (sizeStr !== ogPrevSize) { ogTiles = ogMake(ts); ogScrollY = 0; ogPrevSize = sizeStr; }\n\n  let pals = {\n    pastel: [200, 38, 95],\n    jewel:  [258, 72, 84],\n    warm:   [28,  62, 90],\n    mono:   [0,   0,  84]\n  };\n  let pal = pals[colorStr] || pals.pastel;\n\n  p.noStroke();\n  p.fill(pal[0], pal[1] * 0.28, pal[2] * 0.88);\n  p.rect(0, 0, 400, 400);\n\n  ogScrollY = (ogScrollY + 0.35 * spdMult) % ts;\n  let totalRows = Math.ceil(400 / ts) + 2;\n\n  ogTiles.forEach(function(tile) {\n    tile.fa += (tile.target - tile.fa) * tile.spd * spdMult;\n    if (Math.abs(tile.fa - tile.target) < 0.015) tile.target = Math.random();\n\n    let y = tile.y + ogScrollY;\n    if (y > 400 + ts) tile.y -= totalRows * ts;\n\n    let ft   = foldStr === 'valley' ? 0 : foldStr === 'mountain' ? 1 : foldStr === 'waterbomb' ? 2 : foldStr === 'twist' ? 3 : tile.ftype;\n    let h    = (pal[0] + tile.hOff + 360) % 360;\n    let s    = pal[1];\n    let b    = pal[2];\n    let fa   = tile.fa;\n    let half = ts / 2;\n\n    p.push();\n    p.translate(tile.x + half, y + half);\n\n    // Drop shadow\n    p.noStroke();\n    p.fill(h, s * 0.7, b * 0.2, 22);\n    p.ellipse(3, 5, ts * 0.7, ts * 0.28);\n\n    if (ft === 0) {\n      // Valley fold: left dark, right light\n      let indent = half * fa * 0.5;\n      p.stroke(h, s, b - 38, 28); p.strokeWeight(0.5);\n      p.fill(h, s + 12, b - 22, 100);\n      p.beginShape(); p.vertex(-half,-half); p.vertex(0,-half+indent*0.4); p.vertex(0,half-indent*0.4); p.vertex(-half,half); p.endShape(p.CLOSE);\n      p.fill(h, s - 10, b + 6, 100);\n      p.beginShape(); p.vertex(half,-half); p.vertex(0,-half+indent*0.4); p.vertex(0,half-indent*0.4); p.vertex(half,half); p.endShape(p.CLOSE);\n\n    } else if (ft === 1) {\n      // Mountain: top bright, bottom dark\n      let peak = -half + half * fa * 0.62;\n      p.noStroke();\n      p.fill(h, s - 14, b + 14, 100);\n      p.beginShape(); p.vertex(-half,-half); p.vertex(half,-half); p.vertex(half*0.28,peak); p.vertex(-half*0.28,peak); p.endShape(p.CLOSE);\n      p.fill(h, s, b - 12, 100);\n      p.beginShape(); p.vertex(-half,half); p.vertex(half,half); p.vertex(half*0.28,peak); p.vertex(-half*0.28,peak); p.endShape(p.CLOSE);\n\n    } else if (ft === 2) {\n      // Waterbomb: 4 triangles from edge midpoints to centre point\n      let cp = half * fa * 0.58;\n      p.noStroke();\n      p.fill(h,      s,      b + 10, 100); p.triangle(-half,-half, half,-half, 0,-cp);\n      p.fill(h + 6,  s + 10, b - 5,  100); p.triangle(half,-half,  half,half,  cp,0);\n      p.fill(h + 12, s,      b,      100); p.triangle(half,half,  -half,half,  0,cp);\n      p.fill(h - 6,  s + 8,  b + 5,  100); p.triangle(-half,half, -half,-half, -cp,0);\n\n    } else {\n      // Twist: base square + rotated inner square\n      let ang = fa * p.PI * 0.5;\n      let ir  = half * 0.65;\n      p.noStroke();\n      p.fill(h, s, b - 16, 100);\n      p.beginShape(); p.vertex(-half,-half); p.vertex(half,-half); p.vertex(half,half); p.vertex(-half,half); p.endShape(p.CLOSE);\n      p.fill((h + 28) % 360, Math.min(100, s + 14), b, 100);\n      p.push(); p.rotate(ang);\n      p.beginShape();\n      for (let k = 0; k < 4; k++) { let a = k * p.HALF_PI + p.PI / 4; p.vertex(Math.cos(a) * ir, Math.sin(a) * ir); }\n      p.endShape(p.CLOSE);\n      p.pop();\n    }\n\n    p.pop();\n  });\n};",
+  "tags": [
+    {
+      "id": "tag_origami_tiles_01",
+      "type": "source",
+      "label": "GenerativeArtGallery — artwork14 (Origami Tessellation)",
+      "description": "Adapted from the scrolling origami tile sketch. Tiles are generated once per tile-size change and scroll downward continuously. Each tile independently lerps its fold amount toward a random target, creating staggered fold animation. Four fold types: valley (left/right split), mountain (peak highlight), waterbomb (4 radial triangles with centre-point), twist (rotated inner square). Hue offset per tile gives variation within the palette."
+    },
+    {
+      "id": "tag_origami_tiles_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}

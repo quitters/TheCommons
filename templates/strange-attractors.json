@@ -1,0 +1,120 @@
+{
+  "promptTemplate": "A luminous generative artwork visualizing a {{attractor_type}} strange attractor with {{trail_count}} trails of {{trail_length}} length. Colors mapped by {{color_mode}} using a {{color_palette}} palette. Lines drawn at {{line_weight}} weight in {{render_style}} style. Background fades at {{background_fade}} rate. The view rotates at {{rotation}} speed with {{perturbation}} perturbation.",
+  "variables": [
+    {
+      "name": "attractor_type",
+      "values": [
+        {"text": "lorenz", "weight": 3},
+        {"text": "clifford", "weight": 3},
+        {"text": "dejong", "weight": 2},
+        {"text": "rossler", "weight": 2},
+        {"text": "aizawa", "weight": 1},
+        {"text": "thomas", "weight": 1},
+        {"text": "halvorsen", "weight": 1},
+        {"text": "dadras", "weight": 1}
+      ]
+    },
+    {
+      "name": "trail_count",
+      "values": [
+        {"text": "single", "weight": 2},
+        {"text": "few", "weight": 3},
+        {"text": "several", "weight": 3},
+        {"text": "many", "weight": 2},
+        {"text": "swarm", "weight": 1},
+        {"text": "cloud", "weight": 1}
+      ]
+    },
+    {
+      "name": "trail_length",
+      "values": [
+        {"text": "short", "weight": 2},
+        {"text": "medium", "weight": 3},
+        {"text": "long", "weight": 3},
+        {"text": "flowing", "weight": 2},
+        {"text": "infinite", "weight": 1},
+        {"text": "flash", "weight": 1}
+      ]
+    },
+    {
+      "name": "color_mode",
+      "values": [
+        {"text": "velocity", "weight": 3},
+        {"text": "position", "weight": 3},
+        {"text": "age", "weight": 2},
+        {"text": "angle", "weight": 2},
+        {"text": "rainbow_cycle", "weight": 1},
+        {"text": "depth", "weight": 1}
+      ]
+    },
+    {
+      "name": "color_palette",
+      "values": [
+        {"text": "electric", "weight": 3},
+        {"text": "fire", "weight": 3},
+        {"text": "ice", "weight": 2},
+        {"text": "aurora", "weight": 2},
+        {"text": "sunset", "weight": 2},
+        {"text": "vapor", "weight": 1},
+        {"text": "acid", "weight": 1},
+        {"text": "phantom", "weight": 1}
+      ]
+    },
+    {
+      "name": "line_weight",
+      "values": [
+        {"text": "hairline", "weight": 3},
+        {"text": "fine", "weight": 3},
+        {"text": "medium", "weight": 2},
+        {"text": "bold", "weight": 2},
+        {"text": "heavy", "weight": 1},
+        {"text": "variable", "weight": 1}
+      ]
+    },
+    {
+      "name": "background_fade",
+      "values": [
+        {"text": "none", "weight": 2},
+        {"text": "slow", "weight": 3},
+        {"text": "medium", "weight": 3},
+        {"text": "fast", "weight": 2},
+        {"text": "instant", "weight": 1},
+        {"text": "strobe", "weight": 1}
+      ]
+    },
+    {
+      "name": "rotation",
+      "values": [
+        {"text": "none", "weight": 3},
+        {"text": "slow", "weight": 3},
+        {"text": "medium", "weight": 2},
+        {"text": "fast", "weight": 2},
+        {"text": "oscillating", "weight": 1},
+        {"text": "chaotic", "weight": 1}
+      ]
+    },
+    {
+      "name": "perturbation",
+      "values": [
+        {"text": "none", "weight": 3},
+        {"text": "subtle", "weight": 3},
+        {"text": "moderate", "weight": 2},
+        {"text": "wild", "weight": 2},
+        {"text": "explosive", "weight": 1},
+        {"text": "breathing", "weight": 1}
+      ]
+    },
+    {
+      "name": "render_style",
+      "values": [
+        {"text": "lines", "weight": 3},
+        {"text": "points", "weight": 3},
+        {"text": "glow", "weight": 2},
+        {"text": "ribbon", "weight": 2},
+        {"text": "dotted", "weight": 1},
+        {"text": "pixelated", "weight": 1}
+      ]
+    }
+  ],
+  "p5Code": "// Strange Attractors - Mathematical Light Trails\n\nlet trails = [];\nlet prevType = '';\nlet angleX = 0;\nlet angleY = 0;\nlet firstFrame = true;\n\nconst PALETTES = {\n  electric: [[0,150,255],[0,255,200],[100,0,255],[255,255,255],[0,220,255]],\n  fire: [[255,60,0],[255,160,0],[255,220,50],[255,100,50],[200,0,0]],\n  ice: [[100,180,255],[200,230,255],[150,200,240],[220,240,255],[80,140,220]],\n  aurora: [[0,255,120],[0,200,255],[120,0,255],[255,0,180],[0,255,200]],\n  sunset: [[255,80,50],[255,150,50],[255,200,100],[200,50,80],[255,120,80]],\n  vapor: [[255,100,200],[100,200,255],[200,150,255],[150,255,200],[255,180,220]],\n  acid: [[0,255,0],[180,255,0],[0,255,120],[200,255,50],[100,255,0]],\n  phantom: [[150,150,180],[100,100,140],[200,200,220],[80,80,120],[180,170,200]]\n};\n\nfunction getTrailCount(v) {\n  const m = {single:1, few:3, several:6, many:12, swarm:24, cloud:48};\n  return m[v] || 3;\n}\n\nfunction getTrailLen(v) {\n  const m = {short:80, medium:200, long:500, flowing:1000, infinite:5000, flash:20};\n  return m[v] || 200;\n}\n\nfunction getLineW(v) {\n  const m = {hairline:1, fine:1.5, medium:2, bold:3, heavy:5, variable:-1};\n  return m[v] || 1;\n}\n\nfunction getFadeAlpha(v) {\n  const m = {none:0, slow:3, medium:8, fast:25, instant:200, strobe:-1};\n  return m[v] || 15;\n}\n\nfunction getRotSpeed(v) {\n  const m = {none:0, slow:0.003, medium:0.008, fast:0.02, oscillating:-1, chaotic:-2};\n  return m[v] || 0;\n}\n\nfunction getPerturbAmt(v) {\n  const m = {none:0, subtle:0.01, moderate:0.05, wild:0.15, explosive:0.4, breathing:-1};\n  return m[v] || 0;\n}\n\nfunction stepAttractor(type, x, y, z, dt, perturb) {\n  let dx, dy, dz;\n  let pp = perturb;\n  if (type === 'lorenz') {\n    let sigma = 10 + pp * 5, rho = 28 + pp * 10, beta = 8/3 + pp;\n    dx = sigma * (y - x);\n    dy = x * (rho - z) - y;\n    dz = x * y - beta * z;\n    return [x + dx*dt, y + dy*dt, z + dz*dt];\n  } else if (type === 'clifford') {\n    let a = -1.4 + pp, b = 1.6 + pp*0.5, c = 1.0 - pp*0.3, d = 0.7 + pp*0.2;\n    dx = Math.sin(a * y) + c * Math.cos(a * x);\n    dy = Math.sin(b * x) + d * Math.cos(b * y);\n    return [dx, dy, z * 0.99];\n  } else if (type === 'dejong') {\n    let a = -2.0 + pp, b = -2.0 - pp*0.3, c = -1.2 + pp*0.5, d = 2.0 - pp*0.2;\n    dx = Math.sin(a * y) - Math.cos(b * x);\n    dy = Math.sin(c * x) - Math.cos(d * y);\n    return [dx, dy, z * 0.99];\n  } else if (type === 'rossler') {\n    let a = 0.2 + pp*0.1, b = 0.2 + pp*0.05, c = 5.7 + pp*2;\n    dx = -(y + z);\n    dy = x + a * y;\n    dz = b + z * (x - c);\n    return [x + dx*dt, y + dy*dt, z + dz*dt];\n  } else if (type === 'aizawa') {\n    let a = 0.95, b = 0.7 + pp*0.1, c = 0.6, d = 3.5, e = 0.25, f = 0.1;\n    dx = (z - b) * x - d * y;\n    dy = d * x + (z - b) * y;\n    dz = c + a * z - z*z*z/3 - (x*x + y*y) * (1 + e*z) + f * z * x*x*x;\n    return [x + dx*dt, y + dy*dt, z + dz*dt];\n  } else if (type === 'thomas') {\n    let b = 0.208186 + pp*0.05;\n    dx = Math.sin(y) - b * x;\n    dy = Math.sin(z) - b * y;\n    dz = Math.sin(x) - b * z;\n    return [x + dx*dt*5, y + dy*dt*5, z + dz*dt*5];\n  } else if (type === 'halvorsen') {\n    let a = 1.89 + pp*0.3;\n    dx = -a*x - 4*y - 4*z - y*y;\n    dy = -a*y - 4*z - 4*x - z*z;\n    dz = -a*z - 4*x - 4*y - x*x;\n    return [x + dx*dt, y + dy*dt, z + dz*dt];\n  } else { // dadras\n    let a=3,b=2.7+pp*0.5,c=1.7,d=2,e=9;\n    dx = y - a*x + b*y*z;\n    dy = c*y - x*z + z;\n    dz = d*x*y - e*z;\n    return [x + dx*dt*0.5, y + dy*dt*0.5, z + dz*dt*0.5];\n  }\n}\n\nfunction getStartPos(type) {\n  if (type === 'clifford' || type === 'dejong') return [0.1, 0.1, 0];\n  if (type === 'lorenz') return [1, 1, 1];\n  if (type === 'rossler') return [1, 1, 0];\n  if (type === 'aizawa') return [0.1, 0, 0];\n  if (type === 'thomas') return [1, 0, 0];\n  if (type === 'halvorsen') return [-1.5, 0, 0];\n  return [1, 0.5, 0.5];\n}\n\nfunction getScale(type) {\n  if (type === 'clifford' || type === 'dejong') return 100;\n  if (type === 'lorenz') return 7;\n  if (type === 'rossler') return 12;\n  if (type === 'aizawa') return 120;\n  if (type === 'thomas') return 80;\n  if (type === 'halvorsen') return 12;\n  return 20;\n}\n\nfunction getDt(type) {\n  if (type === 'clifford' || type === 'dejong') return 1;\n  if (type === 'lorenz') return 0.005;\n  if (type === 'rossler') return 0.01;\n  if (type === 'aizawa') return 0.005;\n  if (type === 'thomas') return 0.03;\n  if (type === 'halvorsen') return 0.003;\n  return 0.005;\n}\n\nfunction project(x, y, z, scale, aX, aY) {\n  let cosX = Math.cos(aX), sinX = Math.sin(aX);\n  let cosY = Math.cos(aY), sinY = Math.sin(aY);\n  let y1 = y * cosX - z * sinX;\n  let z1 = y * sinX + z * cosX;\n  let x1 = x * cosY - z1 * sinY;\n  return [300 + x1 * scale, 300 + y1 * scale, z1];\n}\n\nfunction samplePalette(palette, t) {\n  t = ((t % 1) + 1) % 1;\n  let idx = t * (palette.length - 1);\n  let i = Math.floor(idx);\n  let f = idx - i;\n  let c1 = palette[Math.min(i, palette.length - 1)];\n  let c2 = palette[Math.min(i + 1, palette.length - 1)];\n  return [c1[0]+(c2[0]-c1[0])*f, c1[1]+(c2[1]-c1[1])*f, c1[2]+(c2[2]-c1[2])*f];\n}\n\np.setup = function() {\n  p.createCanvas(600, 600);\n  p.background(0);\n};\n\np.draw = function() {\n  let typeV = p.getSynthVar('attractor_type') || 'lorenz';\n  let countV = p.getSynthVar('trail_count') || 'few';\n  let lenV = p.getSynthVar('trail_length') || 'medium';\n  let cmodeV = p.getSynthVar('color_mode') || 'velocity';\n  let palV = p.getSynthVar('color_palette') || 'electric';\n  let lwV = p.getSynthVar('line_weight') || 'fine';\n  let fadeV = p.getSynthVar('background_fade') || 'medium';\n  let rotV = p.getSynthVar('rotation') || 'slow';\n  let pertV = p.getSynthVar('perturbation') || 'none';\n  let rsV = p.getSynthVar('render_style') || 'lines';\n\n  let nTrails = getTrailCount(countV);\n  let maxLen = getTrailLen(lenV);\n  let palette = PALETTES[palV] || PALETTES.electric;\n  let lw = getLineW(lwV);\n  let fadeAlpha = getFadeAlpha(fadeV);\n  let rotSpeed = getRotSpeed(rotV);\n  let pertAmt = getPerturbAmt(pertV);\n  let scale = getScale(typeV);\n  let dt = getDt(typeV);\n\n  // Reset trails if attractor type or count changed\n  if (typeV !== prevType || trails.length !== nTrails || firstFrame) {\n    prevType = typeV;\n    firstFrame = false;\n    trails = [];\n    let start = getStartPos(typeV);\n    for (let i = 0; i < nTrails; i++) {\n      trails.push({\n        x: start[0] + (Math.random() - 0.5) * 0.5,\n        y: start[1] + (Math.random() - 0.5) * 0.5,\n        z: start[2] + (Math.random() - 0.5) * 0.5,\n        history: [],\n        hue: i / nTrails\n      });\n    }\n    p.background(0);\n    angleX = 0;\n    angleY = 0;\n  }\n\n  // Background fade\n  if (fadeAlpha > 0 && fadeAlpha < 200) {\n    p.fill(0, 0, 0, fadeAlpha);\n    p.noStroke();\n    p.rect(0, 0, 600, 600);\n  } else if (fadeAlpha >= 200) {\n    p.background(0);\n  } else if (fadeAlpha === -1) { // strobe\n    if (p.frameCount % 10 < 2) p.background(0);\n  }\n\n  // Rotation\n  if (rotSpeed === -1) { // oscillating\n    angleY = Math.sin(p.frameCount * 0.01) * 0.8;\n    angleX = Math.cos(p.frameCount * 0.007) * 0.4;\n  } else if (rotSpeed === -2) { // chaotic\n    angleY += Math.sin(p.frameCount * 0.03) * 0.01;\n    angleX += Math.cos(p.frameCount * 0.02) * 0.008;\n  } else {\n    angleY += rotSpeed;\n    angleX += rotSpeed * 0.3;\n  }\n\n  // Perturbation\n  let currentPerturb = 0;\n  if (pertAmt === -1) { // breathing\n    currentPerturb = Math.sin(p.frameCount * 0.02) * 0.1;\n  } else {\n    currentPerturb = pertAmt * (Math.sin(p.frameCount * 0.05) * 0.5 + 0.5);\n  }\n\n  // Step and draw trails\n  let stepsPerFrame = (typeV === 'clifford' || typeV === 'dejong') ? 30 : 15;\n\n  for (let t = 0; t < trails.length; t++) {\n    let trail = trails[t];\n\n    for (let s = 0; s < stepsPerFrame; s++) {\n      let next = stepAttractor(typeV, trail.x, trail.y, trail.z, dt, currentPerturb);\n      // Clamp to prevent explosion\n      if (Math.abs(next[0]) > 1000 || Math.abs(next[1]) > 1000 || Math.abs(next[2]) > 1000) {\n        let start = getStartPos(typeV);\n        next = [start[0] + (Math.random()-0.5)*0.5, start[1] + (Math.random()-0.5)*0.5, start[2] + (Math.random()-0.5)*0.5];\n      }\n\n      let prev2d = project(trail.x, trail.y, trail.z, scale, angleX, angleY);\n      trail.x = next[0]; trail.y = next[1]; trail.z = next[2];\n      let cur2d = project(trail.x, trail.y, trail.z, scale, angleX, angleY);\n\n      trail.history.push([cur2d[0], cur2d[1], cur2d[2],\n        Math.sqrt((next[0]-trail.x)**2 + (next[1]-trail.y)**2 + (next[2]-trail.z)**2)]);\n      if (trail.history.length > maxLen) trail.history.shift();\n\n      // Color\n      let colorT = 0;\n      if (cmodeV === 'velocity') {\n        let vel = Math.sqrt((next[0]-trail.x)**2+(next[1]-trail.y)**2+(next[2]-trail.z)**2);\n        colorT = (vel * 100) % 1;\n      } else if (cmodeV === 'position') {\n        colorT = ((trail.x + trail.y) * 0.05 + 0.5) % 1;\n      } else if (cmodeV === 'age') {\n        colorT = trail.history.length / maxLen;\n      } else if (cmodeV === 'angle') {\n        colorT = (Math.atan2(cur2d[1] - 300, cur2d[0] - 300) / (Math.PI * 2) + 1) % 1;\n      } else if (cmodeV === 'rainbow_cycle') {\n        colorT = (p.frameCount * 0.005 + trail.hue) % 1;\n      } else { // depth\n        colorT = (cur2d[2] * 0.02 + 0.5) % 1;\n      }\n      colorT = ((colorT % 1) + 1) % 1;\n      let col = samplePalette(palette, colorT);\n\n      let lineW = lw === -1 ? (0.5 + Math.abs(Math.sin(s * 0.3)) * 3) : lw;\n      let alpha = fadeAlpha === 0 ? 80 : Math.min(255, 160 + 60 * (1 - trail.history.length / maxLen));\n\n      if (rsV === 'points') {\n        p.noStroke();\n        p.fill(col[0], col[1], col[2], alpha);\n        p.circle(cur2d[0], cur2d[1], lineW * 2);\n      } else if (rsV === 'glow') {\n        p.stroke(col[0], col[1], col[2], alpha * 0.2);\n        p.strokeWeight(lineW * 4);\n        p.line(prev2d[0], prev2d[1], cur2d[0], cur2d[1]);\n        p.stroke(col[0], col[1], col[2], alpha);\n        p.strokeWeight(lineW);\n        p.line(prev2d[0], prev2d[1], cur2d[0], cur2d[1]);\n      } else if (rsV === 'ribbon') {\n        let nx = -(cur2d[1] - prev2d[1]);\n        let ny = cur2d[0] - prev2d[0];\n        let len = Math.sqrt(nx*nx+ny*ny) || 1;\n        nx /= len; ny /= len;\n        let w = lineW * 2;\n        p.fill(col[0], col[1], col[2], alpha * 0.6);\n        p.noStroke();\n        p.quad(prev2d[0]+nx*w, prev2d[1]+ny*w, prev2d[0]-nx*w, prev2d[1]-ny*w,\n               cur2d[0]-nx*w, cur2d[1]-ny*w, cur2d[0]+nx*w, cur2d[1]+ny*w);\n      } else if (rsV === 'dotted') {\n        if (s % 3 === 0) {\n          p.noStroke();\n          p.fill(col[0], col[1], col[2], alpha);\n          p.circle(cur2d[0], cur2d[1], lineW * 2.5);\n        }\n      } else if (rsV === 'pixelated') {\n        p.noStroke();\n        p.fill(col[0], col[1], col[2], alpha);\n        let px = Math.floor(cur2d[0] / 4) * 4;\n        let py = Math.floor(cur2d[1] / 4) * 4;\n        p.rect(px, py, 4, 4);\n      } else { // lines\n        p.stroke(col[0], col[1], col[2], alpha);\n        p.strokeWeight(lineW);\n        p.line(prev2d[0], prev2d[1], cur2d[0], cur2d[1]);\n      }\n    }\n  }\n};"
+}

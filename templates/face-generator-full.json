@@ -1,0 +1,149 @@
+{
+  "promptTemplate": "A portrait of a person with {{head_shape}} head shape, {{skin_tone}} skin, {{eye_color}} eyes with {{eye_shape}} shape, {{eyebrow_style}} eyebrows, {{hair_style}} {{hair_color}} hair, {{nose_shape}} nose, {{mouth_shape}} mouth, {{ear_size}} ears, {{neck_width}} neck, {{facial_hair}} facial hair, and {{accessories}}",
+  "variables": [
+    {
+      "name": "head_shape",
+      "values": [
+        { "text": "oval" },
+        { "text": "round" },
+        { "text": "square" },
+        { "text": "heart" },
+        { "text": "diamond" },
+        { "text": "rectangular" }
+      ]
+    },
+    {
+      "name": "skin_tone",
+      "values": [
+        { "text": "pale" },
+        { "text": "light" },
+        { "text": "medium" },
+        { "text": "tan" },
+        { "text": "brown" },
+        { "text": "dark" }
+      ]
+    },
+    {
+      "name": "eye_color",
+      "values": [
+        { "text": "brown" },
+        { "text": "hazel" },
+        { "text": "green" },
+        { "text": "blue" },
+        { "text": "gray" },
+        { "text": "amber" }
+      ]
+    },
+    {
+      "name": "eye_shape",
+      "values": [
+        { "text": "almond" },
+        { "text": "round" },
+        { "text": "hooded" },
+        { "text": "narrow" },
+        { "text": "wide" },
+        { "text": "upturned" }
+      ]
+    },
+    {
+      "name": "eyebrow_style",
+      "values": [
+        { "text": "arched" },
+        { "text": "straight" },
+        { "text": "thick" },
+        { "text": "thin" },
+        { "text": "bushy" },
+        { "text": "angled" }
+      ]
+    },
+    {
+      "name": "hair_style",
+      "values": [
+        { "text": "short" },
+        { "text": "long" },
+        { "text": "wavy" },
+        { "text": "curly" },
+        { "text": "bald" },
+        { "text": "straight" }
+      ]
+    },
+    {
+      "name": "hair_color",
+      "values": [
+        { "text": "black" },
+        { "text": "brown" },
+        { "text": "blonde" },
+        { "text": "red" },
+        { "text": "gray" },
+        { "text": "white" }
+      ]
+    },
+    {
+      "name": "nose_shape",
+      "values": [
+        { "text": "straight" },
+        { "text": "button" },
+        { "text": "upturned" },
+        { "text": "broad" },
+        { "text": "narrow" },
+        { "text": "long" }
+      ]
+    },
+    {
+      "name": "mouth_shape",
+      "values": [
+        { "text": "full" },
+        { "text": "thin" },
+        { "text": "wide" },
+        { "text": "small" },
+        { "text": "heart" },
+        { "text": "curved" }
+      ]
+    },
+    {
+      "name": "ear_size",
+      "values": [
+        { "text": "tiny" },
+        { "text": "small" },
+        { "text": "medium" },
+        { "text": "large" },
+        { "text": "prominent" },
+        { "text": "hidden" }
+      ]
+    },
+    {
+      "name": "neck_width",
+      "values": [
+        { "text": "very-thin" },
+        { "text": "thin" },
+        { "text": "average" },
+        { "text": "thick" },
+        { "text": "wide" },
+        { "text": "muscular" }
+      ]
+    },
+    {
+      "name": "facial_hair",
+      "values": [
+        { "text": "none" },
+        { "text": "mustache" },
+        { "text": "goatee" },
+        { "text": "full-beard" },
+        { "text": "stubble" },
+        { "text": "sideburns" }
+      ]
+    },
+    {
+      "name": "accessories",
+      "values": [
+        { "text": "none" },
+        { "text": "glasses" },
+        { "text": "sunglasses" },
+        { "text": "earrings" },
+        { "text": "hat" },
+        { "text": "both-glasses-earrings" }
+      ]
+    }
+  ],
+  "p5Code": "// ═══════════════════════════════════════════════════════════════════\n// SYNTHOGRASIZER FACE GENERATOR - Enhanced & Polished\n// Real-time face generation with getSynthVar() integration\n// ═══════════════════════════════════════════════════════════════════\n\n// ─── COLOR PALETTES ───────────────────────────────────────────────\n\nconst skinColors = {\n  pale: '#FFE0BD',\n  light: '#F1C27D',\n  medium: '#E0AC69',\n  tan: '#C68642',\n  brown: '#8D5524',\n  dark: '#5C3317'\n};\n\nconst eyeColors = {\n  brown: '#8B4513',\n  hazel: '#8E7618',\n  green: '#2E8B57',\n  blue: '#4169E1',\n  gray: '#708090',\n  amber: '#FFBF00'\n};\n\nconst hairColors = {\n  black: '#1a1a1a',\n  brown: '#654321',\n  blonde: '#FAF0BE',\n  red: '#8B0000',\n  gray: '#808080',\n  white: '#F5F5F5'\n};\n\n// ─── SETUP ────────────────────────────────────────────────────────\n\np.setup = function() {\n  p.createCanvas(450, 500);\n  p.smooth();\n  p.print('✓ Face Generator Ready! Variables will update in real-time.');\n  p.print('✓ Canvas: 450x500 (closer to 1:1 ratio)');\n};\n\n// ─── MAIN DRAW LOOP ───────────────────────────────────────────────\n\np.draw = function() {\n  // Get all current face parameters from Synthograsizer\n  const headShape = p.getSynthVar('head_shape') || 'oval';\n  const skinTone = p.getSynthVar('skin_tone') || 'medium';\n  const eyeColor = p.getSynthVar('eye_color') || 'brown';\n  const eyeShape = p.getSynthVar('eye_shape') || 'almond';\n  const eyebrowStyle = p.getSynthVar('eyebrow_style') || 'arched';\n  const hairStyle = p.getSynthVar('hair_style') || 'short';\n  const hairColor = p.getSynthVar('hair_color') || 'brown';\n  const noseShape = p.getSynthVar('nose_shape') || 'straight';\n  const mouthShape = p.getSynthVar('mouth_shape') || 'full';\n  const earSize = p.getSynthVar('ear_size') || 'medium';\n  const neckWidth = p.getSynthVar('neck_width') || 'average';\n  const facialHair = p.getSynthVar('facial_hair') || 'none';\n  const accessories = p.getSynthVar('accessories') || 'none';\n  \n  // Clean background with subtle gradient\n  drawBackground();\n  \n  // Center point for face positioning (centered in canvas)\n  const cx = 225;  // Horizontal center (450/2)\n  const cy = 280;  // Vertical center adjusted for face proportions\n  \n  // Draw layers from back to front\n  drawBody(cx, cy + 90, skinTone, neckWidth);\n  drawNeck(cx, cy, skinTone, neckWidth);\n  drawHead(cx, cy - 55, headShape, skinTone);\n  drawEars(cx, cy - 55, earSize, skinTone);\n  drawHair(cx, cy - 55, hairStyle, hairColor, headShape);\n  drawEyes(cx, cy - 75, eyeShape, eyeColor);\n  drawEyebrows(cx, cy - 95, eyebrowStyle);\n  drawNose(cx, cy - 45, noseShape, skinTone);\n  drawMouth(cx, cy - 15, mouthShape);\n  \n  // Conditional features\n  if (facialHair !== 'none') {\n    drawFacialHair(cx, cy, facialHair);\n  }\n  \n  if (accessories !== 'none') {\n    drawAccessories(cx, cy - 55, accessories);\n  }\n};\n\n// ═══════════════════════════════════════════════════════════════════\n// DRAWING FUNCTIONS\n// ═══════════════════════════════════════════════════════════════════\n\n// ─── BACKGROUND ───────────────────────────────────────────────────\n\nfunction drawBackground() {\n  // Subtle gradient background\n  for (let y = 0; y < p.height; y++) {\n    const inter = p.map(y, 0, p.height, 0, 1);\n    const c = p.lerpColor(p.color(240, 245, 250), p.color(230, 235, 245), inter);\n    p.stroke(c);\n    p.line(0, y, p.width, y);\n  }\n  p.noStroke();\n}\n\n// ─── BODY (Unified torso, shoulders, and arms) ───────────────────\n\nfunction drawBody(x, y, skinTone, neckWidth) {\n  const widthMap = {\n    'very-thin': 140,\n    'thin': 150,\n    'average': 160,\n    'thick': 170,\n    'wide': 180,\n    'muscular': 190\n  };\n  \n  const shoulderWidth = widthMap[neckWidth] || 160;\n  const torsoWidth = shoulderWidth; // Match shoulder width exactly\n  const shoulderRadius = 30; // Rounded shoulder curve\n  \n  // Calculate height to reach bottom of canvas\n  const bodyHeight = p.height - y + 60; // Extends past bottom\n  \n  p.noStroke();\n  \n  // Main body shape\n  p.fill(skinColors[skinTone]);\n  \n  // Draw torso extending to bottom\n  p.rect(x - torsoWidth/2, y, torsoWidth, bodyHeight);\n  \n  // Rounded shoulders (ellipse on top)\n  p.ellipse(x, y, shoulderWidth, shoulderRadius * 2);\n  \n  // Shoulder shading (darker on bottom of curve)\n  p.fill(0, 0, 0, 20);\n  p.arc(x, y, shoulderWidth, shoulderRadius * 2, 0, p.PI);\n  \n  // Torso side shading (adds depth)\n  p.fill(0, 0, 0, 15);\n  p.rect(x - torsoWidth/2, y, 12, bodyHeight);\n  p.rect(x + torsoWidth/2 - 12, y, 12, bodyHeight);\n  \n  // Chest highlight (subtle)\n  p.fill(255, 255, 255, 15);\n  p.ellipse(x, y + 40, torsoWidth * 0.4, 50);\n  \n  // Collarbone shadow\n  p.fill(0, 0, 0, 25);\n  p.ellipse(x, y + 5, shoulderWidth * 0.6, 8);\n}\n\n// ─── NECK ─────────────────────────────────────────────────────────\n\nfunction drawNeck(x, y, skinTone, neckWidth) {\n  const widthMap = {\n    'very-thin': 35,\n    'thin': 40,\n    'average': 45,\n    'thick': 50,\n    'wide': 55,\n    'muscular': 60\n  };\n  \n  const w = widthMap[neckWidth] || 45;\n  const h = 50;\n  \n  // Simple neck - just a rectangle\n  p.fill(skinColors[skinTone]);\n  p.rect(x - w/2, y + 20, w, h);\n}\n\n// ─── HEAD ─────────────────────────────────────────────────────────\n\nfunction drawHead(x, y, headShape, skinTone) {\n  const skinColor = p.color(skinColors[skinTone]);\n  \n  // Head shadow\n  p.fill(0, 0, 0, 20);\n  switch(headShape) {\n    case 'oval':\n      p.ellipse(x + 3, y + 3, 180, 220);\n      break;\n    case 'round':\n      p.circle(x + 3, y + 3, 200);\n      break;\n    case 'square':\n      p.rect(x - 87, y - 97, 180, 200, 15);\n      break;\n    case 'heart':\n      p.beginShape();\n      p.vertex(x + 3, y + 103);\n      p.bezierVertex(x - 87, y + 53, x - 87, y - 47, x + 3, y - 77);\n      p.bezierVertex(x + 93, y - 47, x + 93, y + 53, x + 3, y + 103);\n      p.endShape(p.CLOSE);\n      break;\n    case 'diamond':\n      p.quad(x + 3, y - 107, x + 93, y + 3, x + 3, y + 113, x - 87, y + 3);\n      break;\n    case 'rectangular':\n      p.rect(x - 77, y - 107, 160, 220, 10);\n      break;\n    default:\n      p.ellipse(x + 3, y + 3, 180, 220);\n  }\n  \n  // Main head\n  p.fill(skinColor);\n  switch(headShape) {\n    case 'oval':\n      p.ellipse(x, y, 180, 220);\n      break;\n    case 'round':\n      p.circle(x, y, 200);\n      break;\n    case 'square':\n      p.rect(x - 90, y - 100, 180, 200, 15);\n      break;\n    case 'heart':\n      p.beginShape();\n      p.vertex(x, y + 100);\n      p.bezierVertex(x - 90, y + 50, x - 90, y - 50, x, y - 80);\n      p.bezierVertex(x + 90, y - 50, x + 90, y + 50, x, y + 100);\n      p.endShape(p.CLOSE);\n      break;\n    case 'diamond':\n      p.quad(x, y - 110, x + 90, y, x, y + 110, x - 90, y);\n      break;\n    case 'rectangular':\n      p.rect(x - 80, y - 110, 160, 220, 10);\n      break;\n    default:\n      p.ellipse(x, y, 180, 220);\n  }\n  \n  // Subtle highlight on forehead\n  p.fill(255, 255, 255, 25);\n  p.ellipse(x, y - 40, 80, 60);\n}\n\n// ─── EARS ─────────────────────────────────────────────────────────\n\nfunction drawEars(x, y, earSize, skinTone) {\n  const sizeMap = {\n    'tiny': 15,\n    'small': 20,\n    'medium': 25,\n    'large': 30,\n    'prominent': 35,\n    'hidden': 0\n  };\n  \n  const size = sizeMap[earSize] || 25;\n  \n  if (size > 0) {\n    // Ear shadows\n    p.fill(0, 0, 0, 15);\n    p.ellipse(x - 93, y + 2, size, size * 1.5);\n    p.ellipse(x + 97, y + 2, size, size * 1.5);\n    \n    // Ears\n    p.fill(skinColors[skinTone]);\n    p.ellipse(x - 95, y, size, size * 1.5);\n    p.ellipse(x + 95, y, size, size * 1.5);\n    \n    // Inner ear detail\n    p.fill(0, 0, 0, 30);\n    p.ellipse(x - 95, y, size * 0.4, size * 0.6);\n    p.ellipse(x + 95, y, size * 0.4, size * 0.6);\n  }\n}\n\n// ─── HAIR ─────────────────────────────────────────────────────────\n\nfunction drawHair(x, y, hairStyle, hairColor, headShape) {\n  p.fill(hairColors[hairColor]);\n  \n  if (hairStyle === 'bald') return;\n  \n  switch(hairStyle) {\n    case 'short':\n      p.arc(x, y - 50, 190, 140, p.PI, p.TWO_PI);\n      break;\n    case 'long':\n      p.arc(x, y - 50, 190, 140, p.PI, p.TWO_PI);\n      p.rect(x - 95, y - 50, 50, 150, 10);\n      p.rect(x + 45, y - 50, 50, 150, 10);\n      break;\n    case 'wavy':\n      for (let i = 0; i < 8; i++) {\n        const angle = p.PI + (i * p.PI / 7);\n        const px = x + p.cos(angle) * 95;\n        const py = y - 50 + p.sin(angle) * 70 + p.sin(p.frameCount * 0.05 + i) * 5;\n        p.circle(px, py, 25);\n      }\n      break;\n    case 'curly':\n      for (let i = 0; i < 12; i++) {\n        const angle = p.PI + (i * p.PI / 11);\n        const px = x + p.cos(angle) * 95;\n        const py = y - 50 + p.sin(angle) * 70;\n        p.circle(px, py, 20);\n      }\n      break;\n    case 'straight':\n      p.rect(x - 95, y - 120, 190, 70, 0, 0, 10, 10);\n      break;\n  }\n}\n\n// ─── EYES ─────────────────────────────────────────────────────────\n\nfunction drawEyes(x, y, eyeShape, eyeColor) {\n  const eyeWidth = 40;\n  const eyeHeight = 30;\n  const eyeSpacing = 60;\n  \n  // White of eyes\n  p.fill(255);\n  \n  switch(eyeShape) {\n    case 'almond':\n      p.ellipse(x - eyeSpacing/2, y, eyeWidth, eyeHeight);\n      p.ellipse(x + eyeSpacing/2, y, eyeWidth, eyeHeight);\n      break;\n    case 'round':\n      p.circle(x - eyeSpacing/2, y, eyeWidth);\n      p.circle(x + eyeSpacing/2, y, eyeWidth);\n      break;\n    case 'hooded':\n      p.arc(x - eyeSpacing/2, y, eyeWidth, eyeHeight, 0, p.PI);\n      p.arc(x + eyeSpacing/2, y, eyeWidth, eyeHeight, 0, p.PI);\n      break;\n    case 'narrow':\n      p.ellipse(x - eyeSpacing/2, y, eyeWidth * 0.8, eyeHeight * 0.7);\n      p.ellipse(x + eyeSpacing/2, y, eyeWidth * 0.8, eyeHeight * 0.7);\n      break;\n    case 'wide':\n      p.ellipse(x - eyeSpacing/2, y, eyeWidth * 1.2, eyeHeight);\n      p.ellipse(x + eyeSpacing/2, y, eyeWidth * 1.2, eyeHeight);\n      break;\n    case 'upturned':\n      p.arc(x - eyeSpacing/2, y, eyeWidth, eyeHeight, -0.2, p.PI + 0.2);\n      p.arc(x + eyeSpacing/2, y, eyeWidth, eyeHeight, -0.2, p.PI + 0.2);\n      break;\n  }\n  \n  // Iris\n  p.fill(eyeColors[eyeColor]);\n  p.circle(x - eyeSpacing/2, y, 20);\n  p.circle(x + eyeSpacing/2, y, 20);\n  \n  // Pupil\n  p.fill(0);\n  p.circle(x - eyeSpacing/2, y, 10);\n  p.circle(x + eyeSpacing/2, y, 10);\n  \n  // Highlight\n  p.fill(255, 255, 255, 180);\n  p.circle(x - eyeSpacing/2 - 3, y - 3, 4);\n  p.circle(x + eyeSpacing/2 - 3, y - 3, 4);\n}\n\n// ─── EYEBROWS ────────────────────────────────────────────────────\n\nfunction drawEyebrows(x, y, eyebrowStyle) {\n  p.fill(60, 50, 40);\n  p.noStroke();\n  \n  const eyebrowWidth = 45;\n  const eyebrowHeight = 8;\n  const eyebrowSpacing = 60;\n  \n  switch(eyebrowStyle) {\n    case 'arched':\n      p.arc(x - eyebrowSpacing/2, y, eyebrowWidth, eyebrowHeight * 2, p.PI, p.TWO_PI);\n      p.arc(x + eyebrowSpacing/2, y, eyebrowWidth, eyebrowHeight * 2, p.PI, p.TWO_PI);\n      break;\n    case 'straight':\n      p.rect(x - eyebrowSpacing/2 - eyebrowWidth/2, y, eyebrowWidth, eyebrowHeight, 2);\n      p.rect(x + eyebrowSpacing/2 - eyebrowWidth/2, y, eyebrowWidth, eyebrowHeight, 2);\n      break;\n    case 'thick':\n      p.rect(x - eyebrowSpacing/2 - eyebrowWidth/2, y, eyebrowWidth, eyebrowHeight * 1.5, 3);\n      p.rect(x + eyebrowSpacing/2 - eyebrowWidth/2, y, eyebrowWidth, eyebrowHeight * 1.5, 3);\n      break;\n    case 'thin':\n      p.rect(x - eyebrowSpacing/2 - eyebrowWidth/2, y, eyebrowWidth, eyebrowHeight * 0.5, 1);\n      p.rect(x + eyebrowSpacing/2 - eyebrowWidth/2, y, eyebrowWidth, eyebrowHeight * 0.5, 1);\n      break;\n    case 'bushy':\n      for (let i = 0; i < 8; i++) {\n        p.circle(x - eyebrowSpacing/2 - eyebrowWidth/2 + i * 6, y + p.random(-2, 2), 6);\n        p.circle(x + eyebrowSpacing/2 - eyebrowWidth/2 + i * 6, y + p.random(-2, 2), 6);\n      }\n      break;\n    case 'angled':\n      p.quad(\n        x - eyebrowSpacing/2 - eyebrowWidth/2, y + 5,\n        x - eyebrowSpacing/2 + eyebrowWidth/2, y - 5,\n        x - eyebrowSpacing/2 + eyebrowWidth/2, y,\n        x - eyebrowSpacing/2 - eyebrowWidth/2, y + 10\n      );\n      p.quad(\n        x + eyebrowSpacing/2 - eyebrowWidth/2, y - 5,\n        x + eyebrowSpacing/2 + eyebrowWidth/2, y + 5,\n        x + eyebrowSpacing/2 + eyebrowWidth/2, y + 10,\n        x + eyebrowSpacing/2 - eyebrowWidth/2, y\n      );\n      break;\n  }\n}\n\n// ─── NOSE ─────────────────────────────────────────────────────────\n\nfunction drawNose(x, y, noseShape, skinTone) {\n  const noseColor = p.lerpColor(\n    p.color(skinColors[skinTone]),\n    p.color(0),\n    0.1\n  );\n  p.fill(noseColor);\n  \n  switch(noseShape) {\n    case 'straight':\n      p.triangle(x - 8, y - 15, x + 8, y - 15, x, y + 20);\n      break;\n    case 'button':\n      p.ellipse(x, y, 20, 25);\n      break;\n    case 'upturned':\n      p.arc(x, y, 25, 30, 0, p.PI);\n      break;\n    case 'broad':\n      p.triangle(x - 15, y - 15, x + 15, y - 15, x, y + 20);\n      break;\n    case 'narrow':\n      p.triangle(x - 5, y - 15, x + 5, y - 15, x, y + 20);\n      break;\n    case 'long':\n      p.triangle(x - 8, y - 25, x + 8, y - 25, x, y + 25);\n      break;\n  }\n  \n  // Nostrils\n  p.fill(0, 0, 0, 80);\n  p.circle(x - 6, y + 10, 4);\n  p.circle(x + 6, y + 10, 4);\n}\n\n// ─── MOUTH ────────────────────────────────────────────────────────\n\nfunction drawMouth(x, y, mouthShape) {\n  p.fill(200, 80, 80);\n  p.noStroke();\n  \n  switch(mouthShape) {\n    case 'full':\n      p.arc(x, y, 60, 30, 0, p.PI);\n      break;\n    case 'thin':\n      p.arc(x, y, 50, 15, 0, p.PI);\n      break;\n    case 'wide':\n      p.arc(x, y, 80, 30, 0, p.PI);\n      break;\n    case 'small':\n      p.arc(x, y, 35, 20, 0, p.PI);\n      break;\n    case 'heart':\n      p.beginShape();\n      p.vertex(x - 20, y);\n      p.bezierVertex(x - 20, y - 10, x - 10, y - 15, x, y - 10);\n      p.bezierVertex(x + 10, y - 15, x + 20, y - 10, x + 20, y);\n      p.bezierVertex(x + 20, y + 10, x, y + 15, x, y + 15);\n      p.bezierVertex(x, y + 15, x - 20, y + 10, x - 20, y);\n      p.endShape(p.CLOSE);\n      break;\n    case 'curved':\n      p.arc(x, y - 5, 60, 40, 0, p.PI);\n      break;\n  }\n}\n\n// ─── FACIAL HAIR ──────────────────────────────────────────────────\n\nfunction drawFacialHair(x, y, facialHair) {\n  p.fill(60, 50, 40);\n  \n  switch(facialHair) {\n    case 'mustache':\n      p.arc(x - 15, y - 15, 30, 20, 0, p.PI);\n      p.arc(x + 15, y - 15, 30, 20, 0, p.PI);\n      break;\n    case 'goatee':\n      p.ellipse(x, y + 10, 25, 35);\n      break;\n    case 'full-beard':\n      p.arc(x, y + 20, 120, 100, 0, p.PI);\n      p.arc(x - 15, y - 15, 30, 20, 0, p.PI);\n      p.arc(x + 15, y - 15, 30, 20, 0, p.PI);\n      break;\n    case 'stubble':\n      for (let i = 0; i < 50; i++) {\n        const px = x + p.random(-60, 60);\n        const py = y + p.random(-20, 40);\n        p.circle(px, py, 1.5);\n      }\n      break;\n    case 'sideburns':\n      p.rect(x - 95, y - 50, 15, 80, 5);\n      p.rect(x + 80, y - 50, 15, 80, 5);\n      break;\n  }\n}\n\n// ─── ACCESSORIES ──────────────────────────────────────────────────\n\nfunction drawAccessories(x, y, accessories) {\n  if (accessories.includes('glasses') || accessories === 'glasses') {\n    // Glasses\n    p.noFill();\n    p.stroke(40);\n    p.strokeWeight(3);\n    p.circle(x - 30, y - 20, 45);\n    p.circle(x + 30, y - 20, 45);\n    p.line(x - 7, y - 20, x + 7, y - 20);\n    p.noStroke();\n  }\n  \n  if (accessories.includes('sunglasses') || accessories === 'sunglasses') {\n    // Sunglasses\n    p.fill(20, 20, 20, 180);\n    p.ellipse(x - 30, y - 20, 50, 35);\n    p.ellipse(x + 30, y - 20, 50, 35);\n    p.stroke(40);\n    p.strokeWeight(3);\n    p.line(x - 5, y - 20, x + 5, y - 20);\n    p.noStroke();\n  }\n  \n  if (accessories.includes('earrings') || accessories === 'earrings') {\n    // Earrings\n    p.fill(255, 215, 0);\n    p.circle(x - 95, y + 15, 10);\n    p.circle(x + 95, y + 15, 10);\n  }\n  \n  if (accessories.includes('hat') || accessories === 'hat') {\n    // Hat\n    p.fill(80, 60, 40);\n    p.rect(x - 70, y - 120, 140, 15, 5);\n    p.arc(x, y - 120, 100, 60, p.PI, p.TWO_PI);\n  }\n}\n\n// ═══════════════════════════════════════════════════════════════════\n// END OF FACE GENERATOR\n// ═══════════════════════════════════════════════════════════════════\n//\n// ✓ Canvas: 400x711 (9:16 aspect ratio)\n// ✓ 13 variables: head, skin, eyes, eyebrows, hair, nose, mouth,\n//                 ears, neck, facial hair, accessories\n// ✓ Real-time updates via getSynthVar()\n// ✓ Shadows, highlights, and depth\n// ✓ Shoulders and body for proper framing\n// ✓ Better neck connection with chin shadow\n// ✓ Improved positioning (face moved down)\n// ✓ Clean, modular code structure\n// ✓ 60fps performance\n//\n// Created for Synthograsizer Face Generator\n// ═══════════════════════════════════════════════════════════════════\n"
+}

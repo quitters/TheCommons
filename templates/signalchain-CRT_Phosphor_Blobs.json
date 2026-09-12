@@ -1,0 +1,121 @@
+{
+  "promptTemplate": "A retro CRT terminal screen showing {{blob_count}} bouncing glowing {{glow_style}} blobs of {{phosphor_color}} phosphor with {{afterglow_decay}} afterglow and {{scanline_density}} scanlines.",
+  "variables": [
+    {
+      "name": "phosphor_color",
+      "feature_name": "Phosphor Color",
+      "values": [
+        {
+          "text": "toxic_green",
+          "weight": 3
+        },
+        {
+          "text": "classic_green",
+          "weight": 3
+        },
+        {
+          "text": "cyber_emerald",
+          "weight": 2
+        },
+        {
+          "text": "vintage_tint",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "blob_count",
+      "feature_name": "Blob Density",
+      "values": [
+        {
+          "text": "sparse",
+          "weight": 2
+        },
+        {
+          "text": "normal",
+          "weight": 3
+        },
+        {
+          "text": "crowded",
+          "weight": 2
+        },
+        {
+          "text": "frenzy",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "glow_style",
+      "feature_name": "Glow Style",
+      "values": [
+        {
+          "text": "halo",
+          "weight": 3
+        },
+        {
+          "text": "vector",
+          "weight": 2
+        },
+        {
+          "text": "fuzz",
+          "weight": 2
+        },
+        {
+          "text": "glitchy",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "afterglow_decay",
+      "feature_name": "Afterglow Decay",
+      "values": [
+        {
+          "text": "infinite",
+          "weight": 1
+        },
+        {
+          "text": "long",
+          "weight": 2
+        },
+        {
+          "text": "medium",
+          "weight": 3
+        },
+        {
+          "text": "short",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "scanline_density",
+      "feature_name": "Scanline Density",
+      "values": [
+        {
+          "text": "tight",
+          "weight": 2
+        },
+        {
+          "text": "classic",
+          "weight": 3
+        },
+        {
+          "text": "coarse",
+          "weight": 2
+        },
+        {
+          "text": "chunky",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "tags": [
+    "signalchain",
+    "p5"
+  ],
+  "p5Code": "let particles = []; const MAX_P = 30; p.setup = function() { p.createCanvas(160, 120); for(let i=0; i<MAX_P; i++) { particles.push({ x: p.random(20, 140), y: p.random(20, 100), vx: p.random(-1.2, 1.2), vy: p.random(-1.2, 1.2), sz: p.random(15, 28) }); } }; p.draw = function() { const color_var = p.getSynthVar('phosphor_color') || 'toxic_green'; const count_var = p.getSynthVar('blob_count') || 'normal'; const style_var = p.getSynthVar('glow_style') || 'halo'; const decay_var = p.getSynthVar('afterglow_decay') || 'medium'; const scan_var = p.getSynthVar('scanline_density') || 'classic'; const color_map = { 'classic_green': { bg: [2, 17, 5], glow: [13, 250, 74], core: [174, 255, 179] }, 'toxic_green': { bg: [0, 10, 2], glow: [57, 255, 20], core: [230, 255, 230] }, 'cyber_emerald': { bg: [1, 13, 10], glow: [0, 255, 170], core: [209, 255, 240] }, 'vintage_tint': { bg: [5, 16, 5], glow: [18, 128, 36], core: [128, 255, 144] } }; const count_map = { 'sparse': 3, 'normal': 6, 'crowded': 12, 'frenzy': 24 }; const decay_map = { 'infinite': 4, 'long': 12, 'medium': 25, 'short': 60 }; const scan_map = { 'tight': 1.5, 'classic': 2, 'coarse': 3, 'chunky': 4 }; const c_palette = color_map[color_var] || color_map['toxic_green']; const num_blobs = count_map[count_var] || 6; const decay = decay_map[decay_var] || 25; const scan_density = scan_map[scan_var] || 2; p.noStroke(); p.fill(c_palette.bg[0], c_palette.bg[1], c_palette.bg[2], decay); p.rect(0, 0, 160, 120); let flicker = p.map(p.noise(p.millis() * 0.05), 0, 1, 0.85, 1.0); for (let i = 0; i < num_blobs; i++) { let pt = particles[i]; pt.x += pt.vx; pt.y += pt.vy; if (pt.x < pt.sz/2 || pt.x > 160 - pt.sz/2) { pt.vx *= -1; pt.x = p.constrain(pt.x, pt.sz/2, 160 - pt.sz/2); } if (pt.y < pt.sz/2 || pt.y > 120 - pt.sz/2) { pt.vy *= -1; pt.y = p.constrain(pt.y, pt.sz/2, 120 - pt.sz/2); } if (style_var === 'halo') { for (let r = pt.sz * 1.5; r > 0; r -= 3) { let inter = r / (pt.sz * 1.5); let r_c = p.lerp(c_palette.core[0], c_palette.glow[0], inter); let g_c = p.lerp(c_palette.core[1], c_palette.glow[1], inter); let b_c = p.lerp(c_palette.core[2], c_palette.glow[2], inter); p.fill(r_c, g_c, b_c, (1 - inter) * 45 * flicker); p.ellipse(pt.x, pt.y, r, r); } } else if (style_var === 'vector') { p.noFill(); p.stroke(c_palette.glow[0], c_palette.glow[1], c_palette.glow[2], 200 * flicker); p.strokeWeight(1.5); p.ellipse(pt.x, pt.y, pt.sz, pt.sz); p.fill(c_palette.core[0], c_palette.core[1], c_palette.core[2], 100); p.ellipse(pt.x, pt.y, pt.sz * 0.4, pt.sz * 0.4); } else if (style_var === 'fuzz') { p.noStroke(); p.fill(c_palette.glow[0], c_palette.glow[1], c_palette.glow[2], 50 * flicker); p.ellipse(pt.x, pt.y, pt.sz * 1.2, pt.sz * 1.2); p.fill(c_palette.core[0], c_palette.core[1], c_palette.core[2], 180 * flicker); p.ellipse(pt.x, pt.y, pt.sz * 0.5, pt.sz * 0.5); p.stroke(c_palette.glow[0], c_palette.glow[1], c_palette.glow[2], 150); for(let k=0; k<12; k++){ let ang = p.random(6.28); let dst = p.random(pt.sz * 0.5, pt.sz * 1.1); p.point(pt.x + p.cos(ang)*dst, pt.y + p.sin(ang)*dst); } } else if (style_var === 'glitchy') { p.noStroke(); let slices = 5; let slice_h = pt.sz / slices; for(let s=0; s<slices; s++) { let y_off = -pt.sz/2 + s * slice_h; let shift = p.sin(p.millis()*0.01 + s) * 4 * p.noise(p.millis()*0.02); p.fill(c_palette.glow[0], c_palette.glow[1], c_palette.glow[2], 120 * flicker); p.rect(pt.x - pt.sz/2 + shift, pt.y + y_off, pt.sz, slice_h, 2); p.fill(c_palette.core[0], c_palette.core[1], c_palette.core[2], 200 * flicker); p.rect(pt.x - pt.sz/4 + shift, pt.y + y_off, pt.sz*0.5, slice_h, 1); } } } p.stroke(0, 0, 0, 175); p.strokeWeight(1); for(let y = 0; y < 120; y += scan_density) { p.line(0, y, 160, y); } p.noFill(); for(let i=0; i<6; i++) { p.stroke(0, 0, 0, 255 - (i * 40)); p.strokeWeight(i + 1); p.rect(0, 0, 160, 120, 10); } };",
+  "usesInput": false
+}

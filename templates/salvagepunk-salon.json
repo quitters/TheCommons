@@ -1,0 +1,387 @@
+{
+  "promptTemplate": "{{subject}}, {{portrait_style}}, {{medium}}, {{atmosphere}}, {{art_register}}",
+  "variables": [
+    {
+      "name": "subject",
+      "feature_name": "Subject",
+      "values": [
+        {
+          "text": "A sophisticated and fancy raccoon showcasing the elegance of a Victorian aristocratic noble, artistically recycled from a salvagepunk thrift-store, combining elements of naturalist aesthetic, meme art, nouveau realisme, intricately created with heavy thick oil paint applied in a dramatic impasto technique, encapsulating rich colors and textures magnifying the eccentric charm and debonair",
+          "weight": 3
+        },
+        {
+          "text": "A Super cute KAWAII SNAKE embodying the grandeur of a Victorian aristocrat, intertwined with the charm of a Renaissance figure, bedecked in period-suited Renaissance attire with a touch of streetwear fashion, eccentric charm and debonair adorned in a detailed and fine-tuned study of nouveau realisme with an essence of naturalist aesthetic and meme art, reviving the allure of a nostalgic portrait extraordinaire",
+          "weight": 3
+        },
+        {
+          "text": "A Putrid zombie rat embodying the grandeur of a Victorian aristocrat, intertwined with the charm of a Renaissance figure, bedecked in period-suited Renaissance attire, adorned in nouveau realisme with an essence of naturalist aesthetic and meme art. (Dark. putrid zombified typhoid rat)",
+          "weight": 2
+        },
+        {
+          "text": "A Mangy ugly diseased Nutria, coypu with typhoid embodying the grandeur of a Victorian aristocrat, intertwined with the charm of a Renaissance figure, bedecked in period-suited Renaissance attire, revealing the eccentric charm and debonair, commercial viability with high-class aesthetic finesse",
+          "weight": 2
+        },
+        {
+          "text": "A Very old Octogenarian Tortoise embodying the grandeur of a Victorian aristocrat, intertwined with the charm of a Renaissance figure, bedecked in period-suited Renaissance attire, high-class aesthetic finesse and the artistic confidence of a salvagepunk thrift-store find, reviving the allure of a nostalgic portrait extraordinaire",
+          "weight": 2
+        },
+        {
+          "text": "Many snakes embodying the grandeur of a Victorian aristocrat, intertwined with the charm of a Renaissance figure, bedecked in period-suited Renaissance attire, revealing eccentric charm and debonair, commercially-viable portrait with high-class aesthetic finesse",
+          "weight": 2
+        },
+        {
+          "text": "A round-faced female textile artist in her mature era of 30s, endowed with bouncy short blonde curls, elegantly draped in a pristine white dress, accentuating with a vividly printed scarf in purple, pink, and sunflower yellow, posing against a stark black wall with deep-set brown bricks and a mural of urban architecture, yellow woven wall hangings in the style of bold patterned linens, pink and amber, textile installation, emotive fields of color",
+          "weight": 3
+        },
+        {
+          "text": "A stylish intimidating senpai with an exaggerated big head, outfit embodying the bolder style associated with lewd bimbos, complete with flamboyant makeup celebrating the diversity and energy of the multicultural queer-hyperpop scene, exuding the vibe of a high-energy nightclub drag-rave setting, the horniest aesthetic, a hypnotizing jaw-dropping super dope colorful streetwear fashion photorealistic masterpiece on canvas",
+          "weight": 2
+        },
+        {
+          "text": "[3D render of the cutest, fluffiest smiley-face mound thing, with beady eyes, pixar hairworks | Something reminiscent of fluffy needle-felted pastel cotton-candy explosions seems almost palpable, soft, and gently pulsating, making the sight soothing. It epitomizes the most peaceful and comforting aspects of the human psyche, creating the absolute most beautiful and serene visual imaginable in high definition. Hyper-realistic imagery of a peak paragon of serenity and delight, a dazzling tapestry of calming, soothing, organic elements.]",
+          "weight": 3
+        },
+        {
+          "text": "[a smiley-face mound represented as Hyper-realistic imagery of an extreme paragon of horror and revulsion, a grotesque fleshy collage crafted from quivering, fleshy, organic matter. The abominable artwork is beyond our comprehension, possessing a disturbing, unique anatomy that shatters all norms and conventions of beauty or aesthetics. The piles of ooze appear almost palpable, wet, and throbbing, making the sight unbearable. It epitomizes the worst fears and taboos of human psyche, making for the absolute most repulsive and terrifying visual imaginable in high definition.]",
+          "weight": 2
+        },
+        {
+          "text": "(((biblically-accurate-celestial creature with sparse feathers and several huge eyes))) ((a smiling round monster creature with two cute beady eyes)) ((A repulsive fleshy malformed blob creature with super-cute beady eyes and a playful naive smile, matted greasy folds, deep putrid wrinkles, massive jiggly flabby rolls of fatty tissue, wet slimy translucent deteriorating membrane oozing fluids and a convoluted irregular porous surface infested with veins and hair follicles that resemble a grotesque mound of saline-filled silicone flesh))",
+          "weight": 2
+        },
+        {
+          "text": "upside-down breakdancing bboy troupe hyping the crowd with impressive backflips, Pulitzer-winning candid american lifestyle photojournalism",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "portrait_style",
+      "feature_name": "Portrait Style",
+      "values": [
+        {
+          "text": "nouveau realisme meme art, artistically recycled from a salvagepunk thrift-store, blended harmoniously with naturalist aesthetic, dramatically textured with thick oil paint in a dramatic impasto technique, magnifying the eccentric charm and debonair, imbued with an immersive ambiance which makes the painting come alive",
+          "weight": 3
+        },
+        {
+          "text": "Create a desaturated, vintage-looking image inspired by the cinematic aesthetic of Andrei Tarkovsky, focused on an intriguing silhouette, the backdrop evoking the profound darkness of the cave, juxtaposed against an entrance view revealing an ethereal background environment, ensure to make the image artistically captivating, stimulating emotions akin to a dramatic, arcane photograph",
+          "weight": 3
+        },
+        {
+          "text": "hyperrealist, new american documentary photography, uniformly staged images, sheet film, golden age aesthetics, pop culture imagery, transavanguardia, snapshots of america, god rays, leica m6 kodak aero ektar 178mm f/2.5",
+          "weight": 2
+        },
+        {
+          "text": "an outsider-art masterpiece featuring internet memes, graffiti, sexy baddies, gang signs, bling, and opulence, a wonky, silly, outlandish, unique, creative, unapologetic, naive, extravagant, otherworldly, never-before-seen, carefree and irreverent artwork of dope streetwear fashion, visually-inspired by Francisco Goya, Francis Bacon, Jacques-Louis David, Francois Boucher, David Hockney, and John Deakin",
+          "weight": 3
+        },
+        {
+          "text": "baroque chiaroscuro Renaissance drama, A Renaissance oil painting echoing meticulous artistry, rich lush colors, and the dramatic chiaroscuro light-dark techniques inherent in paintings from the Renaissance period, period-appropriate attire such as a ruffled collar, velvet doublet, or ornate headpiece",
+          "weight": 2
+        },
+        {
+          "text": "painted in the style of eric wallis, ando fuchs, endurance art, spacesolarpunk, digital art, josef capek, american barbizon school, thick impasto techniques",
+          "weight": 2
+        },
+        {
+          "text": "a hallucinogenic and hyperrealistic portrait, characterizing whimsical atmospherics transcending into an enigmatic dimension, elements of candycore aesthetics with muted pastel shades and effervescent formations, appalling kawaii cuteness, disproportionately magnified eyes turned uncanny, energized with an essence of video glitch art",
+          "weight": 2
+        },
+        {
+          "text": "a tarkovsky aesthetic emulating the appearance of pressed vibrant objects growing out of volcanic rock, perfectly flattened against a black background, their forms preserved, communicating a sense of timelessness and nostalgia as if looking at a personal memento converted into art",
+          "weight": 2
+        },
+        {
+          "text": "a silly exaggerated caricature in the style of a 1990s collectors-edition trading card on 280 GSM Cardstock",
+          "weight": 1
+        },
+        {
+          "text": "Revulsion and terror, a surreal fusion of abstract and organic shapes pulsating in a nauseating rhythm, draped in a revolting sheen, unsettling juxtaposition of foul dark pink Rock and unimaginably-disturbing copper verdigris Wax imagery that tests the limits of repulsive aesthetics, in a minimalist Bauhaus art style",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "medium",
+      "feature_name": "Medium",
+      "values": [
+        {
+          "text": "dramatically textured thick oil paint, applying a striking impasto technique to highlight the elegant details, commercially-viable portrait with high-class aesthetic finesse, echoing the artistic confidence of a salvagepunk thrift-store find, reviving the allure of a nostalgic portrait extraordinaire",
+          "weight": 3
+        },
+        {
+          "text": "Generate a hyperrealistic fuzzy needlefelted creature with the aesthetic of the Golden Age and new American documentary sheet film photography, close-up details of skin texture, divine light beams (god rays), and pop culture references to enhance the viewer's immersion, use details reminiscent of Leica M6's and Kodak Aero Ektar 178mm f/2.5's style for a transavanguardia hyperrealistic touch",
+          "weight": 3
+        },
+        {
+          "text": "vintage desaturated film photograph, cinematic photo, grainy photo, vignette, highly detailed, moody, epic, film, atmospheric haze, dynamic lighting",
+          "weight": 3
+        },
+        {
+          "text": "oil on canvas, exquisitely intricate details, surrealism, neoclassicism, renaissance, hyper realistic, ultra detailed, cell shaded, 8k, a bright cheerful exploding pastel rainbow",
+          "weight": 2
+        },
+        {
+          "text": "the scene is painted with pastel oil paints with thick minimalist impasto technique, the planet burned beautifully",
+          "weight": 2
+        },
+        {
+          "text": "jankily-drawn in mspaint 1998 outsider art, visually-inspired by Francisco Goya, Francis Bacon, Jacques-Louis David, Francois Boucher, David Hockney, and John Deakin",
+          "weight": 1
+        },
+        {
+          "text": "An intricately designed masterpiece captured in the unique medium of needle felting, embodying the raw, unconventional aesthetics of outsider art, incorporating pastel colors, distorted forms, imaginative figures and a sense of profound emotion, possessing the vibrant texture created by the tufts of wool fiber, giving the art piece a tangible, three-dimensional look",
+          "weight": 2
+        },
+        {
+          "text": "colour glorious bizarre surrealist photographic masterpiece by ben zank and mono giraud and dorothea tanning, photo of many biomorphic still life objects draped in white cloaks, sunrise, max ernst, frederic leighton, roger dean, sam spratt, mark brooks, amano, greg hildebrandt, extreme close up",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "atmosphere",
+      "feature_name": "Atmosphere",
+      "values": [
+        {
+          "text": "A sprawling server farm, its countless machines humming with activity, suddenly becomes the source of an ethereal spectacle. From the labyrinth of servers, a gentle pastel smoke begins to rise, swirling into the air with hues of lavender, mint, and blush. wisps of thick dense pastel-rainbow smoke, cinematic photo, grainy photo, atmospheric haze, dynamic lighting",
+          "weight": 3
+        },
+        {
+          "text": "profound cave darkness, a peculiar shaped hole radiating a soft light from the outside world, the backdrop evoking the profound darkness of the cave, juxtaposed against the entrance view revealing an ethereal background environment",
+          "weight": 2
+        },
+        {
+          "text": "Create an exquisite fine art image that evokes a sense of rococo opulence. A vibrant floral painting abundant with blooming flowers in deep reds, soft pinks, and cascades of light purples, bursting with life and color, surrounded by an ornately created golden gilded frame with intricate designs",
+          "weight": 2
+        },
+        {
+          "text": "In a canvas filled with chaos and brutal action, the viewer is engrossed by the sense of hopelessness and impending horror, a tumultuous blend of baroque romanticism and post-internet medieval influences, rough-hewn surfaces revealing signs of deteriorated grandeur, foul dark grotesque horror with pulsating organic forms",
+          "weight": 2
+        },
+        {
+          "text": "A bird's-eye view of a forest, where the trees are now part of the pastel cloud landscape. The foliage has taken on the soft textures of the clouds, with branches and leaves blending into the cotton-candy-like surroundings. Wildlife roams freely, their forms now just outlines filled with the same pastel colors as the environment. wisps of pastel vapor clouds, cinematic photo, grainy photo, vignette, highly detailed, moody, epic, film, atmospheric haze",
+          "weight": 3
+        },
+        {
+          "text": "Victorian aristocratic grandeur with a pastoral or palatial setting, offering an immersive ambiance which makes the painting come alive, rich lush colors, eccentric charm and debonair",
+          "weight": 3
+        },
+        {
+          "text": "high-energy nightclub drag-rave setting, pastel chrome backdrop adding an exuberant splash of modernity, celebrating the diversity and energy of the multicultural queer-hyperpop scene",
+          "weight": 2
+        },
+        {
+          "text": "an art gallery installation featuring a circular light tower covered in multiple tv-monitor screens, multiple screens, social media art, ceramic, retropunk, swiss style, handheld, liminal spaces, multilayered, cut-paper origami diorama, the scene is painted with pastel oil paints with thick minimalist impasto technique, the planet burned beautifully",
+          "weight": 1
+        },
+        {
+          "text": "an emotive and symbolic image capturing the metaphysical journey of transitioning from life to afterlife, the ephemeral transition from the corporeal state to the ethereal plane, profound tranquility and mystery, balance between warmth, peace, melancholy and liberation, elements of light and darkness, paths and passages",
+          "weight": 2
+        },
+        {
+          "text": "Minimalist art, a corn field on the farm, minimalism artwork painting",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "art_register",
+      "feature_name": "Art Register",
+      "values": [
+        {
+          "text": "commercially-viable portrait, artist unknown, with high-class aesthetic finesse echoing the artistic confidence of a salvagepunk thrift-store find, reviving the allure of a nostalgic portrait extraordinaire",
+          "weight": 3
+        },
+        {
+          "text": "a wonderfully strange, unforgettable artistic multimedia arts and crafts neo-expressionism photorealistic streetwear fashion portrait, Outsider art, retro cgi, featured in juxtapoz, moma, high fashion, abstract and fun",
+          "weight": 3
+        },
+        {
+          "text": "palette check dope playdoh streetwear fashion-week runway portrait-photograph of a colorful outsider-art party, Kodak 400 film, directed by Wes Anderson and Spike Jonze, a textural runway fashion show in the style of a Kandinsky composition sculpted out of gelatin, DIC color guide, pantone pastel, an unforgettable outsider art illustration collage, putrid",
+          "weight": 3
+        },
+        {
+          "text": "Imagine a candid photograph of a 1997 art party sculpture, resembling an exploding-playdoh Mandelbrot Set. Cinematic, detailed, professional lighting, incredible detail and sharpness. An exploding rainbow playdoh Mandelbrot set in the style of cai guo-qiang, an exploding needlefelted rainbow in the style of NAOYA HATAKEYAMA, CAI GUO-QIANG, and LOS CARPINTEROS as a bright cheerful exploding pastel rainbow",
+          "weight": 2
+        },
+        {
+          "text": "Visualize an image that emanates a surrealistic hybrid of abstract and organic forms weaving in and out of rhythm, with a repugnant glossy sheen, signifying the dichotomy of revolting beauty. This creature, crafted with the meticulous hand of a storied muppeteer, encapsulates both sickening and fascinating aesthetics. Its large, innocent, smiling eyes and mouth contrast starkly with its grotesque form. It is a symphony of foul materials and spectral images, both repelling and attracting simultaneously",
+          "weight": 2
+        },
+        {
+          "text": "Create a Peripheral Drift Illusion, an optical illusion with a seamless pattern that is symmetrical and high-definition, an unforgettable outsider art illustration collage of a large mound-shaped figure",
+          "weight": 1
+        },
+        {
+          "text": "a pattern of unique playful truchet tiles, a grid of interconnected exploding balloons, like a game of chutes and ladders, palette check, felted mannequin with extreme emotion, dope fresh hypebeast muppet, abstract and fun",
+          "weight": 2
+        },
+        {
+          "text": "Imagine a muppet-like figure painted in a modern abstract style and sculpted out of gelatin, evoking candid photography from a costume party in the mid-1990s, filled with vibrant color and playful design. a muppet painted by Kandinsky and sculpted out of gelatin, DIC color guide, pantone",
+          "weight": 2
+        },
+        {
+          "text": "resin figure, pop style, 4k, intricate detail, FRP cartoon figures, solid colour background, photorealistic surreal life vivid colors uhd, Peripheral Drift Illusion, optical illusion, seamless pattern, symmetrical",
+          "weight": 2
+        },
+        {
+          "text": "grumpy exploding-rainbow postcard aesthetic in the style of Modernism on Oil paint by Raphael",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "frame_hue",
+      "feature_name": "Frame Hue",
+      "values": [
+        {
+          "text": "45",
+          "weight": 3
+        },
+        {
+          "text": "35",
+          "weight": 2
+        },
+        {
+          "text": "22",
+          "weight": 2
+        },
+        {
+          "text": "55",
+          "weight": 1
+        },
+        {
+          "text": "165",
+          "weight": 1
+        },
+        {
+          "text": "215",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "subject_hue",
+      "feature_name": "Subject Hue",
+      "values": [
+        {
+          "text": "200",
+          "weight": 3
+        },
+        {
+          "text": "270",
+          "weight": 2
+        },
+        {
+          "text": "300",
+          "weight": 2
+        },
+        {
+          "text": "60",
+          "weight": 2
+        },
+        {
+          "text": "0",
+          "weight": 1
+        },
+        {
+          "text": "130",
+          "weight": 1
+        },
+        {
+          "text": "180",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "name": "decay",
+      "feature_name": "Decay",
+      "values": [
+        {
+          "text": "0",
+          "weight": 1
+        },
+        {
+          "text": "10",
+          "weight": 2
+        },
+        {
+          "text": "25",
+          "weight": 3
+        },
+        {
+          "text": "45",
+          "weight": 3
+        },
+        {
+          "text": "65",
+          "weight": 2
+        },
+        {
+          "text": "85",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "glow_density",
+      "feature_name": "Glow Density",
+      "values": [
+        {
+          "text": "500",
+          "weight": 1
+        },
+        {
+          "text": "1200",
+          "weight": 2
+        },
+        {
+          "text": "2500",
+          "weight": 3
+        },
+        {
+          "text": "4500",
+          "weight": 2
+        },
+        {
+          "text": "8000",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "name": "bg_style",
+      "feature_name": "BG Style",
+      "values": [
+        {
+          "text": "velvet",
+          "weight": 3
+        },
+        {
+          "text": "mottled",
+          "weight": 2
+        },
+        {
+          "text": "dark",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "p5Code": "// ═══════════════════════════════════════════════════════════════════════\n// SALVAGEPUNK SALON - Generative baroque portrait frame with decay\n// Synthograsizer Workflow Template\n// ═══════════════════════════════════════════════════════════════════════\n\nconst CW = 768;\n\nlet figurePoints = [];\nlet ambientParticles = [];\nlet glitchBlocks = [];\nlet glitchTimer = 60;\nlet _prevFrameHue = -1;\nlet _prevBgStyle = '';\n\np.setup = function() {\n  p.createCanvas(CW, CW);\n  p.colorMode(p.HSB, 360, 100, 100, 100);\n\n  // Radial blob points for the generative figure silhouette\n  let nPts = 22;\n  for (let i = 0; i < nPts; i++) {\n    figurePoints.push({\n      angle: (i / nPts) * p.TWO_PI,\n      baseR: p.random(0.72, 1.0),\n      noiseOff: p.random(10000)\n    });\n  }\n\n  // Ambient dust floating inside portrait area\n  for (let i = 0; i < 50; i++) {\n    ambientParticles.push(newDustParticle());\n  }\n};\n\nfunction newDustParticle() {\n  return {\n    x: p.random(CW * 0.18, CW * 0.82),\n    y: p.random(CW * 0.2, CW * 0.88),\n    vx: p.random(-0.22, 0.22),\n    vy: p.random(-0.55, -0.08),\n    size: p.random(1.5, 7),\n    alpha: p.random(8, 44),\n    hueOff: p.random(-40, 40),\n    noiseOff: p.random(1000)\n  };\n}\n\np.draw = function() {\n  let frameHue    = parseFloat(p.getSynthVar('frame_hue'))   || 45;\n  let subjectHue  = parseFloat(p.getSynthVar('subject_hue')) || 210;\n  let decay       = parseFloat(p.getSynthVar('decay'))       || 30;\n  let glowDensity = parseInt(p.getSynthVar('glow_density'))  || 2500;\n  let bgStyle     = p.getSynthVar('bg_style')                || 'velvet';\n  let t = p.frameCount;\n\n  let hueChanged = (frameHue !== _prevFrameHue || bgStyle !== _prevBgStyle);\n  _prevFrameHue = frameHue;\n  _prevBgStyle = bgStyle;\n\n  if (hueChanged) { p.background(frameHue, 18, 7); }\n\n  // Semi-transparent overlay for motion trails\n  p.noStroke();\n  p.fill(frameHue, 18, 7, 18);\n  p.rect(0, 0, CW, CW);\n\n  // Periodic full clear to prevent muddiness\n  if (t % 100 === 1) { p.background(frameHue, 18, 7); }\n\n  // ─── Background texture ───────────────────────────────────────────────\n  if (bgStyle === 'velvet') {\n    for (let i = 0; i < 40; i++) {\n      let x = p.random(CW), y = p.random(CW);\n      p.stroke(frameHue, p.random(20, 55), p.random(10, 32), p.random(4, 18));\n      p.strokeWeight(1);\n      p.point(x, y);\n    }\n  } else if (bgStyle === 'mottled') {\n    p.noStroke();\n    for (let i = 0; i < 18; i++) {\n      let x = p.random(CW), y = p.random(CW);\n      let sz = p.random(8, 55);\n      p.fill(frameHue, p.random(10, 45), p.random(5, 26), p.random(3, 14));\n      p.ellipse(x, y, sz, sz * p.random(0.4, 1.8));\n    }\n  }\n\n  // ─── Chiaroscuro portrait glow ────────────────────────────────────────\n  let breathe = 1 + Math.sin(t * 0.022) * 0.018;\n  let cx = CW / 2;\n  let cy = CW * 0.485;\n  p.noStroke();\n  for (let r = 270; r > 55; r -= 18) {\n    let alpha = p.map(r, 55, 270, 20, 1) * breathe;\n    p.fill(subjectHue, 28, 38, alpha);\n    p.ellipse(cx, cy, r * 2.1, r * 2.45);\n  }\n\n  // ─── Generative figure silhouette ─────────────────────────────────────\n  p.push();\n  p.translate(cx, cy + CW * 0.05);\n  let figW = CW * 0.19 * breathe;\n  let figH = CW * 0.26 * breathe;\n\n  // Drop shadow\n  p.noStroke();\n  p.fill(subjectHue, 65, 7, 32);\n  p.ellipse(10, 18, figW * 1.95, figH * 1.5);\n\n  // Body blob — noise-driven radial shape\n  p.beginShape();\n  for (let i = 0; i <= figurePoints.length + 2; i++) {\n    let fp = figurePoints[i % figurePoints.length];\n    let nv = p.noise(fp.noiseOff + t * 0.007) * 0.30 + 0.78;\n    let r = fp.baseR * nv;\n    p.curveVertex(Math.cos(fp.angle) * figW * r, Math.sin(fp.angle) * figH * r);\n  }\n  p.fill(subjectHue, 38, 21, 93);\n  p.endShape(p.CLOSE);\n\n  // Head\n  let headY = -figH * 0.88;\n  let headR = figW * 0.53;\n  p.fill(subjectHue, 32, 28, 93);\n  p.ellipse(0, headY, headR * 2, headR * 2.18);\n\n  // Beady eyes\n  let eyeSep = headR * 0.3;\n  p.fill(0, 0, 4, 98);\n  p.ellipse(-eyeSep, headY + headR * 0.04, headR * 0.18, headR * 0.28);\n  p.ellipse( eyeSep, headY + headR * 0.04, headR * 0.18, headR * 0.28);\n  // Eye glints\n  p.fill(0, 0, 100, 52);\n  p.ellipse(-eyeSep + 1.5, headY - headR * 0.04, headR * 0.055, headR * 0.055);\n  p.ellipse( eyeSep + 1.5, headY - headR * 0.04, headR * 0.055, headR * 0.055);\n\n  p.pop();\n\n  // ─── Ambient dust particles ───────────────────────────────────────────\n  let glowTarget = Math.max(20, Math.floor(glowDensity / 80));\n  while (ambientParticles.length < glowTarget) ambientParticles.push(newDustParticle());\n  while (ambientParticles.length > glowTarget) ambientParticles.pop();\n\n  p.noStroke();\n  for (let ap of ambientParticles) {\n    ap.x += ap.vx + Math.sin(t * 0.018 + ap.noiseOff) * 0.26;\n    ap.y += ap.vy;\n    let hue = ((subjectHue + ap.hueOff) % 360 + 360) % 360;\n    let flicker = 0.62 + Math.sin(t * 0.09 + ap.noiseOff) * 0.38;\n    p.fill(hue, 35, 92, ap.alpha * flicker);\n    p.ellipse(ap.x, ap.y, ap.size);\n    if (ap.y < CW * 0.08 || ap.x < CW * 0.09 || ap.x > CW * 0.91) {\n      Object.assign(ap, newDustParticle());\n    }\n  }\n\n  // ─── Ornate baroque frame (drawn on top) ──────────────────────────────\n  drawSalonFrame(frameHue, decay, t);\n\n  // ─── Glitch artifacts ─────────────────────────────────────────────────\n  if (decay > 8) {\n    glitchTimer--;\n    if (glitchTimer <= 0) {\n      glitchTimer = Math.max(8, Math.floor(p.random(40, 130) - decay * 0.75));\n      let nNew = Math.floor(decay / 28) + 1;\n      for (let k = 0; k < nNew; k++) {\n        glitchBlocks.push({\n          x: p.random(CW * 0.05, CW * 0.87),\n          y: p.random(CW * 0.05, CW * 0.87),\n          w: p.random(14, 135),\n          h: p.random(1.5, 9),\n          life: p.random(2, 10),\n          hue: p.random(360)\n        });\n      }\n    }\n    p.noStroke();\n    for (let i = glitchBlocks.length - 1; i >= 0; i--) {\n      let gb = glitchBlocks[i];\n      p.fill(gb.hue, 78, 98, p.map(gb.life, 0, 10, 0, 52));\n      p.rect(gb.x, gb.y, gb.w, gb.h);\n      gb.x += p.random(-2, 2);\n      gb.life--;\n      if (gb.life <= 0) glitchBlocks.splice(i, 1);\n    }\n  }\n};\n\nfunction drawSalonFrame(frameHue, decay, t) {\n  let m = 16;\n  let W = CW - m * 2;\n  let H = CW - m * 2;\n  p.noFill();\n\n  // Stacked moulding layers simulating carved gilt wood\n  let mouldings = [\n    { inset: 0,  sw: 30, sBri: 72, sAlpha: 90 },\n    { inset: 15, sw: 5,  sBri: 98, sAlpha: 85 },\n    { inset: 20, sw: 18, sBri: 56, sAlpha: 88 },\n    { inset: 34, sw: 4,  sBri: 96, sAlpha: 82 },\n    { inset: 38, sw: 12, sBri: 44, sAlpha: 85 },\n    { inset: 47, sw: 3,  sBri: 90, sAlpha: 80 },\n    { inset: 51, sw: 7,  sBri: 64, sAlpha: 74 }\n  ];\n\n  for (let ml of mouldings) {\n    let shimmer = Math.sin(t * 0.012 + ml.inset * 0.09) * 7;\n    p.stroke(frameHue + shimmer, 58, ml.sBri, ml.sAlpha);\n    p.strokeWeight(ml.sw);\n    p.rect(m + ml.inset, m + ml.inset, W - ml.inset * 2, H - ml.inset * 2, 6);\n  }\n\n  // Inner portrait mat line\n  p.stroke(0, 0, 6, 92);\n  p.strokeWeight(2);\n  p.rect(m + 60, m + 60, W - 120, H - 120, 3);\n\n  // Verdigris / rust decay patches along frame edges\n  if (decay > 4) {\n    let nSpots = Math.ceil(decay / 6);\n    p.noStroke();\n    for (let i = 0; i < nSpots; i++) {\n      let posAlong = p.noise(i * 4.17 + 99);\n      let side = i % 4;\n      let jitter = p.noise(i * 2.3, t * 0.003) * 24 - 12;\n      let x, y;\n      if      (side === 0) { x = m + posAlong * W; y = m + jitter; }\n      else if (side === 1) { x = m + posAlong * W; y = m + H + jitter; }\n      else if (side === 2) { x = m + jitter;       y = m + posAlong * H; }\n      else                 { x = m + W + jitter;   y = m + posAlong * H; }\n      let vhue   = (frameHue + 155 + p.random(-25, 25)) % 360;\n      let valpha = p.map(decay, 4, 100, 18, 72) * (0.65 + p.noise(i * 1.7, t * 0.004) * 0.65);\n      p.fill(vhue, 50, 46, valpha);\n      p.ellipse(x, y, p.random(4, 20), p.random(3, 15));\n    }\n  }\n\n  // Corner rosettes\n  let corners = [\n    [m + 57, m + 57],\n    [CW - m - 57, m + 57],\n    [m + 57, CW - m - 57],\n    [CW - m - 57, CW - m - 57]\n  ];\n  let pulse = 1 + Math.sin(t * 0.025) * 0.045;\n  for (let [ox, oy] of corners) {\n    // Outer petals\n    for (let petal = 0; petal < 8; petal++) {\n      let ang = (petal / 8) * p.TWO_PI + t * 0.003;\n      let px = ox + Math.cos(ang) * 18 * pulse;\n      let py = oy + Math.sin(ang) * 18 * pulse;\n      p.noStroke();\n      p.fill(frameHue, 65, 80, 68);\n      p.ellipse(px, py, 9 * pulse, 9 * pulse);\n    }\n    // Concentric rings\n    for (let r = 24; r >= 5; r -= 6) {\n      p.stroke(frameHue, 68, p.map(r, 5, 24, 100, 60), p.map(r, 5, 24, 95, 42));\n      p.strokeWeight(2);\n      p.noFill();\n      p.ellipse(ox, oy, r * 2 * pulse, r * 2 * pulse);\n    }\n    // Center jewel\n    p.noStroke();\n    p.fill(frameHue + 25, 85, 100, 92);\n    p.ellipse(ox, oy, 11 * pulse, 11 * pulse);\n    p.fill(0, 0, 100, 56);\n    p.ellipse(ox - 2.5, oy - 2.5, 3.5, 3.5);\n  }\n}",
+  "tags": [
+    {
+      "id": "tag_salvagepunk_salon_01",
+      "type": "source",
+      "label": "Salvagepunk Salon — A1111 SD Workflow Archive",
+      "description": "Converted from a large archive of A1111 Stable Diffusion prompts. Themes consolidated into 5 variables covering Victorian/Renaissance animal aristocrat portraits (raccoon, KAWAII SNAKE, zombie rat, nutria, tortoise, snakes), Tarkovsky cave aesthetics, grotesque needlefelt biblical creatures, smiley mound horror/serenity, outsider art streetwear fashion, pastel smoke surrealism, and candycore creepypasta. Prompt text preserved verbatim from original SD workflows."
+    },
+    {
+      "id": "tag_salvagepunk_salon_02",
+      "type": "creator",
+      "label": "Synthograsizer"
+    }
+  ]
+}
