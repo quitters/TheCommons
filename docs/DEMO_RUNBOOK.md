@@ -36,3 +36,7 @@ The local preview currently has `FACILITATOR_ENABLED=false`. For the agent rehea
 - Check the participant portal for the actual video limit, submission deadline, links, and sponsor-tagging instructions. Submit only after checking the repository/video for secrets.
 
 Leave MIDI, multi-room join codes, additional APIs, and inherited-template audio retrofits for after the demo.
+
+## Scan-to-join code
+
+Run `npm run qr -- https://YOUR-CURRENT-TUNNEL.trycloudflare.com/station/` whenever the temporary tunnel address changes. The QR is encoded locally, with no QR service or model call. It appears on the display and under **Invite participants** in the creator desk; `/shared/join.html` gives a large view and `/shared/join-qr.png` a printable download. Existing pages update within ten seconds after regenerating. The generated URL and images are local ignored files so a clean clone never points at an expired event tunnel.

@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/theme.css">
 <link rel="stylesheet" href="../station/station.css">
+<link rel="stylesheet" href="../shared/join-qr.css">
 <style>
   .admin-layout { max-width: 680px; padding-bottom: 48px; }
   #promptBox { position: static; }
@@ -44,6 +45,12 @@
       <p id="loginStatus" class="form-status" role="status"></p>
     </form>
     <section id="creatorTools" hidden>
+      <details class="join-card join-card-admin" data-join-card hidden>
+        <summary>Invite participants</summary>
+        <a data-join-link><img data-join-image alt="QR code to join the live canvas"></a>
+        <p>Participants can scan this code with their phone camera.</p>
+        <div class="join-actions"><a href="/shared/join.html" target="_blank" rel="noopener">Open large QR code</a><a href="/shared/join-qr.png" download>Download QR code</a></div>
+      </details>
       <details class="preset-library">
         <summary>Choose a preset</summary>
         <p class="section-help">Load a prepared visual instantly, without generating. You can undo a load.</p>
@@ -75,5 +82,5 @@
       <div class="admin-actions"><button id="logout" type="button" class="primary-button">Sign out</button><a href="/station/">Open a station</a></div>
     </section>
   </main>
-</div><script type="module" src="./admin.js"></script></body>
+</div><script type="module" src="./admin.js"></script><script type="module" src="../shared/join-qr.js"></script></body>
 </html>

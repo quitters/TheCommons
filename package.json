@@ -11,11 +11,17 @@
     "start": "node --env-file=.env server/index.js",
     "dev": "node --env-file=.env --watch server/index.js",
     "preview:public": "node --env-file=.env server/public-preview.js",
+    "qr": "node scripts/generate-join-qr.js",
     "test": "node server/smoke-test.js",
     "verify": "npm test"
   },
   "dependencies": {
     "express": "^4.19.2",
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "jsqr": "^1.4.0",
+    "pngjs": "^7.0.0",
+    "qrcode": "^1.5.4"
   }
 }

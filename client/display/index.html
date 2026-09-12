@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../shared/theme.css">
 <link rel="stylesheet" href="./display.css">
+<link rel="stylesheet" href="../shared/join-qr.css">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -17,6 +18,11 @@
   <div class="display-brand">The <span>Commons</span></div>
   <div id="status" role="status"></div>
 </header>
+<details class="join-card join-card-floating" data-join-card hidden open>
+  <summary>Scan to join</summary>
+  <a data-join-link><img data-join-image alt="QR code to join the live canvas"></a>
+  <p>Your phone. Your part of the canvas.</p>
+</details>
 <section id="audioPanel" aria-labelledby="audioTitle">
   <p class="eyebrow">Let the room in</p>
   <h1 id="audioTitle">A canvas with a pulse.</h1>
@@ -28,5 +34,6 @@
 <!-- p5 is only for inherited library content. Fresh generations use Canvas2D. -->
 <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
 <script type="module" src="./display.js"></script>
+<script type="module" src="../shared/join-qr.js"></script>
 </body>
 </html>

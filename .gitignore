@@ -2,3 +2,6 @@ node_modules/
 .env
 *.log
 .commons-data/
+client/shared/join-current.json
+client/shared/join-qr.svg
+client/shared/join-qr.png
