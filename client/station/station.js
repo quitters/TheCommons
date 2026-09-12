@@ -1,40 +1,53 @@
-// One table's control surface: on-screen knobs (works on any phone/laptop,
-// no physical MIDI hardware required -- see README for why that's the
-// practical choice, not just a fallback) plus a prompt box that can remix
-// the whole shared piece for every table at once.
-
+// Generic controls for either sketch contract. Display labels may replace
+// underscores, but the original values always travel over the relay.
 const table = new URLSearchParams(location.search).get('table')
   || `table-${Math.random().toString(36).slice(2, 6)}`;
-document.getElementById('tableName').textContent = `you are: ${table}`;
-
+document.getElementById('tableName').textContent = `Table / ${table}`;
 const wsProto = location.protocol === 'https:' ? 'wss' : 'ws';
 const ws = new WebSocket(`${wsProto}://${location.host}/ws?role=station&table=${encodeURIComponent(table)}`);
-
 const knobsEl = document.getElementById('knobs');
-const selected = {};
+const connection = document.getElementById('connection');
+const promptSend = document.getElementById('promptSend');
+const promptStatus = document.getElementById('promptStatus');
+const selected = new Map();
+let remixing = false;
+
+function updateConnection() {
+  const live = ws.readyState === WebSocket.OPEN;
+  connection.textContent = live ? 'Connected' : 'Disconnected · reload to rejoin';
+  connection.dataset.state = live ? 'live' : 'offline';
+  knobsEl.querySelectorAll('button').forEach((button) => { button.disabled = !live; });
+  promptSend.disabled = !live || remixing;
+}
 
 function render(sketch) {
   if (!sketch) return;
-  knobsEl.innerHTML = '';
+  document.getElementById('sketchName').textContent = sketch.name;
+  knobsEl.replaceChildren();
+  selected.clear();
   for (const v of sketch.variables || []) {
-    if (!(v.name in selected)) selected[v.name] = v.values?.[0]?.text;
-
-    const wrap = document.createElement('div');
+    selected.set(v.name, v.values?.[0]?.text);
+    const wrap = document.createElement('fieldset');
     wrap.className = 'knob';
-
-    const label = document.createElement('label');
-    label.textContent = v.label || v.name;
+    const label = document.createElement('legend');
+    label.textContent = v.label || v.name.replaceAll('_', ' ');
     wrap.appendChild(label);
-
     const row = document.createElement('div');
     row.className = 'values';
     for (const val of v.values || []) {
       const btn = document.createElement('button');
-      btn.textContent = val.text;
-      btn.className = selected[v.name] === val.text ? 'active' : '';
+      btn.type = 'button';
+      btn.textContent = val.text.replaceAll('_', ' ');
+      btn.classList.toggle('active', selected.get(v.name) === val.text);
+      btn.setAttribute('aria-pressed', String(selected.get(v.name) === val.text));
       btn.onclick = () => {
-        selected[v.name] = val.text;
-        render(sketch);
+        if (ws.readyState !== WebSocket.OPEN) return;
+        selected.set(v.name, val.text);
+        // Preserve focus and touch feedback instead of rebuilding every knob.
+        for (const sibling of row.children) {
+          sibling.classList.toggle('active', sibling === btn);
+          sibling.setAttribute('aria-pressed', String(sibling === btn));
+        }
         ws.send(JSON.stringify({ type: 'var', varName: v.name, value: val.text }));
       };
       row.appendChild(btn);
@@ -42,27 +55,42 @@ function render(sketch) {
     wrap.appendChild(row);
     knobsEl.appendChild(wrap);
   }
+  updateConnection();
 }
-
+ws.onopen = updateConnection;
+ws.onclose = updateConnection;
+ws.onerror = updateConnection;
 ws.onmessage = (ev) => {
   const msg = JSON.parse(ev.data);
   if (msg.type === 'welcome' || msg.type === 'sketch') render(msg.sketch);
 };
 
-document.getElementById('promptSend').addEventListener('click', async () => {
-  const prompt = document.getElementById('promptInput').value.trim();
-  if (!prompt) return;
-  const btn = document.getElementById('promptSend');
-  btn.disabled = true;
-  btn.textContent = 'Remixing…';
+document.getElementById('promptForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const promptInput = document.getElementById('promptInput');
+  const prompt = promptInput.value.trim();
+  if (!prompt || remixing || ws.readyState !== WebSocket.OPEN) return;
+  remixing = true;
+  promptSend.textContent = 'Remixing…';
+  promptStatus.textContent = 'Finding the room’s next piece…';
+  promptStatus.dataset.error = 'false';
+  updateConnection();
   try {
-    await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch('/api/generate', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt }),
     });
+    if (!response.ok) throw new Error('Remix failed');
+    const sketch = await response.json();
+    promptStatus.textContent = sketch.fallback
+      ? `Now on the wall: ${sketch.name}. Chosen from the built-in library.`
+      : `Now on the wall: ${sketch.name}.`;
+  } catch {
+    promptStatus.textContent = 'Couldn’t remix the room. Your idea is still here — try again.';
+    promptStatus.dataset.error = 'true';
   } finally {
-    btn.disabled = false;
-    btn.textContent = 'Remix for the room';
+    remixing = false;
+    promptSend.textContent = 'Remix for the room ↗';
+    updateConnection();
   }
 });

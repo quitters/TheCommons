@@ -33,3 +33,16 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
 }
+
+::selection { background: var(--coral-dim); }
+button, textarea { font: inherit; }
+button { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+button:disabled { cursor: default; opacity: 0.5; }
+.eyebrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; line-height: 1.6; text-transform: uppercase; color: var(--ink-dim); }
+.primary-button { min-height: 46px; padding: 12px 18px; border: 1px solid var(--coral); border-radius: 8px; background: var(--coral); color: var(--ground); font-weight: 700; transition: filter 150ms, transform 150ms; }
+.primary-button:hover:not(:disabled) { filter: brightness(1.1); }
+.primary-button:active:not(:disabled) { transform: translateY(1px); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

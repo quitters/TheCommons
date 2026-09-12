@@ -28,8 +28,10 @@ const vars = {};
 function getVar(name) { return vars[name] ?? null; }
 
 function setStatus() {
-  const s = sketch ? `${sketch.name}${sketch.fallback ? ' (built-in fallback)' : ''}${mode === 'p5' ? ' — inherited template' : ''}` : 'waiting for a sketch…';
-  statusEl.textContent = `The Commons — ${s}`;
+  statusEl.textContent = sketch ? `${sketch.name} · ${mode === 'p5' ? 'Library piece' : 'Live canvas'}` : 'Waiting for the canvas…';
+  document.getElementById('audioHint').textContent = mode === 'p5'
+    ? 'This library piece follows the tables. Enable the microphone now for audio-reactive pieces when they come on, or simply watch.'
+    : 'Use this display’s microphone to let the piece respond to the music. Or simply watch it unfold.';
 }
 
 function teardownP5() {
@@ -83,16 +85,41 @@ ws.onclose = () => { statusEl.textContent = 'disconnected from relay — retry b
 // library predates the audio-reactivity idea. See README's next-steps.
 let audioState = { level: 0, bass: 0, mid: 0, treble: 0, beat: false };
 const bassHistory = [];
-document.getElementById('enableAudio').addEventListener('click', async function enable() {
-  this.remove();
+const audioPanel = document.getElementById('audioPanel');
+const audioButton = document.getElementById('enableAudio');
+const audioChip = document.getElementById('showAudio');
+const audioStatus = document.getElementById('audioStatus');
+document.getElementById('skipAudio').addEventListener('click', () => {
+  audioPanel.hidden = true;
+  audioChip.hidden = false;
+  audioChip.focus();
+});
+audioChip.addEventListener('click', () => {
+  audioPanel.hidden = false;
+  audioChip.hidden = true;
+  audioButton.focus();
+});
+audioButton.addEventListener('click', async function enable() {
+  this.disabled = true;
+  audioStatus.textContent = 'Waiting for microphone permission…';
+  let stream;
+  let actx;
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const actx = new AudioContext();
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    actx = new AudioContext();
+    await actx.resume();
     const src = actx.createMediaStreamSource(stream);
     const analyser = actx.createAnalyser();
     analyser.fftSize = 1024;
     src.connect(analyser);
     const data = new Uint8Array(analyser.frequencyBinCount);
+    audioPanel.hidden = true;
+    audioChip.hidden = false;
+    audioChip.textContent = 'Mic enabled';
+    audioChip.dataset.live = 'true';
+    this.textContent = 'Microphone enabled';
+    audioStatus.textContent = 'Microphone ready. Audio-reactive pieces will follow the room.';
+    audioChip.focus();
 
     setInterval(() => {
       analyser.getByteFrequencyData(data);
@@ -113,6 +140,10 @@ document.getElementById('enableAudio').addEventListener('click', async function 
       audioState = { level, bass, mid, treble, beat };
     }, 1000 / 30);
   } catch (err) {
+    stream?.getTracks().forEach((track) => track.stop());
+    if (actx) await actx.close().catch(() => {});
+    this.disabled = false;
+    audioStatus.textContent = 'Microphone unavailable. You can keep watching or try again.';
     console.warn('microphone unavailable — running without audio-reactivity:', err.message);
   }
 });
