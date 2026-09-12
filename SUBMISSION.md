@@ -19,6 +19,7 @@ Adapted from the [Agents, Everywhere starter kit](https://github.com/CopilotKit/
 - The p5.js adapter that lets the inherited template library run inside this project's shared multi-station system at all — those templates were never wired to a shared relay/display before (`client/display/display.js`)
 - Live microphone audio analysis and the audio-reactivity contract (`client/display/display.js`)
 - The table station UI — on-screen knobs generated generically from whatever sketch is live, plus the full-remix prompt box (`client/station`)
+- The smoke test suite (`server/smoke-test.js`)
 
 ## Title and description
 
@@ -51,11 +52,9 @@ The agent (the Facilitator) only has anything to perceive or decide because more
 
 - [x] A new participant can run the quickstart from a clean clone (`npm install && cp .env.example .env && npm start` — verified working with zero configuration)
 - [x] The README lists the credentials and separate processes required (just `OPENAI_API_KEY`, optional)
-- [ ] `npm run verify`-equivalent check passes — **not yet added**; this project currently has no test suite (see open item below)
+- [x] `npm run verify` passes (`server/smoke-test.js` — boots the real server on a test port, forces the no-key fallback path, checks the template library, the fallback pool, and the live `/api/telemetry`/`/api/generate` endpoints; run and confirmed passing 2026-09-12)
 - [x] `.env` is gitignored; no tokens or account secrets are committed
 - [x] Sample/fallback content is clearly labeled as such (the built-in sketch pool, the `fallback: true` flag in generation responses)
-
-**Open item before submitting:** there is no automated test suite yet. At minimum, add a smoke script that boots the server and hits `/api/telemetry` and `/api/generate` before calling this box checked — don't check it on the strength of the manual testing already done in development.
 
 ## Two-minute demo video
 

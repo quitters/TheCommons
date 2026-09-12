@@ -32,10 +32,15 @@ app.get('/api/telemetry', (_req, res) => res.json(relay.getTelemetry()));
 startFacilitator(relay);
 
 const PORT = process.env.PORT || 4173;
-server.listen(PORT, () => {
+// Explicit 0.0.0.0, not the platform default: this needs to be reachable from
+// other devices on the venue's network (phones at other tables), and on some
+// Windows configurations an unqualified .listen(port) binds IPv6-only, which
+// "localhost" doesn't always resolve to first -- the exact trap documented in
+// a sibling project's own README. Binding explicitly avoids depending on it.
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`The Commons running:`);
   console.log(`  Display (put this on the shared screen/projector): http://localhost:${PORT}/display/`);
-  console.log(`  Station (one per table):                           http://localhost:${PORT}/station/?table=1`);
+  console.log(`  Station (one per table, from any device on this network): http://<this-machine's-LAN-IP>:${PORT}/station/?table=1`);
   console.log(`  Generation: ${process.env.OPENAI_API_KEY ? 'live (OpenAI configured)' : 'built-in + inherited template library only (no OPENAI_API_KEY)'}`);
   console.log(`  Booted on: ${bootSketch.name}${bootSketch.p5Code ? ' (inherited p5 template)' : ' (native)'}`);
 });

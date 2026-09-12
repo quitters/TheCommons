@@ -25,6 +25,8 @@ Then open:
 
 Without an `OPENAI_API_KEY` in `.env`, the server runs entirely on the built-in pool — two hand-written sketches (`server/builtin-sketches.js`) plus the full 31-template default library (`templates/`, loaded by `server/templates.js`) — so the whole pipeline (knobs → relay → display → audio-reactivity) is fully demoable, with real visual variety, before any configuration exists. Add a key to unlock live generation from a text prompt (the station page's "Remix for the room" box) and the autonomous facilitator loop.
 
+Run `npm run verify` (or `npm test`) to check this yourself — it boots the real server on a separate test port with the key forced empty, then exercises the template library, the fallback pool, and the live `/api/telemetry` and `/api/generate` endpoints (`server/smoke-test.js`).
+
 ## How a sketch works
 
 Two contracts, documented in [`shared/contract.js`](shared/contract.js) and run through entirely separate paths in [`client/display/display.js`](client/display/display.js):
@@ -43,6 +45,7 @@ Either way, `getVar`/`p.getSynthVar` reads the current knob value for a variable
 - Facilitator agent (`server/facilitator.js`): polls telemetry every 10s, and after 90s of room-wide silence, synthesizes a prompt from which tables were most active earlier and autonomously regenerates the piece.
 - Display (`client/display`): runs either sketch contract, live mic analysis, graceful per-frame error handling on the native path (one bad frame from a malformed sketch never kills the animation loop).
 - Station (`client/station`): on-screen touch knobs generated generically from whatever the current sketch declares — works identically for native and inherited sketches, no special-casing needed.
+- Smoke test (`server/smoke-test.js`, `npm run verify`): boots the real server, forces the no-key fallback path, and checks the template library, the fallback pool, and the live API endpoints. No test framework dependency.
 
 **Documented, not yet built:**
 - Physical MIDI controller support (Web MIDI API) as an alternative to touch knobs at a table. Touch knobs are the practical default for a hackathon demo — they work on any device with zero hardware sourcing — but the relay/station split is designed so a MIDI-reading station is a drop-in addition, not a redesign.
@@ -55,7 +58,7 @@ Either way, `getVar`/`p.getSynthVar` reads the current knob value for a variable
 
 Per the hackathon's own eligibility rules ("existing templates... may be used as building blocks," but "the project's core functionality must be built during the event"):
 
-- **Inherited, unmodified, clearly attributed:** the 31 files in [`templates/`](templates/) — real p5.js generative-art templates copied verbatim from `synthograsizer-suite`'s own template library (several of which credit their own further upstream sources in each file's own `tags` field). This is default *content*, not the mechanism.
+- **Inherited, unmodified, clearly attributed:** the 31 files in [`templates/`](templates/) — real p5.js generative-art templates copied verbatim from `synthograsizer-suite`'s own template library (several of which credit their own further upstream sources in each file's own `tags` field). This is default *content*, not the mechanism. The schema those files follow, and the actual prompt that generated them, are documented (trimmed to only the parts relevant here) in [`docs/TEMPLATE_SCHEMA.md`](docs/TEMPLATE_SCHEMA.md) and [`docs/inherited-p5-generation-prompt.md`](docs/inherited-p5-generation-prompt.md) — neither is wired into this project's own generation path (see "How a sketch works" above), they're there so the inherited content's origin is fully traceable, not just the content itself.
 - **Built from scratch during the event:** everything that makes this a shared, agentic, music-synced installation rather than a single-user art tool — the WebSocket relay and its soft-ownership design, the facilitator's perceive/decide/act loop, the prompt-to-native-code generation path and its system prompt, the live audio analysis, the station UI, and the p5-adapter that lets the inherited templates run inside this project's own knob/relay system at all (they were never wired to a shared multi-station display before).
 
 This project does not call into, vendor, or fork any *code* from `synthograsizer-suite` or `SignalChain` (sibling projects on the same machine) — only the explicitly-permitted template *content* above, copied once, unmodified, and disclosed here rather than blended in quietly.
