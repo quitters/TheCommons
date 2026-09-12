@@ -38,10 +38,11 @@ function teardownP5() {
   if (p5Instance) { p5Instance.remove(); p5Instance = null; }
 }
 
-function loadSketch(next) {
+function loadSketch(next, values = {}) {
   sketch = next;
+  for (const name of Object.keys(vars)) delete vars[name];
   for (const v of sketch.variables || []) {
-    if (!(v.name in vars)) vars[v.name] = v.values?.[0]?.text ?? null;
+    vars[v.name] = values[v.name] ?? v.values?.[0]?.text ?? null;
   }
 
   if (sketch.p5Code) {
@@ -72,7 +73,7 @@ const ws = new WebSocket(`${wsProto}://${location.host}/ws?role=display`);
 ws.onmessage = (ev) => {
   const msg = JSON.parse(ev.data);
   if (msg.type === 'sketch' && msg.sketch) {
-    loadSketch(msg.sketch);
+    loadSketch(msg.sketch, msg.values);
   } else if (msg.type === 'var') {
     vars[msg.varName] = msg.value;
     // p5 templates read getVar() themselves each draw() call -- nothing else to push

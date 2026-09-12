@@ -12,6 +12,7 @@ import { spawn } from 'node:child_process';
 import assert from 'node:assert/strict';
 import { loadTemplateLibrary } from './templates.js';
 import { pickFallback } from './generate.js';
+import { checkRelay } from './relay-smoke-test.js';
 
 const PORT = 4199; // dedicated test port, distinct from the dev default (4173)
 let failed = false;
@@ -93,6 +94,8 @@ async function waitForServer(timeoutMs = 8000) {
 
 try {
   await waitForServer();
+
+  await checkAsync('stations and displays share remixes, values, late joins, and four-second ownership', () => checkRelay(`http://127.0.0.1:${PORT}`));
 
   await checkAsync('GET /api/telemetry returns the expected shape', async () => {
     const res = await fetch(`http://127.0.0.1:${PORT}/api/telemetry`);

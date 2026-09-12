@@ -22,8 +22,8 @@ npm start
 ```
 
 Then open:
-- **`http://localhost:4173/display/`** — put this on the shared screen/projector. Click once to enable microphone-driven audio reactivity (optional; the piece runs fine without it).
-- **`http://localhost:4173/station/?table=1`** — one tab per table. Open it again with `?table=2`, `?table=3`, etc. to simulate multiple tables on one machine for testing.
+- **`http://127.0.0.1:4173/display/`** — put this on the shared screen/projector. Choose **Enable microphone** for optional audio reactivity, or **Just watch** to dismiss the card. Sound can be enabled later from the corner button.
+- **`http://127.0.0.1:4173/station/?table=1`** — one tab per table. Open it again with `?table=2`, `?table=3`, etc. to simulate multiple tables on one machine for testing. Phones on the same network should use this machine's LAN IP instead of `127.0.0.1`.
 
 Without an `OPENAI_API_KEY` in `.env`, the server runs entirely on the built-in pool — two hand-written sketches (`server/builtin-sketches.js`) plus the full 31-template default library (`templates/`, loaded by `server/templates.js`) — so the whole pipeline (knobs → relay → display → audio-reactivity) is fully demoable, with real visual variety, before any configuration exists. Add a key to unlock live generation from a text prompt (the station page's "Remix for the room" box) and the autonomous facilitator loop.
 
@@ -47,6 +47,7 @@ Either way, `getVar`/`p.getSynthVar` reads the current knob value for a variable
 - Facilitator agent (`server/facilitator.js`): polls telemetry every 10s, and after 90s of room-wide silence, synthesizes a prompt from which tables were most active earlier and autonomously regenerates the piece.
 - Display (`client/display`): runs either sketch contract, live mic analysis, graceful per-frame error handling on the native path (one bad frame from a malformed sketch never kills the animation loop).
 - Station (`client/station`): on-screen touch knobs generated generically from whatever the current sketch declares — works identically for native and inherited sketches, no special-casing needed.
+- Shared state: all open stations receive remixes and accepted knob changes; late stations and displays join with the current values. A station whose turn is blocked by another table's four-second hold shows the accepted value and a short explanation. Remixes reset the controls to the new sketch's defaults.
 - Visual identity (`client/shared/theme.css`): both `client/station` and `client/display` now share the same palette/type/layout language `pitch.html` established, instead of the bare functional styling they launched with.
 - Smoke test (`server/smoke-test.js`, `npm run verify`): boots the real server, forces the no-key fallback path, and checks the template library, the fallback pool, and the live API endpoints. No test framework dependency.
 

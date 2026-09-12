@@ -40,7 +40,7 @@ const PORT = process.env.PORT || 4173;
 // a sibling project's own README. Binding explicitly avoids depending on it.
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`The Commons running:`);
-  console.log(`  Display (put this on the shared screen/projector): http://localhost:${PORT}/display/`);
+  console.log(`  Display (put this on the shared screen/projector): http://127.0.0.1:${PORT}/display/`);
   console.log(`  Station (one per table, from any device on this network): http://<this-machine's-LAN-IP>:${PORT}/station/?table=1`);
   console.log(`  Generation: ${process.env.OPENAI_API_KEY ? 'live (OpenAI configured)' : 'built-in + inherited template library only (no OPENAI_API_KEY)'}`);
   console.log(`  Booted on: ${bootSketch.name}${bootSketch.p5Code ? ' (inherited p5 template)' : ' (native)'}`);
