@@ -40,13 +40,34 @@ export async function checkGemini() {
     assert.equal(generated.variables[1].type, 'number');
     assert.equal(generated.variables[0].values[0].text, 'sunset');
     assert.ok(!JSON.stringify(generated).includes(key));
+    const broken = JSON.stringify({ ...sketch, code: 'const broken = ;' });
+    let validationError;
+    try { new Function('ctx', 'frame', 'getVar', 'audio', 'const broken = ;'); } catch (error) { validationError = error.message; }
+    const requests = [];
+    const repaired = await generateSketch('a luminous orbit', { env, fetchImpl: async (_url, options) => {
+      requests.push(JSON.parse(options.body));
+      const text = requests.length === 1 ? broken : JSON.stringify(sketch);
+      return { ok: true, json: async () => ({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text }] } }] }) };
+    } });
+    assert.equal(repaired.fallback, false);
+    assert.equal(repaired.code, sketch.code);
+    assert.equal(repaired.p5Code, undefined);
+    assert.equal(requests.length, 2);
+    assert.deepEqual(requests[1].systemInstruction, requests[0].systemInstruction);
+    assert.deepEqual(requests[1].contents.map((turn) => turn.role), ['user', 'model', 'user']);
+    assert.deepEqual(requests[1].contents[0], requests[0].contents[0]);
+    assert.equal(requests[1].contents[1].parts[0].text, broken);
+    assert.ok(requests[1].contents[2].parts[0].text.includes(validationError));
+    assert.match(requests[1].contents[2].parts[0].text, /COMPLETE replacement JSON/);
     for (const result of [
       { candidates: [{ finishReason: 'MAX_TOKENS', content: { parts } }] },
       { promptFeedback: { blockReason: 'SAFETY' } },
       { candidates: [{ finishReason: 'STOP', content: { parts: [{ text: 'bad JSON' }] } }] },
     ]) {
-      const fallback = await generateSketch('test', { env, fetchImpl: async () => ({ ok: true, json: async () => result }) });
+      let attempts = 0;
+      const fallback = await generateSketch('test', { env, fetchImpl: async () => { attempts++; return { ok: true, json: async () => result }; } });
       assert.equal(fallback.fallback, true);
+      assert.equal(attempts, result.candidates?.[0]?.finishReason === 'STOP' ? 2 : 1);
     }
     const noKey = await generateSketch('test', { env: { GENERATION_PROVIDER: 'gemini' },
       fetchImpl: () => { throw new Error('must not fetch without a key'); } });

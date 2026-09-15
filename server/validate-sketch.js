@@ -13,8 +13,8 @@ export function validateNativeSketch(sketch) {
   require(nonempty(sketch.name), 'missing name');
   require(nonempty(sketch.promptTemplate), 'missing promptTemplate');
   require(nonempty(sketch.code), 'missing drawing code');
-  require(Array.isArray(sketch.variables) && sketch.variables.length >= 2 && sketch.variables.length <= 6,
-    'expected 2–6 variables');
+  require(Array.isArray(sketch.variables) && sketch.variables.length >= 2 && sketch.variables.length <= 16,
+    'expected 2–16 variables');
   const names = new Set();
   const variables = sketch.variables.map((v) => {
     require(v && typeof v === 'object' && typeof v.name === 'string'
@@ -32,8 +32,8 @@ export function validateNativeSketch(sketch) {
       require(onStep(v, v.max) && onStep(v, v.default), `${v.name} max and default must align with step from min`);
       return { name: v.name, label, type: 'number', min: v.min, max: v.max, step: v.step, default: v.default };
     }
-    require(Array.isArray(v.values) && v.values.length >= 3 && v.values.length <= 6,
-      `${v.name} needs 3–6 choices`);
+    require(Array.isArray(v.values) && v.values.length >= 3 && v.values.length <= 10,
+      `${v.name} needs 3–10 choices`);
     const texts = new Set();
     const values = v.values.map((value) => {
       require(value && typeof value === 'object' && nonempty(value.text), `${v.name} has a malformed choice`);
