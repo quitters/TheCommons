@@ -4,11 +4,11 @@ Updated: 2026-09-16. The hackathon is complete; this is now post-event product w
 
 ## Product direction and current scope
 
-The owner wants The Commons to become a tool on their existing website, hosted through the Google stack they already use. People should be able to create their own rooms and administer them. Each room needs its own display page and a QR code that brings participants into that room's controls. Hosting must operate independently of the owner's laptop and temporary Cloudflare tunnels.
+The owner wants The Commons to become a tool at **https://synthograsizer.com/thecommons**, integrated into the **synthograsizer-suite** Git repository and hosted through the Google Cloud services already running synthograsizer.com. These targets were explicitly confirmed by the owner; the existing deployment configuration has not yet been inspected. People should be able to create their own rooms and administer them. Each room needs its own display page and a QR code that brings participants into that room's controls. Hosting must operate independently of the owner's laptop and temporary Cloudflare tunnels.
 
 **This direction is recorded, not implemented.** The latest instruction is to document the next steps without building the hosted multi-room product yet. Do not provision infrastructure, deploy, change the website, or start the room refactor merely because this plan exists. Do not push without an explicit request.
 
-The website repository, domain, Google project, existing hosting services, identity system, database, deployment process, and billing constraints have not been established in this task. Discover those first. Do not assume Firebase, Cloud Run, Firestore, or any other particular service is already in use. Reuse the actual stack where appropriate; select services only after checking its configuration and current official documentation.
+The website domain and destination repository name are confirmed above. The suite repository checkout/remote/branch, Google project, specific hosting services, identity system, database, deployment process, and billing constraints still need verification. Discover those first. Do not assume Firebase, Cloud Run, Firestore, or any other particular service is already in use. Reuse the actual stack where appropriate; select services only after checking its configuration and current official documentation.
 
 ## Completed generation repair
 
@@ -71,13 +71,15 @@ The local JSON store does preserve completed jobs, presets, and saved sketch/und
 4. Only the room owner can generate/remix, load or save looks, undo, and manage the room. Participant access does not confer creator permissions.
 5. The owner can close the room and manage access. Define reopening, expiration, retention, and deletion behavior before implementing those actions.
 
-Illustrative routes, subject to the website's routing conventions: `/commons/rooms/:roomId/admin`, `/commons/rooms/:roomId/display`, and `/commons/join/:joinCode`. These are proposals, not existing endpoints. A join code maps to a room and participant access only; it is never an admin credential. Decide whether displays are public-by-link or require a separate read-only token.
+Illustrative routes, subject to the website's routing conventions: `/thecommons/rooms/:roomId/admin`, `/thecommons/rooms/:roomId/display`, and `/thecommons/join/:joinCode`. These are proposals, not existing endpoints. A join code maps to a room and participant access only; it is never an admin credential. Decide whether displays are public-by-link or require a separate read-only token.
 
 ## Next steps, in order
 
 ### 1. Discover the website and agree on an integration design
 
-This is the next task when implementation planning resumes. Obtain the website repository/domain and inspect its applicable agent guidance, authentication, Google services, routing, deploy configuration, storage, and environment separation without exposing secrets. Record what is already deployed versus merely configured.
+This is the next task when implementation planning resumes. Locate and verify the synthograsizer-suite checkout and remote, read its applicable agent guidance, and inspect its authentication, Google services, routing, deploy configuration, storage, and environment separation without exposing secrets. Record what is already deployed versus merely configured. Plan the integration within that repository rather than assuming TheCommons will deploy as an independent repository. Decide how to preserve attribution and maintain the imported code without conflicting with the suite's existing template tooling. Do not copy local credentials, jobs, or generated QR assets.
+
+Treat /thecommons as the required public base path. Audit root-relative asset links, API requests, WebSocket URLs, redirects, login callbacks, cookie paths, and QR URLs; the standalone app currently assumes root routes. Verify direct navigation and reloads on nested room pages. Adapt the existing site routing/proxy configuration without breaking other suite tools. A shared domain does not remove the need to isolate generated code from site credentials.
 
 Agree on initial targets: simultaneous rooms, participants per room, expected control-update rate, typical event duration, acceptable reconnect time, generation usage, and operating budget. Decide whether participants can join anonymously, whether rooms are listed or unlisted, how invitation rotation works, and who pays for generation. Do not invent capacity or pricing claims.
 
@@ -120,6 +122,21 @@ Acceptance: a room's sketch cannot access website login state, other rooms' data
 Deploy first to a separate Google-backed staging environment using the agreed stack. Test full owner/participant flows, hostile cross-room requests, real-phone QR joining, long sessions, reconnects, worker failure, rollout/restart behavior, and rollback. Load-test the agreed room/participant targets and measure latency, memory, disconnects, generation outcomes, and cost. Publish measured capacity, not assumptions.
 
 The production milestone is a stable website URL that continues working with the development laptop off. Document operations, monitoring, recovery, retention, and rollback before launch. The laptop gateway and Cloudflare Quick Tunnel remain optional historical demo tooling, not dependencies of hosted rooms.
+
+## Required deployment guide for the owner
+
+The owner specifically wants help knowing **what to type into the console** to run the improved suite on their existing Google Cloud setup. When implementation is ready, provide a checked, copy-and-paste deployment runbook in synthograsizer-suite, tailored to its actual services. Do not supply speculative deploy commands now or silently switch hosting platforms.
+
+The runbook must:
+
+1. Identify where each command runs (for example, Google Cloud Shell versus local PowerShell), required tools, repository directory, and the exact tested commit/branch. Explain Google Cloud Console UI steps separately from terminal commands.
+2. Start with read-only checks of the active account, project, region, existing services, and deployment pipeline. Use verified non-secret values and clearly identify any remaining placeholders; never guess project IDs or overwrite an unrelated service.
+3. Distinguish one-time setup from repeat deployments. Include the actual build/deploy or existing pipeline commands, routing configuration for /thecommons, durable storage/job setup, and secure server-side secret references without displaying credential values.
+4. Explain each step briefly and show the expected success signal. Include any required data migration/backup, staging validation, production rollout, and an exact rollback procedure for both application and compatible data changes.
+5. Verify https://synthograsizer.com/thecommons, nested display/join links, room ownership, cross-room isolation, QR scans on phones, live updates, and generation job recovery. Confirm the service works with the laptop off and the site's existing tools still work.
+6. Document how to inspect logs/status safely, diagnose common failures, track usage/cost, and perform future updates. Identify steps that change resources, access, or billing before running them.
+
+Creating this guide and carrying out deployment are separate steps. The current request records the requirement for later help; it does not authorize provisioning, deployment, or pushing repositories now.
 
 ## Invariants throughout the migration
 
