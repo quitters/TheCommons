@@ -6,6 +6,8 @@ See [SUBMISSION.md](SUBMISSION.md) for the hackathon eligibility/deliverables ch
 
 Visual identity — palette, type, layout logic — was designed once in [pitch.html](pitch.html) and shared into the actual product via [client/shared/theme.css](client/shared/theme.css). Extend that, don't invent a second visual language for the app itself.
 
+Post-hackathon direction: a tool on the owner's existing website, hosted through their Google stack, where creators own separate rooms with unique displays and participant QR codes. This is planned, not built. See [docs/HANDOFF.md](docs/HANDOFF.md) for the verified generation-repair status, open infrastructure decisions, and phased next steps.
+
 ## What this is, on purpose
 
 - **Many hands, one canvas.** Any number of "table stations" (a phone, tablet, or laptop each) push knob changes to a shared display over WebSocket. Nobody controls the piece alone — the core use case is exactly what it sounds like at a bar or venue: everyone in the room has a little bit of pull over what's on the wall.
