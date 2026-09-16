@@ -76,6 +76,21 @@ From the local admin page, **Create a new piece** generated **Stained Glass Obse
 
 No repair warning was observed for this live request; successful repair itself was verified with injected responses for both providers. No live OpenAI call was made. The generated result remains in ignored local data. Do not commit it or copy private prompts/data into the website repository.
 
+## Completed: Stage 2 — room identity & isolation (suite-side)
+
+Implemented and tested in `synthograsizer-suite`, on branch `commons/stage-2-room-isolation` (commit `81ef397`, branched off `chatroom/gemini-modernization-phases-0-1` rather than committed there, to avoid mixing with that branch's own unrelated in-progress ChatRoom work). Not merged, not deployed, not pushed — local only, awaiting review.
+
+This ports the domain model and isolation this repo's Node server implements — `server/relay.js`, `server/generation-jobs.js`, `server/admin.js`, `server/validate-sketch.js` — into the suite's FastAPI backend, per the decided serving model above:
+
+- **Schema** (v4): `commons_rooms` (owner, join_code, status), `commons_room_state` (live sketch/values/undo per room), `commons_room_jobs` (job history + presets, with a `generations.id` soft link left for later credit metering — always NULL for now).
+- **`backend/routers/thecommons.py`**: room create/list/read, undo, presets, and the async generate/job endpoints. Every admin endpoint requires a verified Google session and server-checked room ownership, copying `routers/artifacts.py`'s exact discipline — a nonexistent room and someone else's room return byte-identical 404s, so room IDs can't be enumerated. `/ws/thecommons/{join_code}` is fully anonymous for both the display and station roles, matching the decided rule that participants need no account.
+- **`backend/service/thecommons_relay.py`**: a faithful behavioral port of `relay.js`'s ownership-balancing algorithm and 4-second held-turn logic, one `RoomRelay` per room in an in-process registry (confirmed safe: the Cloud Run deploy runs bare `uvicorn` with no `--workers`, i.e. genuinely single-process).
+- **`backend/service/thecommons_jobs.py`**: the job/room-state model, Postgres-backed instead of local JSON files, with the same idempotent `start()`/undo/preset semantics as `generation-jobs.js`, and a per-room `asyncio.Lock` giving the same single-active-job-per-room guarantee Node gets for free from being single-threaded.
+- **Generation stays fallback-only in this stage** (`backend/service/thecommons_generate.py`): the room/job model calls a generator through the same injection seam Node uses, but Stage 2's own generator never calls a real model — spending real operator money ahead of the reserve/commit/refund credit wiring (still not built) would reintroduce the exact untracked-spend risk this handoff already flagged. `/api/thecommons/generate` is nonetheless added to `enforcement.AI_PREFIXES` now, so terms/rate-limit/budget gating is already in place before a later stage swaps in the real provider call. `validate-sketch.js` was ported in full for that same later stage (`backend/service/thecommons_validate.py`) even though nothing calls it yet.
+- **55 new tests** (schema/migration, pure relay-algorithm unit tests — including the balancing tie-break ordering gotcha ported from JS `Set` insertion order — room/job/websocket cross-room isolation, full two-owner end-to-end scenarios, and sketch validation). Full suite: 337 passing, no regressions from the 282 that existed before this work. `pytest` had to be installed locally to run any of this — it's used throughout `tests/` but isn't in `requirements.txt`.
+
+Explicitly not in scope for this stage, unchanged from the plan below: a per-room client UI (no creator desk/display/station pages yet — still the next real gap before this is usable end-to-end), real credit charging, QR generation, and durable job recovery across restarts.
+
 ## Repository and local operating state
 
 - Repository: `C:\Users\Alexander\Projects\agents-everywhere-hackathon\repos\TheCommons`
@@ -162,13 +177,11 @@ This is the "map each responsibility to the existing Google stack" deliverable f
 
 Stage 1's serving-model and responsibility-mapping deliverables are now done. What's still open for stage 1: a live (not just repo-config) check of the actual Cloud Run project/IAM/billing state, and agreement on initial capacity/cost targets (simultaneous rooms, participants per room, event duration, operating budget). Stage 2 (room identity/isolation model) is the next piece of actual implementation, and per the standing instruction on this project, it has not been authorized to start yet.
 
-### 2. Define room identity and isolation locally
+### 2. Define room identity and isolation locally — done, pending review
 
-After authorization to build, introduce a room domain model and isolate the existing behavior before deploying it. Model room ID, owner identity, status, participant invite mapping, active sketch/version, saved values, presets, undo, and generation jobs. Scope request IDs, participant identities, telemetry, and browser storage to rooms. The inherited library can remain shared read-only content; generated work and saved looks need an explicit ownership policy.
+Completed and tested on the suite side; see "Completed: Stage 2" above for what shipped and where (`commons/stage-2-room-isolation`, not merged or deployed). All of this stage's acceptance criteria are covered by the new automated tests: two rooms run concurrently with independent art/controls/owners/presets/jobs/undo; a second creator gets an identical 404 reading or mutating another owner's room, job, or preset by guessing an ID; a var-update broadcast in one room never reaches another's sockets. Participant identity stays in-memory only (not a DB table), matching Node — the durable "invite mapping" this stage needed is fully covered by each room's `join_code` column.
 
-Resolve and authorize the room on every API and WebSocket connection/message. Bind connections to the authorized room rather than trusting arbitrary message room IDs. Keep participant tokens private and scoped; check creator ownership on the server for every admin operation and job read. Treat room IDs as identifiers, not proof of permission.
-
-Acceptance: two rooms can run concurrently with different art, controls, owners, presets, jobs, and undo. Changes, reconnects, stale requests, and joins in one never affect or disclose private state in the other. A second creator cannot read or mutate another owner's jobs/presets by guessing IDs.
+Still open from this stage's original scope, carried forward rather than resolved: no client UI exists yet for any of this (no creator desk/display/station pages against the new endpoints), and durable job recovery across restarts is still only "mark interrupted, don't resume" — that's explicitly Stage 3's job.
 
 ### 3. Establish durable state and consistent live updates
 
