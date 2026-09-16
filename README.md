@@ -6,7 +6,7 @@ See [SUBMISSION.md](SUBMISSION.md) for the hackathon eligibility/deliverables ch
 
 Visual identity — palette, type, layout logic — was designed once in [pitch.html](pitch.html) and shared into the actual product via [client/shared/theme.css](client/shared/theme.css). Extend that, don't invent a second visual language for the app itself.
 
-Post-hackathon direction: a tool at `synthograsizer.com/thecommons`, integrated into `synthograsizer-suite` and hosted through the site's existing Google Cloud stack, where creators own separate rooms with unique displays and participant QR codes. This is planned, not built. See [docs/HANDOFF.md](docs/HANDOFF.md) for the verified generation-repair status, open infrastructure decisions, and phased next steps.
+Post-hackathon direction: a tool at `synthograsizer.com/thecommons`, integrated into `synthograsizer-suite` and hosted through the site's existing Google Cloud stack, where Google-signed-in creators own separate rooms with unique displays and participant QR codes, spending their own suite credits. Participant controls require no account or login. This is planned, not built. See [docs/HANDOFF.md](docs/HANDOFF.md) for the verified generation-repair status, deployment/account findings, and phased next steps.
 
 ## What this is, on purpose
 

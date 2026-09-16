@@ -8,7 +8,48 @@ The owner wants The Commons to become a tool at **https://synthograsizer.com/the
 
 **This direction is recorded, not implemented.** The latest instruction is to document the next steps without building the hosted multi-room product yet. Do not provision infrastructure, deploy, change the website, or start the room refactor merely because this plan exists. Do not push without an explicit request.
 
-The website domain and destination repository name are confirmed above. The suite repository checkout/remote/branch, Google project, specific hosting services, identity system, database, deployment process, and billing constraints still need verification. Discover those first. Do not assume Firebase, Cloud Run, Firestore, or any other particular service is already in use. Reuse the actual stack where appropriate; select services only after checking its configuration and current official documentation.
+The website domain and destination repository are confirmed above. The suite's deployment configuration and auth/credit code have now been inspected locally (findings below) — this is not a live Google Cloud account audit; recheck the active project, revisions, IAM, and billing settings before deployment. Reuse the existing stack (Cloud Run, Cloud SQL, Google Identity Services) and check current official documentation before changing any service configuration.
+
+## Suite integration: deployment and account findings
+
+Inspected locally in `synthograsizer-suite` on 2026-09-16. No suite code or deployment was changed; these are read-only findings, not a live Cloud Console audit.
+
+- Checkout: `C:\Users\Alexander\Projects\synthograsizer-suite`; remote: <https://github.com/quitters/synthograsizer.git>. The directory name differs from the GitHub repository name.
+- Current branch is `chatroom/gemini-modernization-phases-0-1`, with an existing modification to `chatroom/server/services/gemini.js` and an untracked `chatroom/.run-pid`. Preserve both — do not deploy this working tree or merge unrelated ChatRoom work by accident. Branch a clean integration branch from an agreed suite base once implementation starts.
+- Deployment (`docs/DEPLOY_CLOUDRUN.md`): Cloud Run service `synthograsizer`, project `synthograsizer-app`, region `northamerica-northeast1`, Cloud SQL Postgres `synth-db`. The container runs the suite's Python/FastAPI app via Uvicorn — it does not run The Commons' Node server. Copying Commons files into the suite does not start a second server; the integration design has to decide how Commons is served (same process/router, a sidecar, a separate Cloud Run service behind the same proxy, etc.).
+- The service is pinned to `--min-instances 1 --max-instances 1` with a 600s timeout and session affinity. Scaling past one instance needs shared rate-limit/budget state first (the runbook says so explicitly) — relevant because Commons' realtime relay is currently process-local, single-instance state.
+- `synthograsizer.com` reaches Cloud Run through a Vercel proxy (`vercel.json` rewrites all paths). `/thecommons` would ride that same proxy unless a different routing decision is made. Confirm the proxy forwards WebSocket upgrades before relying on that transport at `/thecommons`.
+- Deploys use `gcloud run deploy ... --set-env-vars "..."`, which **replaces the entire service environment** — not additive. The runbook documents a real 2026-07-20 incident where a routine redeploy silently wiped `SYNTH_PUBLIC_ORIGINS` and broke every POST through the domain. Any deployment guide for Commons must account for this (either fold Commons' env vars into the one `--set-env-vars` list, or use `--update-env-vars` and re-apply it after every deploy per the runbook's own rule).
+- Identity: `SYNTH_HOSTED=1` / `SYNTH_AUTH=1` enable hosted auth. `backend/service/auth.py` verifies Google Identity Services ID tokens (signature/audience/expiry via `google-auth`, plus issuer and `email_verified`), upserts the user by Google's stable `sub`, and issues an opaque HttpOnly `SameSite=Lax` session cookie (`synth_session`) — Google's own token is never stored. This is the identity boundary to reuse for Commons room creators; it should not need a second login system.
+- Admin is computed from `ADMIN_EMAILS` (env, not a DB column) via `effective_tier()`. Admin tier bypasses credit debits (`credits.py`), the daily budget breaker, and per-user rate limiting (`enforcement.py`). **A Commons room owner must never be granted this tier** — it is a suite-operator concept, not a room-owner concept, and would remove all spend limits for that account across every suite tool.
+- Charging (`backend/service/credits.py`) is reserve-then-settle: `Charge.reserve()` does one atomic conditional `UPDATE ... WHERE credits_balance >= cost` (no overspend race), inserts a `generations` row as `status='failed'`, and flips it to `'ok'` on `commit()` or refunds on any exception (`__aexit__`). The invariant `SUM(credit_ledger.delta) == users.credits_balance` is tested. This reserve/commit/refund pattern — not a bolt-on charge-after-the-fact — is the model Commons generation (including the repair call) should follow.
+- `backend/service/budget.py` is a daily USD circuit breaker: sums `generations.usd_est` for the UTC day, caches the sum for ~30s per process (coherent only because `max-instances=1`), and **fails open** on any DB error ("never let a broken breaker take the service down"). It is a last-line defense against a bug or leaked session, not a hard per-room or per-owner cap — Commons needs its own per-owner reservation logic on top of it, not instead of it.
+- `backend/service/enforcement.py` is one always-registered middleware that gates a fixed prefix list (`AI_PREFIXES`, e.g. `/api/generate/`, `/api/chat`, ...) behind session + terms + rate-limit + budget checks, and 403s a separate `DISABLED_PREFIXES` list (things like local file/OSC/scope endpoints that don't make sense multi-tenant on Cloud Run). **A new `/thecommons/...` or room-job route will not automatically inherit these guards** — it has to either live under an existing guarded prefix or get its own explicit session/CSRF/ownership/terms/rate-limit/budget wiring. The HTTP middleware also does not see WebSocket scope (the suite's own Lyria endpoint gates itself separately in its router) — Commons' `/ws` relay will need the same kind of independent enforcement.
+- Same-origin/CSRF: unsafe methods on guarded paths require a matching `Origin`/`Referer`, with an operator-set allowlist via `SYNTH_PUBLIC_ORIGINS` for exactly this kind of proxy-fronted case. `/thecommons` will need its own origins covered by (or already covered by) that allowlist.
+
+### Decided access rules for The Commons
+
+| Action | Access requirement | Model spending |
+|---|---|---|
+| Open the landing page | Public | None |
+| Create a room / list owned rooms | Verified Google session | No model call just to create an empty room |
+| Open/use room admin tools (generate, remix, undo, presets) | Verified Google session **and** server-checked ownership of that room | Charged to the owner's existing suite credits |
+| Scan QR / open participant controls | No account, no Google login — room-scoped anonymous participant token | None — participants must have no path to trigger generation |
+| View a room display | Per the room's link policy | None |
+
+This resolves the "who pays for generation" and "can participants join anonymously" questions raised in [Next steps § 1](#1-discover-the-website-and-agree-on-an-integration-design) below: room creators authenticate with their existing Google account and spend their own suite credits; participants never authenticate and can never spend credits. A **room owner is not a suite operator** — never add a room creator to `ADMIN_EMAILS` or grant the `admin` tier; that would exempt them from every spend limit suite-wide, not just give them their room.
+
+### Credit-enforcement gaps to close during implementation
+
+These are gaps between the suite's existing (single-app) credit system and what a multi-room, async-job product like Commons needs — not bugs in the suite as it stands today:
+
+1. **New routes need explicit protection.** `enforcement.py`'s prefix lists won't automatically cover `/thecommons/...` or a WebSocket relay; wire session, CSRF-origin, ownership, terms, rate-limit, and charging explicitly, and enforce the participant-vs-owner role independently on the WebSocket path.
+2. **Reserve before dispatch, including the repair call.** Follow the suite's reserve/commit/refund pattern: reserve credits (covering both the initial call and a possible repair call) before starting a durable job, persist the owner/room/job/charge relationship, and make job-start responses (202-style) distinct from settlement. Deduplicate submissions/deliveries so a reload or retried worker delivery can't double-charge or double-dispatch.
+3. **The daily breaker is a backstop, not a cap.** `budget.tripped()` fails open on DB errors and is only ~30s-coherent (fine at `max-instances=1`). Commons needs its own per-owner reservation on top of it — a Google account identifies a spender, it doesn't bound one.
+4. **Make job accounting recoverable.** The suite's own charge/generations-row/ledger-row are three separate writes reconciled by an implicit invariant, not one atomic transaction — model Commons' job/reservation/settlement records the same deliberate way, with defined recovery for crashes, duplicate workers, and provider-outcome uncertainty (repair especially, since it's a second paid call inside one job).
+5. **`--set-env-vars` replaces the whole environment.** Any new Commons-specific env vars must go into the deploy runbook's env-var list (or be re-applied via `--update-env-vars` after every deploy) — see the finding above and the runbook's own 2026-07-20 incident note.
+
+Required integration tests (future, not implemented yet): anonymous room creation/admin/generation returns an auth error; a signed-in non-owner cannot read or mutate another owner's room; room owners never receive the `admin` tier's exemptions; anonymous QR participant controls work with no session; zero credits blocks new generation while the current canvas keeps running; concurrent rooms cannot together exceed their shared owner's balance; the repair call and duplicate job delivery cannot bypass charging; an unavailable budget/account store blocks new paid calls rather than allowing them.
 
 ## Completed generation repair
 
@@ -39,7 +80,7 @@ No repair warning was observed for this live request; successful repair itself w
 
 - Repository: `C:\Users\Alexander\Projects\agents-everywhere-hackathon\repos\TheCommons`
 - Remote: <https://github.com/quitters/TheCommons>
-- Branch: `main`. The two implementation commits above precede this handoff documentation. Recheck the actual ahead count rather than assuming it is still two after documentation is committed.
+- Branch: `main`, pushed and in sync with `origin/main` as of this update (generation repair, handoff creation, and the Synthograsizer integration/deployment findings above have all landed on `origin/main`). Recheck `git status --short --branch` before further work rather than assuming this stays true.
 - Presentation drafts remain untracked: `docs/PRESENTATION_TRANSCRIPT.md` and `docs/QA_PREP.md`. They were reviewed and deliberately excluded from the repair commit. The Q&A overlaps README and has stale claims about persistence, template authorship, reconnects, and unmeasured capacity. Keep the files intact; review them separately if publishing presentation materials.
 - The app was started at `http://127.0.0.1:4188` for the live check, with Gemini configured privately and the facilitator off. Runtime processes are ephemeral: verify listeners before restarting or stopping anything. Do not terminate unrelated processes.
 - No audience gateway or Cloudflare tunnel was started for the check. Old `trycloudflare.com` URLs and the QR pointing to them are expired demo artifacts, not deployment addresses. Preserve the local QR files; do not advertise their old URL.
@@ -65,9 +106,9 @@ The local JSON store does preserve completed jobs, presets, and saved sketch/und
 
 ## Proposed user journey
 
-1. A creator opens The Commons on the existing website and signs in through its established identity system.
+1. A creator opens The Commons on the existing website and must sign in with their Google account through the suite's existing identity system before creating a room or accessing its admin tools.
 2. The creator creates a room and becomes its owner/admin. They receive a creator desk, a unique display URL, and a participant URL represented as a QR code.
-3. A display opens that room's canvas. Participants scan the QR and receive controls for that room, with the current automatic allocation and shared-turn behavior.
+3. A display opens that room's canvas. Participants scan the QR and receive controls for that room without Google sign-in or an account, with the current automatic allocation and shared-turn behavior.
 4. Only the room owner can generate/remix, load or save looks, undo, and manage the room. Participant access does not confer creator permissions.
 5. The owner can close the room and manage access. Define reopening, expiration, retention, and deletion behavior before implementing those actions.
 
@@ -81,7 +122,7 @@ This is the next task when implementation planning resumes. Locate and verify th
 
 Treat /thecommons as the required public base path. Audit root-relative asset links, API requests, WebSocket URLs, redirects, login callbacks, cookie paths, and QR URLs; the standalone app currently assumes root routes. Verify direct navigation and reloads on nested room pages. Adapt the existing site routing/proxy configuration without breaking other suite tools. A shared domain does not remove the need to isolate generated code from site credentials.
 
-Agree on initial targets: simultaneous rooms, participants per room, expected control-update rate, typical event duration, acceptable reconnect time, generation usage, and operating budget. Decide whether participants can join anonymously, whether rooms are listed or unlisted, how invitation rotation works, and who pays for generation. Do not invent capacity or pricing claims.
+Agree on initial targets: simultaneous rooms, participants per room, expected control-update rate, typical event duration, acceptable reconnect time, generation usage, and operating budget. Anonymous participant access and Google-authenticated, credit-metered room creation/admin access are decided (see [Decided access rules](#decided-access-rules-for-the-commons) above). Still open: whether rooms are listed or unlisted, how invitation rotation works, and the exact credit tariff for Commons generation within the suite's pricing model. Do not invent capacity or pricing claims.
 
 Deliverable: a short architecture decision document mapping each responsibility below to the existing Google stack, with any proposed additions, expected cost drivers, deployment/rollback plan, and unresolved decisions. Verify current connection/request limits and background-work behavior for the chosen services. A hosting move alone is not multi-room support.
 
