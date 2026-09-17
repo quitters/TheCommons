@@ -6,7 +6,7 @@ See [SUBMISSION.md](SUBMISSION.md) for the hackathon eligibility/deliverables ch
 
 Visual identity — palette, type, layout logic — was designed once in [pitch.html](pitch.html) and shared into the actual product via [client/shared/theme.css](client/shared/theme.css). Extend that, don't invent a second visual language for the app itself.
 
-Post-hackathon direction: a tool at `synthograsizer.com/thecommons`, integrated into `synthograsizer-suite` and hosted through the site's existing Google Cloud stack, where Google-signed-in creators own separate rooms with unique displays and participant QR codes, spending their own suite credits. Participant controls require no account or login. This is planned, not built. See [docs/HANDOFF.md](docs/HANDOFF.md) for the verified generation-repair status, deployment/account findings, and phased next steps.
+**Now also live as a hosted, multi-room product** at <https://synthograsizer.com/thecommons> — any signed-in Synthograsizer account can create a room, generate into it, put the wall on a screen, and let people scan a QR to take a control. Participants need no account. That version is a port of this engine into `synthograsizer-suite`'s FastAPI backend, running on its existing Google Cloud stack and metered against the creator's own suite credits; **this repo remains the standalone app and the reference implementation of both sketch contracts.** See [docs/HANDOFF.md](docs/HANDOFF.md) for the deployed architecture, what is and isn't verified, what's left, and the hard-won traps.
 
 ## What this is, on purpose
 
