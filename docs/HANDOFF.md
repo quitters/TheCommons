@@ -78,7 +78,9 @@ No repair warning was observed for this live request; successful repair itself w
 
 ## Completed: Stage 2 — room identity & isolation (suite-side)
 
-Implemented and tested in `synthograsizer-suite`, on branch `commons/stage-2-room-isolation` (commit `81ef397`, branched off `chatroom/gemini-modernization-phases-0-1` rather than committed there, to avoid mixing with that branch's own unrelated in-progress ChatRoom work). Not merged, not deployed, not pushed — local only, awaiting review.
+Implemented and tested in `synthograsizer-suite`. Originally committed on `commons/stage-2-room-isolation`, branched off `chatroom/gemini-modernization-phases-0-1` rather than committed there, to avoid mixing with that branch's own unrelated in-progress ChatRoom work.
+
+**Now merged to `origin/main`** (2026-09-16) as five commits ending at `9ab56e3` — but *not* by merging that original branch, which sat on top of **11 unrelated ChatRoom commits** (phases 0–8) and would have shipped that in-progress work to production. The five Commons commits were cherry-picked onto `main` in a separate git worktree (switching branches in the main checkout would have endangered the uncommitted `chatroom/server/services/gemini.js` edit, which differs by 600+ lines between the two branches), verified at 358 tests passing on that base, and fast-forwarded in as `commons/deploy-candidate`. Zero file overlap between the two sets of work, and `MODEL_TEMPLATE_GEN` — the only `config.py` value Commons reads — is identical on both. **Not yet deployed.**
 
 This ports the domain model and isolation this repo's Node server implements — `server/relay.js`, `server/generation-jobs.js`, `server/admin.js`, `server/validate-sketch.js` — into the suite's FastAPI backend, per the decided serving model above:
 
@@ -203,7 +205,7 @@ Stage 1's serving-model and responsibility-mapping deliverables are now done. Wh
 
 ### 2. Define room identity and isolation locally — done, pending review
 
-Completed and tested on the suite side; see "Completed: Stage 2" above for what shipped and where (`commons/stage-2-room-isolation`, not merged or deployed). All of this stage's acceptance criteria are covered by the new automated tests: two rooms run concurrently with independent art/controls/owners/presets/jobs/undo; a second creator gets an identical 404 reading or mutating another owner's room, job, or preset by guessing an ID; a var-update broadcast in one room never reaches another's sockets. Participant identity stays in-memory only (not a DB table), matching Node — the durable "invite mapping" this stage needed is fully covered by each room's `join_code` column.
+Completed and tested on the suite side, and now merged to `origin/main` (see "Completed: Stage 2" above for what shipped and the branch-hygiene problem that had to be solved first). All of this stage's acceptance criteria are covered by the new automated tests: two rooms run concurrently with independent art/controls/owners/presets/jobs/undo; a second creator gets an identical 404 reading or mutating another owner's room, job, or preset by guessing an ID; a var-update broadcast in one room never reaches another's sockets. Participant identity stays in-memory only (not a DB table), matching Node — the durable "invite mapping" this stage needed is fully covered by each room's `join_code` column.
 
 Still open from this stage's original scope, carried forward rather than resolved: no client UI exists yet for any of this (no creator desk/display/station pages against the new endpoints), and durable job recovery across restarts is still only "mark interrupted, don't resume" — that's explicitly Stage 3's job.
 
@@ -250,7 +252,31 @@ The runbook must:
 5. Verify https://synthograsizer.com/thecommons, nested display/join links, room ownership, cross-room isolation, QR scans on phones, live updates, and generation job recovery. Confirm the service works with the laptop off and the site's existing tools still work.
 6. Document how to inspect logs/status safely, diagnose common failures, track usage/cost, and perform future updates. Identify steps that change resources, access, or billing before running them.
 
-Creating this guide and carrying out deployment are separate steps. The current request records the requirement for later help; it does not authorize provisioning, deployment, or pushing repositories now.
+Creating this guide and carrying out deployment are separate steps.
+
+### The deploy, as of `9ab56e3` on `main`
+
+Commons needs **no new secrets and no new environment variables** — it reuses `GOOGLE_API_KEY`, `SYNTH_AUTH`, and the existing Cloud SQL instance. The one new dependency (`qrcode`) installs at image build, so a failure there fails the *build*, not production. The schema migrates at app startup, and Cloud Run does not route traffic to a revision that fails to boot, so a bad migration leaves the current revision serving.
+
+That means the deploy is the suite's **existing** runbook (`docs/DEPLOY_CLOUDRUN.md`) with nothing added — run from a fresh Cloud Shell clone of `main`, as three **separate** commands, never `&&`-chained, because `--set-env-vars` replaces the entire service environment (the 2026-07-20 incident that dropped `SYNTH_PUBLIC_ORIGINS` and 403'd every POST through the domain):
+
+1. §2 — `gcloud run deploy synthograsizer --source . …`
+2. §2b — re-apply `SYNTH_PUBLIC_ORIGINS` (note the `^@^` delimiter switch; the value contains a comma)
+3. §2c — re-apply `SYNTH_GCS_BUCKET` + `SYNTH_TERMS_VERSION`
+
+A correctly-run deploy leaves **three revisions ~15s apart**; a lone revision means 2b/2c were skipped.
+
+### Post-deploy checks, in priority order
+
+1. **WebSockets through the Vercel proxy — the one real unknown.** The entire participant experience depends on the upgrade surviving the `/(.*)` rewrite, and it has never been tested. Open `/thecommons/display/{code}` on the domain and confirm the canvas renders (not just that the page loads). If it fails there but works on the `run.app` URL directly, the transport is the problem, and the fix is the ALB + serverless NEG path the runbook already anticipates for Veo.
+2. Sign in, create a room, generate once. Confirm the credit badge drops by 10 and that a fallback-only result (no model answer) refunds it.
+3. Scan the QR **on a real phone** — never yet tested — and confirm the control assigned to that phone moves the wall.
+4. Confirm the suite's existing tools still work (nothing Commons touches is shared with them, but the env-var footgun above is worth one check).
+5. Confirm it all still works with this laptop off — the actual production milestone.
+
+### Known gaps at first deploy
+
+No invitation lifecycle: a room's join code, once issued, works forever — there is no close, expire, or rotate yet, and no UI for it. No durable job recovery: a job interrupted by a restart is marked `interrupted`, never resumed. Untrusted-creator sandboxing (roadmap stage 5) is **not** done — generated drawing code still runs on the same origin as the signed-in page, which is acceptable while the creators are you and people you trust, and is the thing to close before opening room creation to the public.
 
 ## Invariants throughout the migration
 
