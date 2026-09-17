@@ -268,7 +268,11 @@ A correctly-run deploy leaves **three revisions ~15s apart**; a lone revision me
 
 ### Post-deploy checks, in priority order
 
-1. **WebSockets through the Vercel proxy — the one real unknown.** The entire participant experience depends on the upgrade surviving the `/(.*)` rewrite, and it has never been tested. Open `/thecommons/display/{code}` on the domain and confirm the canvas renders (not just that the page loads). If it fails there but works on the `run.app` URL directly, the transport is the problem, and the fix is the ALB + serverless NEG path the runbook already anticipates for Veo.
+1. ~~**WebSockets through the Vercel proxy — the one real unknown.**~~ **Confirmed broken, and fixed (2026-09-17).** The Vercel proxy answers WebSocket upgrades with **its own 404** instead of forwarding them — the identical upgrade returns `HTTP/1.1 101 Switching Protocols` straight at Cloud Run and `HTTP/1.1 404 Not Found` (`Server: Vercel`) through the domain, tested against a real live room. The wall and station loaded fine but could never connect, so the canvas stayed black.
+
+    The fix needed no infrastructure: the pages now ask `/api/thecommons/config` where the relay lives and dial Cloud Run directly, which browsers permit (WebSockets aren't subject to CORS preflight, and the relay never had an origin check — a join code is the capability, exactly as it already was same-origin). Set via **`SYNTH_WS_ORIGIN`**, which is now part of the §2 env list. Unset means same-origin, so local installs are unaffected and the setting becomes removable if the domain ever moves to the ALB + serverless NEG path the runbook anticipates for Veo.
+
+    **Diagnostic caution for whoever tests this next:** a bogus join code is *not* a valid probe. The relay closes unknown rooms *before* accepting the socket, and a pre-accept close can't carry a close code, so the browser reports a bare `1006` — indistinguishable at a glance from a transport failure. It reproduces identically on a known-good local server. Probe with a **real** room, or with `curl -i -H "Connection: Upgrade" -H "Upgrade: websocket" …` and read the status line.
 2. Sign in, create a room, generate once. Confirm the credit badge drops by 10 and that a fallback-only result (no model answer) refunds it.
 3. Scan the QR **on a real phone** — never yet tested — and confirm the control assigned to that phone moves the wall.
 4. Confirm the suite's existing tools still work (nothing Commons touches is shared with them, but the env-var footgun above is worth one check).
